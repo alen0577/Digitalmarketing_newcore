@@ -1,0 +1,163 @@
+{% extends 'HD_base.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+    .schedule-list
+    {
+        border:1px solid rgba(24, 23, 23, 0.523);
+    }
+</style>
+<div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'head_dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Schedule Filter</li>
+        </ol>
+      </nav>
+</div>
+
+<!--  Mail section -->
+<div class="row">
+
+    <div class="col-md-12 col-xl-12 grid-margin stretch-card">
+       
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-5">Employee Schedule Filter List</h4>
+                <div class="serach-schedule mt-3 mb-2">
+                    <form action="#" method="post">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            
+                            <div class="col-sm-12 col-lg-3 col-md-3">
+                                <div class="form-group">
+                                  <label> select employee</label>
+                                  <select class="form-control text-offwhite" name="#" id="#" required>
+                                      <option></option>
+                                  </select>                        
+                                </div>
+                            </div>
+                           
+                            <div class="col-sm-12 col-lg-3 col-md-3">
+                                <div class="form-group">
+                                  <label>from date</label>
+                                  <input type="date" class="form-control text-offwhite" name="#" >                    
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-3 col-md-2">
+                                <div class="form-group">
+                                  <label>to date</label>
+                                  <input type="date" class="form-control text-offwhite" name="#" >                       
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-2 col-md-2">
+                                <div class="form-group">
+                                  <label></span>filter by schedule </label>
+                                  <select class="form-control text-offwhite" name="#" id="#" >
+                                     
+                                      <option>All</option>
+                                      <option>Upcoming schedule</option>
+                                  </select>
+                                 
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-lg-1 col-md-1 d-flex  justify-content-center  align-items-center">
+                               
+                                    <button class=" btn btn-primary " type="submit"><i class="mdi mdi-magnify mdi-18px"></i></button> 
+
+                            </div>
+                            
+                        </div>
+                    </form>
+                </div>
+
+                <div class="row  mt-3">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">Schedules (Shebin Shaji)</h4>
+                          <div class="table-responsive">
+                            <table class="table">
+                              <thead>
+                                <tr>
+                                  <th> Day and Date </th>
+                                  <th> Schedule Task </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td> Cash on delivered </td>
+                                  <td class="#">
+                                    <div class="sechedule-task d-flex">
+                                        <div class="left-date-time">
+                                            <p class="schedule-date">Aug. 10 2023</p>
+                                            <div class="form-check form-check-primary">
+                                                 <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox"> Time - 12:12 am to 02:05 pm
+                                            </label>
+                                            </div>
+                                        </div>
+                                        <div class="right-scheduletask d-flex">
+                                            <div class="inner-schedule-content">
+                                                <h6>Digital Marketing work</h6>
+                                                <p>Filler text is text that shares some characteristics of a real written text, 
+                                                    but is random or otherwise generated. 
+                                                </p>
+                                            </div>
+                                            <div class="schedule-change">
+                                                <a href="#" class="test-primary"><i class=" mdi mdi-pencil"></i></a>
+                                                <a href="#" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
+                                            </div>
+                                           
+                
+                                        </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td> App design </td>
+                                  <td>
+                                    <div class="sechedule-task d-flex">
+                                        <div class="left-date-time">
+                                            <p class="schedule-date">Aug. 10 2023</p>
+                                            <div class="form-check form-check-primary">
+                                                 <label class="form-check-label">
+                                                <input class="checkbox" type="checkbox"> Time - 12:12 am to 02:05 pm
+                                            </label>
+                                            </div>
+                                        </div>
+                                        <div class="right-scheduletask d-flex">
+                                            <div class="inner-schedule-content">
+                                                <h6>Digital Marketing work</h6>
+                                                <p>Filler text is text that shares some characteristics of a real written text, 
+                                                    but is random or otherwise generated. 
+                                                </p>
+                                            </div>
+                                            <div class="schedule-change">
+                                                <a href="#" class="test-primary"><i class=" mdi mdi-pencil"></i></a>
+                                                <a href="#" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
+                                            </div>
+                                           
+                
+                                        </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                                
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
