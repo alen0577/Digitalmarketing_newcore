@@ -14,15 +14,40 @@ urlpatterns = [
     # Profile ------------------------------
 
     path('Executive_Profile',views.executive_profile,name='executive_profile'),
-    path('Profile-Update',views.Profile_detailsUpdate,name='Profile_detailsUpdate'),
-    path('Profile-Image\Remove',views.profileImage_remove,name='profileImage_remove'),
+    path('Exprofile-Update',views.Profile_detailsUpdate,name='Profile_detailsUpdate'),
+    path('Exprofile-Image\Remove',views.profileImage_remove,name='profileImage_remove'),
 
 
+    # Password ----------------------------
+
+    path('Expassword',views.executive_password,name='executive_password'),
+    path('Expassword-Update',views.user_passwordUpdate,name='user_passwordUpdate'),
+
+
+    # Action Taken  --------------------------
+
+    path('Executive-Action-Taken',views.executive_actionTaken,name='executive_actionTaken'),
 
     
-    
+    # Notification ----------------------
 
+    path('Executive-Notification',views.executive_allnotification,name='executive_allnotification'),
+
+
+    # Feedback  --------------------------
+
+    path('Executive-Feedback',views.executive_feedback,name='executive_feedback'),
+
+    # Complaints --------------------------
+
+    path('Executive-Complaints',views.executive_complaints,name='executive_complaints'),
+
+    # Leave ---------------------------
     
+    path('Executive-Leave',views.executive_leave,name='executive_leave'),
+    path('Exapply-leave',views.exapply_leave,name='exapply_leave'),
+
+
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

@@ -53,7 +53,7 @@
                   </div>
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="{% url 'head_password' %}" class="dropdown-item preview-item">
+                <a href="{% url 'executive_password' %}" class="dropdown-item preview-item">
                   <div class="preview-thumbnail">
                     <div class="preview-icon bg-dark rounded-circle">
                       <i class="mdi mdi-onepassword  text-info"></i>
@@ -111,7 +111,7 @@
           </li>
          
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{% url 'head_leave' %}">
+            <a class="nav-link" href="{% url 'executive_leave' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-calendar-today"></i>
               </span>
@@ -119,7 +119,7 @@
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{% url 'head_actionTaken' %}">
+            <a class="nav-link" href="{% url 'executive_actionTaken' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-marker-check"></i>
               </span>
@@ -136,8 +136,8 @@
             </a>
             <div class="collapse" id="message">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="{% url 'head_feedback' %}"> Feedback  </a></li>
-                <li class="nav-item"> <a class="nav-link" href="{% url 'head_complaints' %}"> Complaints </a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'executive_feedback' %}"> Feedback  </a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'executive_complaints' %}"> Complaints </a></li>
               
               </ul>
             </div>
@@ -224,7 +224,7 @@
                   <div class="dropdown-divider"></div>
                   {% endfor %}
                   <div class="dropdown-divider"></div>
-                  <a href="{% url 'head_allnotification' %}">
+                  <a href="{% url 'executive_allnotification' %}">
                     <p class="p-3 mb-0 text-center">See all notifications</p>
                   </a>
                   
@@ -254,7 +254,7 @@
                     </div>
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="{% url 'head_logout' %}">
+                  <a class="dropdown-item preview-item" href="{% url 'executive_logout' %}">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>

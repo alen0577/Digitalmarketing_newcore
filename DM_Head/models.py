@@ -50,8 +50,8 @@ class Notification(models.Model):
 
 class EmployeeLeave(models.Model):
     emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
-    start_date = models.TimeField(auto_now=False,default='',null=True,blank=True)
-    end_date = models.TimeField(auto_now=False,default='',null=True,blank=True)
+    start_date = models.DateField(auto_now=False,default='',null=True,blank=True)
+    end_date = models.DateField(auto_now=False,default='',null=True,blank=True)
     leave_type = models.CharField(max_length=255,default='',null=True,blank=True)
     leave_reason = models.TextField(default='',null=True,blank=True)
     leave_status = models.IntegerField(default=0)
