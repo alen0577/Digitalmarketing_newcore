@@ -306,18 +306,120 @@ def executive_feedback(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        employee_ids = [1, 2]
+        employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
+        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
+        feedback_view=Feedback.objects.filter(from_id=id1)
+
         
 
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'employees':employees,
+            'feedback_view':feedback_view
         }
 
         return render(request,'Executive_feedback.html',content)
 
     else:
         return redirect('/')
+
+def exadd_feedback(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+        
+        # dummy notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        employee_ids = [1, 2]
+        employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
+        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+        id2=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
+        feedback_view=Feedback.objects.filter(from_id=id2)
+
+        if request.POST:
+            from_id=id1.id
+            from_name=id1.emp_name
+            feedback_date=date.today()
+            idto=request.POST['feedbackto']
+            feedback_emp_id=EmployeeRegister_Details.objects.get(id=idto)
+            feedback_content=request.POST['feedback_content']
+            feedback=Feedback(from_id=from_id,from_name=from_name,feedback_date=feedback_date,feedback_emp_id=feedback_emp_id,feedback_content=feedback_content)
+            feedback.save()
+            success_text = 'Feedback Submitted'
+            success = True
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'employees':employees,
+                'feedback_view':feedback_view,
+                'success_text':success_text,
+                'success':success,
+            }
+        else:
+
+            error=True
+            error_text = 'Oops! something went wrong.'
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'employees':employees,
+                'feedback_view':feedback_view,
+                'error':error,
+                'error_text':error_text,
+                
+            }      
+
+        
+
+        
+
+        return render(request,'Executive_feedback.html',content)
+
+    else:
+        return redirect('/')
+
+
+# feedbackgiven filter 
+
+def exfeedback_given(request):
+    
+    if request.session.has_key('emp_id'):
+        emp_id = request.session['emp_id']
+        
+    else:
+        return redirect('/')
+
+    id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
+    feedback_view = list(Feedback.objects.filter(from_id=id1).values())
+
+    return JsonResponse({'feedback_view': feedback_view})   
+
+
+# feedbackreceived filter 
+
+def exfeedback_received(request):
+    
+    if request.session.has_key('emp_id'):
+        emp_id = request.session['emp_id']
+        
+    else:
+        return redirect('/')
+        
+    id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
+    feedback_view = list(Feedback.objects.exclude(from_id=id1).values())
+
+    return JsonResponse({'feedback_view': feedback_view})   
 
 
 # Complaints ---------------------
@@ -336,18 +438,76 @@ def executive_complaints(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+        view_complaints=Complaints.objects.filter(complaint_emp_id=id1)
         
 
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'view_complaints':view_complaints,
         }
 
         return render(request,'Executive_complaints.html',content)
 
     else:
             return redirect('/')
+
+def addex_complaint(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+        
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+        
+        # dummy notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+        view_complaints=Complaints.objects.filter(complaint_emp_id=id1)
+
+        if request.POST:
+            compaint_head=request.POST['compaint_head']
+            compaint_content=request.POST['compaint_content']
+            complaint_date=date.today()
+
+            complaint=Complaints(complaint_emp_id=id1, compaint_head= compaint_head,compaint_content=compaint_content,complaint_date=complaint_date)
+            complaint.save()
+            success_text = 'Complaint Registered'
+            success = True
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'success_text':success_text,
+                'success':success,
+                'view_complaints':view_complaints,
+                
+            }
+        else:
+
+            error=True
+            error_text = 'Oops! something went wrong.'
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'error':error,
+                'error_text':error_text,
+                'view_complaints':view_complaints
+            }      
+        
+
+        return render(request,'Executive_complaints.html',content)
+
+    else:
+            return redirect('/')
+
+
     
 
 
@@ -370,6 +530,7 @@ def executive_leave(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        
 
 
         
@@ -379,6 +540,8 @@ def executive_leave(request):
             'dash_details':dash_details,
             'notifications':notifications,
             'myleave':myleave,
+            
+            
         }
 
         return render(request,'Executive_leave.html',content)
@@ -401,6 +564,7 @@ def exapply_leave(request):
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+        myleave=EmployeeLeave.objects.filter(emp_id=id1)
 
         # fetch leave details
         if request.POST:
@@ -412,20 +576,55 @@ def exapply_leave(request):
 
             leave_details=EmployeeLeave(emp_id=id1,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date)
             leave_details.save()
-            return redirect('executive_leave')
+            success_text = 'Applied Leave'
+            success = True
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'success_text':success_text,
+                'success':success,
+                'myleave':myleave,
+            }
+
+            # return redirect('executive_leave')
+        else:
+
+            error=True
+            error_text = 'Oops! something went wrong.'
+            content = {
+                'emp_dash':emp_dash,
+                'dash_details':dash_details,
+                'notifications':notifications,
+                'error':error,
+                'error_text':error_text,
+                'myleave':myleave,
+            }    
 
 
-        content = {
-            'emp_dash':emp_dash,
-            'dash_details':dash_details,
-            'notifications':notifications
-        }
+        
 
         return render(request,'Executive_leave.html',content)
 
     else:
         return redirect('/')
 
+
+# leave filter function
+
+def filter_exleave(request):
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    
+    myleave = list(EmployeeLeave.objects.filter(start_date__range=[from_date, to_date]).values())
+
+    return JsonResponse({'myleave': myleave})       
+
+
+
+
+
+# logout
 
 def executive_logout(request):
     request.session.pop('emp_id', None)

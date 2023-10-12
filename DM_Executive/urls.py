@@ -37,15 +37,21 @@ urlpatterns = [
     # Feedback  --------------------------
 
     path('Executive-Feedback',views.executive_feedback,name='executive_feedback'),
+    path('Executive-Add-Feedback',views.exadd_feedback,name='exadd_feedback'),
+    path('Executive-Feedbackgiven',views.exfeedback_given,name='exfeedback_given'),
+    path('Executive-Feedbackreceived',views.exfeedback_received,name='exfeedback_received'),
+
 
     # Complaints --------------------------
 
     path('Executive-Complaints',views.executive_complaints,name='executive_complaints'),
+    path('Add-Executive-Complaints',views.addex_complaint,name='addex_complaint'),
 
     # Leave ---------------------------
     
     path('Executive-Leave',views.executive_leave,name='executive_leave'),
     path('Exapply-leave',views.exapply_leave,name='exapply_leave'),
+    path('Filterex-Leave',views.filter_exleave,name='filter_exleave'),
 
 
 
