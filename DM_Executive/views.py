@@ -4,6 +4,7 @@ from .models import *
 from DM_Head.models import *
 from django.utils import timezone
 from datetime import date
+from datetime import datetime, timedelta
 from django.http import JsonResponse
 
 
@@ -22,11 +23,13 @@ def executive_dashboard(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
         
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'notification':notification,
         }
 
         return render(request,'Executive_dashboard.html',content)
@@ -49,11 +52,13 @@ def executive_profile(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
         
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'notification':notification,
         }
 
         return render(request,'Executive_profile.html',content)
@@ -76,6 +81,7 @@ def Profile_detailsUpdate(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
 
 
         # Details Save -----------------
@@ -118,6 +124,7 @@ def Profile_detailsUpdate(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'success_text':success_text,
                 'success':success
             }
@@ -129,6 +136,7 @@ def Profile_detailsUpdate(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'error_text':error_text,
                 'error':error
             }
@@ -166,11 +174,13 @@ def executive_password(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
         
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'notification':notification,
         }
 
         return render(request,'Executive_password.html',content)
@@ -193,6 +203,7 @@ def user_passwordUpdate(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
 
         if request.POST:
            
@@ -207,6 +218,7 @@ def user_passwordUpdate(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'success':success,
                 'success_text':success_text
             }
@@ -218,6 +230,7 @@ def user_passwordUpdate(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'error':error,
                 'error_text':error_text
             }
@@ -244,12 +257,17 @@ def executive_actionTaken(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+        actions=ActionTaken.objects.filter(act_emp_id=id1).order_by('-action_date')
         
 
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'notification':notification,
+            'actions':actions,
         }
 
         return render(request,'Executive_actionTaken.html',content)
@@ -276,12 +294,14 @@ def executive_allnotification(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
         
 
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
-            'notifications':notifications
+            'notifications':notifications,
+            'notification':notification,
         }
 
         return render(request,'Executive_allnotification.html',content)
@@ -306,10 +326,12 @@ def executive_feedback(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+
         employee_ids = [1, 2]
         employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
-        feedback_view=Feedback.objects.filter(from_id=id1)
+        feedback_view=Feedback.objects.filter(from_id=id1).order_by('-feedback_date')
 
         
 
@@ -317,6 +339,7 @@ def executive_feedback(request):
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
+            'notification':notification,
             'employees':employees,
             'feedback_view':feedback_view
         }
@@ -339,11 +362,13 @@ def exadd_feedback(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+
         employee_ids = [1, 2]
         employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
         id2=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
-        feedback_view=Feedback.objects.filter(from_id=id2)
+        feedback_view=Feedback.objects.filter(from_id=id2).order_by('-feedback_date')
 
         if request.POST:
             from_id=id1.id
@@ -360,6 +385,7 @@ def exadd_feedback(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'employees':employees,
                 'feedback_view':feedback_view,
                 'success_text':success_text,
@@ -373,6 +399,7 @@ def exadd_feedback(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'employees':employees,
                 'feedback_view':feedback_view,
                 'error':error,
@@ -401,9 +428,24 @@ def exfeedback_given(request):
         return redirect('/')
 
     id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
-    feedback_view = list(Feedback.objects.filter(from_id=id1).values())
+    feedback_view =Feedback.objects.filter(from_id=id1).order_by('-feedback_date')
+    feedback_list=[]
 
-    return JsonResponse({'feedback_view': feedback_view})   
+    for i in feedback_view:
+        date=i.feedback_date
+        by=i.from_name
+        byid=i.from_id
+        content=i.feedback_content
+        to=i.feedback_emp_id.emp_name
+        feedback_list.append({
+            'feedback_date':date,
+            'from_name':by,
+            'from_id':byid,
+            'feedback_content':content,
+            'feedback_emp':to
+        })
+
+    return JsonResponse({'feedback_list': feedback_list})   
 
 
 # feedbackreceived filter 
@@ -417,9 +459,23 @@ def exfeedback_received(request):
         return redirect('/')
         
     id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id).id
-    feedback_view = list(Feedback.objects.exclude(from_id=id1).values())
+    feedback_view = Feedback.objects.filter(feedback_emp_id=id1).order_by('-feedback_date')
+    feedback_list=[]
+    for i in feedback_view:
+        date=i.feedback_date
+        by=i.from_name
+        byid=i.from_id
+        content=i.feedback_content
+        to=i.feedback_emp_id.emp_name
+        feedback_list.append({
+            'feedback_date':date,
+            'from_name':by,
+            'from_id':byid,
+            'feedback_content':content,
+            'feedback_emp':to
+        })
 
-    return JsonResponse({'feedback_view': feedback_view})   
+    return JsonResponse({'feedback_list': feedback_list})   
 
 
 # Complaints ---------------------
@@ -438,14 +494,17 @@ def executive_complaints(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        view_complaints=Complaints.objects.filter(complaint_emp_id=id1)
+        view_complaints=Complaints.objects.filter(complaint_emp_id=id1).order_by('-complaint_date')
         
 
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
+            'notification':notification,
             'view_complaints':view_complaints,
         }
 
@@ -467,8 +526,10 @@ def addex_complaint(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        view_complaints=Complaints.objects.filter(complaint_emp_id=id1)
+        view_complaints=Complaints.objects.filter(complaint_emp_id=id1).order_by('-complaint_date')
 
         if request.POST:
             compaint_head=request.POST['compaint_head']
@@ -483,6 +544,7 @@ def addex_complaint(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'success_text':success_text,
                 'success':success,
                 'view_complaints':view_complaints,
@@ -496,6 +558,7 @@ def addex_complaint(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'error':error,
                 'error_text':error_text,
                 'view_complaints':view_complaints
@@ -526,10 +589,11 @@ def executive_leave(request):
         dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
 
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        myleave=EmployeeLeave.objects.filter(emp_id=id1)
+        myleave=EmployeeLeave.objects.filter(emp_id=id1).order_by('-leave_apply_date')
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
         
 
 
@@ -539,6 +603,7 @@ def executive_leave(request):
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
+            'notification':notification,
             'myleave':myleave,
             
             
@@ -548,7 +613,24 @@ def executive_leave(request):
 
     else:
         return redirect('/')
-    
+
+# function to find number of days
+
+def count_weekdays(start_date, end_date):
+    current_date = start_date
+    weekdays_count = 0
+
+    # Iterate through each date within the range
+    while current_date <= end_date:
+        # Check if the current date is a weekday (Monday to Saturday)
+        if current_date.weekday() < 6 and current_date.weekday() != 6:
+            weekdays_count += 1
+        
+        # Move to the next day
+        current_date += timedelta(days=1)
+
+    return weekdays_count
+
 
 def exapply_leave(request):
     if 'emp_id' in request.session:
@@ -563,8 +645,10 @@ def exapply_leave(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+
         id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        myleave=EmployeeLeave.objects.filter(emp_id=id1)
+        myleave=EmployeeLeave.objects.filter(emp_id=id1).order_by('-leave_apply_date')
 
         # fetch leave details
         if request.POST:
@@ -576,12 +660,21 @@ def exapply_leave(request):
 
             leave_details=EmployeeLeave(emp_id=id1,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date)
             leave_details.save()
+
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            # Calculate the difference in days
+            weekdays_count = (count_weekdays(start_date, end_date))
+            leave_details.no_of_days = weekdays_count
+            leave_details.save()
+
             success_text = 'Applied Leave'
             success = True
             content = {
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'success_text':success_text,
                 'success':success,
                 'myleave':myleave,
@@ -596,6 +689,7 @@ def exapply_leave(request):
                 'emp_dash':emp_dash,
                 'dash_details':dash_details,
                 'notifications':notifications,
+                'notification':notification,
                 'error':error,
                 'error_text':error_text,
                 'myleave':myleave,
@@ -615,8 +709,10 @@ def exapply_leave(request):
 def filter_exleave(request):
     from_date = request.GET.get('from_date')
     to_date = request.GET.get('to_date')
-    
-    myleave = list(EmployeeLeave.objects.filter(start_date__range=[from_date, to_date]).values())
+    if request.session.has_key('emp_id'):
+        emp_id = request.session['emp_id']
+    id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
+    myleave = list(EmployeeLeave.objects.filter(start_date__range=[from_date, to_date],emp_id=id1,).values())
 
     return JsonResponse({'myleave': myleave})       
 

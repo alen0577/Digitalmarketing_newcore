@@ -78,6 +78,7 @@
             <div class="add-items d-flex ">
               
                 <select class="form-control text-offwhite" name="feedbackto" id="#" required>
+                  <option value="" hidden>Select</option>
                   {% for i in employees %}
                   <option value="{{i.id}}">{{i.emp_name}}</option>
                   {% endfor %}
@@ -106,7 +107,6 @@
             <div class="col-md-4"></div>
             <div class="col-md-4">
               <select class="form-control text-offwhite" name="feedbackto" id="feedback-filter">
-                <option value="" hidden>Select</option>
                 <option value="Feedback Given" id="Feedback_given">Feedback Given</option>
                 <option value="Feedback Received" id="Feedback_received">Feedback Received</option>
               </select>
@@ -215,8 +215,8 @@
               success: function(data) {
                 // Handle the JSON response
                 $("#feedback-table tbody").empty();  // Clear existing data
-                $.each(data.feedback_view, function(index, item) {
-                  var empName = item.feedback_emp_id ? item.feedback_emp_id.emp_name : 'N/A';
+                $.each(data.feedback_list, function(index, item) {
+                  var empName = item.feedback_emp ? item.feedback_emp : 'N/A';
                   $("#feedback-table tbody").append('<tr><td>' + item.feedback_date + '</td><td>' + item.from_name + '</td><td>' + empName + '</td><td>' + item.feedback_content + '</td></tr>');
                 });
               },

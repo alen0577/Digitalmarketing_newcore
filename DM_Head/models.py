@@ -54,5 +54,7 @@ class EmployeeLeave(models.Model):
     end_date = models.DateField(auto_now=False,default='',null=True,blank=True)
     leave_type = models.CharField(max_length=255,default='',null=True,blank=True)
     leave_reason = models.TextField(default='',null=True,blank=True)
+    no_of_days = models.IntegerField(default=0)
     leave_status = models.IntegerField(default=0)
     leave_apply_date = models.DateField(auto_now=False,null=True)
+    leave_statuChange_date = models.DateField(auto_now=False,null=True)

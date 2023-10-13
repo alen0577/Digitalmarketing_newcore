@@ -161,10 +161,12 @@
                         <td>{{i.end_date|date:"Y-m-d" }}</td>
                         <td>{{i.leave_type}}</td>
                         <td>{{i.leave_reason}}</td>
-                        {% if i.leave_status %}
+                        {% if i.leave_status == 1 %}
                         <td><button class="btn btn-outline-success btn-sm">Approved</button></td>
-                        {% else %}
+                        {% elif i.leave_status == 0 %}
                         <td><button class="btn btn-outline-warning btn-sm">Pending</button></td>
+                        {% else %}
+                        <td><button class="btn btn-outline-danger btn-sm">Rejected</button></td>
                         {% endif %}
                         
                       </tr>
@@ -253,13 +255,21 @@
           leaveTable.empty();  // Clear existing table data
 
           $.each(data.myleave, function(index, item) {
+            var leaveStatusText = '';
+            if (item.leave_status === 1) {
+              leaveStatusText = '<button class="btn btn-outline-success btn-sm">Approved</button>';
+            } else if (item.leave_status === 0) {
+              leaveStatusText = '<button class="btn btn-outline-warning btn-sm">Pending</button>';
+            } else {
+              leaveStatusText = '<button class="btn btn-outline-danger btn-sm">Rejected</button>';
+            }
             var row = '<tr>' +
               '<td>' + (index + 1) + '</td>' +
               '<td>' + item.start_date + '</td>' +
               '<td>' + item.end_date + '</td>' +
               '<td>' + item.leave_type + '</td>' +
               '<td>' + item.leave_reason + '</td>' +
-              '<td>' + (item.leave_status ? '<button class="btn btn-outline-success btn-sm">Approved</button>' : '<button class="btn btn-outline-warning btn-sm">Pending</button>') + '</td>' +
+              '<td>' + leaveStatusText  + '</td>' +
               '</tr>';
             leaveTable.append(row);
           });
