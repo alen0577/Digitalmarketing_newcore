@@ -32,6 +32,9 @@ urlpatterns = [
     # Notification ----------------------
 
     path('Executive-Notification',views.executive_allnotification,name='executive_allnotification'),
+    path('Exmark-notification/<int:pk>',views.exmark_notification,name='exmark_notification'),
+    path('Exdelete-notification/<int:pk>', views.exdelete_notification, name='exdelete_notification'),
+    path('Exdelete_selected_notifications', views.delete_selected_notifications, name='delete_selected_notifications'),
 
 
     # Feedback  --------------------------
@@ -52,6 +55,11 @@ urlpatterns = [
     path('Executive-Leave',views.executive_leave,name='executive_leave'),
     path('Exapply-leave',views.exapply_leave,name='exapply_leave'),
     path('Filterex-Leave',views.filter_exleave,name='filter_exleave'),
+
+
+    #Schedule ----------------------------
+
+    path('Executive-Schedule',views.executive_schedule,name='executive_schedule'),
 
 
 

@@ -23,7 +23,7 @@ def executive_dashboard(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         content = {
             'emp_dash':emp_dash,
@@ -52,7 +52,7 @@ def executive_profile(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         content = {
             'emp_dash':emp_dash,
@@ -81,7 +81,7 @@ def Profile_detailsUpdate(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
 
         # Details Save -----------------
@@ -174,7 +174,7 @@ def executive_password(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         content = {
             'emp_dash':emp_dash,
@@ -203,7 +203,7 @@ def user_passwordUpdate(request):
 
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
         if request.POST:
            
@@ -257,9 +257,8 @@ def executive_actionTaken(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
-        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        actions=ActionTaken.objects.filter(act_emp_id=id1).order_by('-action_date')
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        actions=ActionTaken.objects.filter(act_emp_id=dash_details).order_by('-action_date')
         
 
         content = {
@@ -294,7 +293,9 @@ def executive_allnotification(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        allnotification=Notification.objects.exclude(emp_id=dash_details,notific_status=2).order_by('-notific_date','-notific_time')
+
         
 
         content = {
@@ -302,12 +303,44 @@ def executive_allnotification(request):
             'dash_details':dash_details,
             'notifications':notifications,
             'notification':notification,
+            'allnotification':allnotification,
         }
 
         return render(request,'Executive_allnotification.html',content)
 
     else:
             return redirect('/')
+
+
+# Mark notification as seen...
+
+def exmark_notification(request,pk):
+    
+    notification=Notification.objects.get(id=pk)
+    notification.notific_status=1
+    notification.save()
+    return redirect('executive_allnotification')
+        
+
+# delete notification
+def exdelete_notification(request,pk):
+
+    notification=Notification.objects.get(id=pk)
+    notification.notific_status=2
+    notification.save()
+    return redirect('executive_allnotification')
+
+
+# delete notifications
+def delete_selected_notifications(request):
+
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('selected_ids[]')
+        Notification.objects.filter(id__in=selected_ids).update(notific_status=2) 
+        
+        return JsonResponse({'message': 'Notifications deleted successfully'})
+        
+    return JsonResponse({'error': 'Invalid request method'})
 
 
 # Feedback -------------------------
@@ -326,7 +359,7 @@ def executive_feedback(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
         employee_ids = [1, 2]
         employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
@@ -362,7 +395,7 @@ def exadd_feedback(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
         employee_ids = [1, 2]
         employees=EmployeeRegister_Details.objects.filter(emp_designation_id__in=employee_ids)
@@ -494,10 +527,9 @@ def executive_complaints(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
-        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        view_complaints=Complaints.objects.filter(complaint_emp_id=id1).order_by('-complaint_date')
+        view_complaints=Complaints.objects.filter(complaint_emp_id=dash_details).order_by('-complaint_date')
         
 
         content = {
@@ -526,10 +558,9 @@ def addex_complaint(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
-        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        view_complaints=Complaints.objects.filter(complaint_emp_id=id1).order_by('-complaint_date')
+        view_complaints=Complaints.objects.filter(complaint_emp_id=dash_details).order_by('-complaint_date')
 
         if request.POST:
             compaint_head=request.POST['compaint_head']
@@ -588,12 +619,11 @@ def executive_leave(request):
         emp_dash = LogRegister_Details.objects.get(id=emp_id)
         dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
 
-        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        myleave=EmployeeLeave.objects.filter(emp_id=id1).order_by('-leave_apply_date')
+        myleave=EmployeeLeave.objects.filter(emp_id=dash_details).order_by('-start_date')
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
 
 
@@ -645,10 +675,9 @@ def exapply_leave(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
-        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
-        id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-        myleave=EmployeeLeave.objects.filter(emp_id=id1).order_by('-leave_apply_date')
+        myleave=EmployeeLeave.objects.filter(emp_id=dash_details).order_by('-start_date')
 
         # fetch leave details
         if request.POST:
@@ -712,11 +741,44 @@ def filter_exleave(request):
     if request.session.has_key('emp_id'):
         emp_id = request.session['emp_id']
     id1=EmployeeRegister_Details.objects.get(logreg_id=emp_id)
-    myleave = list(EmployeeLeave.objects.filter(start_date__range=[from_date, to_date],emp_id=id1,).values())
+    myleave = list(EmployeeLeave.objects.filter(start_date__range=[from_date, to_date],emp_id=id1,).order_by('-start_date').values())
 
     return JsonResponse({'myleave': myleave})       
 
 
+#Schedule -------------------------------------------
+
+def executive_schedule(request):
+
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+        
+        # dummy notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+          
+        today = date.today()
+        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details)
+        schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
+
+        content = {'emp_dash':emp_dash,
+                   'dash_details':dash_details,
+                   'notifications':notifications,
+                   'notification':notification,
+                   'schedules':schedules,
+                   'schedule_days':schedule_days}
+
+        return render(request,'Executive_dayTaskschedule.html',content)
+
+    else:
+            return redirect('/')
 
 
 

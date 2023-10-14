@@ -64,6 +64,7 @@ class DesignationRegister_details(models.Model):
     desig_name = models.CharField(max_length=255,default='',null=True,blank=True)
     desig_active_status = models.IntegerField(default=0)
     desig_reg_date = models.DateField(auto_now_add=True,null=True)
+    dashboard_id =  models.IntegerField(default=0)
 
    
 class EmployeeRegister_Details(models.Model):

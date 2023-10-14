@@ -151,8 +151,22 @@ def login_submitt(request):
                                    'dash_details':dash_details,
                                    'success':success,
                                    'success_text':success_text}
+                                   
+                        if dash_details.emp_designation_id.dashboard_id == 1:
                         
-                        return render(request,'Executive_dashboard.html',content)
+                            return render(request,'HD_dashboard.html',content)
+                        
+                        elif dash_details.emp_designation_id.dashboard_id == 2:
+                             
+                            print('Team Lead dashboard')
+
+                        elif dash_details.emp_designation_id.dashboard_id == 3:
+                            return render(request,'Executive_dashboard.html',content)    
+                        
+                        else:
+                            return render(request,'error-404.html')           
+                        
+                        
 
                     except EmployeeRegister_Details.DoesNotExist:
                         error=True

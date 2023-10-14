@@ -87,8 +87,7 @@
             </a>
             <div class="collapse" id="schedule-list">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="{% url 'head_schedule' %}">My schedule</a></li>
-                <li class="nav-item"> <a class="nav-link" href="{% url 'head_employees_schedule' %}">Employees</a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'executive_schedule' %}">My schedule</a></li>
                 <li class="nav-item"> <a class="nav-link" href="{% url 'head_scheduleFilter' %}">Schedule Filter</a></li>
               </ul>
             </div>
@@ -208,21 +207,44 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                   <h6 class="p-3 mb-0">Notifications</h6>
+                  {% if notification %}
+
                   {% for note in notification %}
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item preview-item">
+                    
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-calendar text-success"></i>
                       </div>
-                    </div>
+                    </div>                    
                     <div class="preview-item-content">
                       <p class="preview-subject mb-1">{{note.notific_head}}</p>
                       <p class="text-muted ellipsis mb-0"> Just a reminder that you have a notification</p>
                     </div>
+                    
                   </a>
                   <div class="dropdown-divider"></div>
                   {% endfor %}
+
+                  {% else %}
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-bell-off text-danger"></i>
+                      </div>
+                    </div>                    
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">No new notifications</p>
+                      <p class="text-muted ellipsis mb-0">Youd don't have a new notification now</p>
+                    </div>
+                    
+                  </a>
+                  <div class="dropdown-divider"></div>
+
+                  {% endif %}
                   <div class="dropdown-divider"></div>
                   <a href="{% url 'executive_allnotification' %}">
                     <p class="p-3 mb-0 text-center">See all notifications</p>

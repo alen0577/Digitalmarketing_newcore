@@ -47,7 +47,7 @@
 
     <div class="card" id="action-taken" >
       <div class="card-body">
-        <h4 class="card-title mb-4"> Actions Taken </h4>
+        <h4 class="card-title mb-4">View Actions </h4>
         <div class="table-responsive">
           <table class="table">
             <thead>
@@ -57,8 +57,9 @@
               </tr>
             </thead>
             <tbody>
+              {% for i in actions %}
               <tr>
-                <td> Cash on delivered </td>
+                <td>{{i.action_date}}</td>
                 <td class="#">
                   <div class="preview-list">
                     <div class="preview-item border-bottom">
@@ -69,8 +70,8 @@
                       </div>
                       <div class="preview-item-content d-sm-flex flex-grow">
                         <div class="flex-grow">
-                          <h6 class="preview-subject">Admin dashboard design</h6>
-                          <p class="text-muted mb-0">Broadcast web app mockup</p>
+                          <h6 class="preview-subject">{{i.act_head}}</h6>
+                          <p class="text-muted mb-0">{{i.act_reason}}</p>
                         </div>
                         
                       </div>
@@ -78,36 +79,14 @@
                     
                   </div>
                   <div> 
-                    <p class="mt-2">Action Taken</p>
+                    <p class="mt-2">Action Taken by <strong>{{i.act_from_name}}</strong><small><i> on (<span>{{i.action_date}}</span>)</i></small> </p>
+                    <p class="mt-2">{{i.act_content}} </p>
+
                   </div>
                 </td>
               </tr>
-              <tr>
-                <td> App design </td>
-                <td>
-                  <div class="preview-list">
-                    <div class="preview-item border-bottom">
-                      <div class="preview-thumbnail">
-                        <div class="preview-icon bg-danger">
-                          <i class="mdi mdi-file-document"></i>
-                        </div>
-                      </div>
-                      <div class="preview-item-content d-sm-flex flex-grow">
-                        <div class="flex-grow">
-                          <h6 class="preview-subject">Admin dashboard design</h6>
-                          <p class="text-muted mb-0">Broadcast web app mockup Broadcast web app mockup </p>
-                        </div>
-                        
-                      </div>
-                    </div>
-                    
-                  </div>
-                  <div> 
-                    <p class="mt-2">Action Taken</p>
-                  </div>
-                </td>
-              </tr>
-              
+              {% endfor %}
+
             </tbody>
           </table>
         </div>
