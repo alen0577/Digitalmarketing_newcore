@@ -19,7 +19,7 @@
             <div class="card" id="schedule-add" style="display: none;" >
                 <div class="card-body">
                     <h4 class="card-title">Schedule your day</h4>
-                    <form action="{% url 'head_schedule_save' %}" method="post" >
+                    <form action="{% url 'executive_schedule_save' %}" method="post" >
 
                         {% csrf_token %}
             
@@ -110,7 +110,7 @@
                             </div>
                             <div class="schedule-change">
                                 <a href="#"  class="test-primary schedule-edit-link" id="scheduleEdit{{ schedule.id }}" data-schedule-id="{{ schedule.id }}"><i class=" mdi mdi-pencil"></i></a>
-                                <a href="{% url 'head_scheduleRemove' schedule.id %}" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
+                                <a href="{% url 'executive_scheduleRemove' schedule.id %}" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
                             </div>
                            
 

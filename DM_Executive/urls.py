@@ -60,6 +60,8 @@ urlpatterns = [
     #Schedule ----------------------------
 
     path('Executive-Schedule',views.executive_schedule,name='executive_schedule'),
+    path('Executive-schedule-remove/<int:pk>',views.executive_scheduleRemove,name='executive_scheduleRemove'),
+    path('Executive-schedule-save',views.executive_schedule_save,name='executive_schedule_save'),
 
 
 
