@@ -765,7 +765,7 @@ def executive_schedule(request):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
           
         today = date.today()
-        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details)
+        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
         schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
         content = {'emp_dash':emp_dash,
@@ -805,7 +805,7 @@ def executive_scheduleRemove(request,pk):
         error_text = 'Schedule task removed'
         
         today = date.today()
-        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details)
+        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
         schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
         content = {'emp_dash':emp_dash,
@@ -835,6 +835,9 @@ def executive_schedule_save(request):
         
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+
+        
         
         schedules = None
         schedule_days = None
@@ -851,14 +854,15 @@ def executive_schedule_save(request):
                 schedule_obj.schedule_head=request.POST['task_head']
                 schedule_obj.todo_content=request.POST['task_content']
                 schedule_obj.log_time = timezone.now()
-                schedule_obj.schedule_date = date.today()
+                schedule_obj.schedule_date =request.POST['date']
                 schedule_obj.save()
 
                 today = date.today()
-                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details)
+                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
                 schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
                 success_text = 'Schedule edit successful.'
                 success = True
+                
 
             else:
 
@@ -871,20 +875,23 @@ def executive_schedule_save(request):
                 schedule_obj.schedule_head=request.POST['task_head']
                 schedule_obj.todo_content=request.POST['task_content']
                 schedule_obj.log_time = timezone.now()
-                schedule_obj.schedule_date = date.today()
+                schedule_obj.schedule_date = request.POST['date']
 
                 schedule_obj.save()
 
                 today = date.today()
-                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details)
+                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
                 schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
                 success_text = 'Schedule save successful.'
                 success = True
 
+        
+
         content = {'emp_dash':emp_dash,
                    'dash_details':dash_details,
                    'notifications':notifications,
+                   'notification':notification,
                    'success_text':success_text,
                    'success':success,
                    'schedules':schedules,
@@ -896,6 +903,74 @@ def executive_schedule_save(request):
             return redirect('/')
 
 
+def ScheduleEdit(request):
+
+    schedule_id = request.GET.get('scheduleid')
+    try:
+            schedule = EmployeeSchedule.objects.get(id=schedule_id)
+           
+            data = {
+                'scheduleid':schedule.id,
+                'start_time': schedule.start_time,
+                'end_time': schedule.end_time,
+                'task_head': schedule.schedule_head,
+                'task_content': schedule.todo_content,
+                'schedule_date':schedule.schedule_date
+            }
+            return JsonResponse(data)
+    except EmployeeSchedule.DoesNotExist:
+            return JsonResponse({'error': 'Schedule not found'}, status=404)  
+
+
+def update_schedule_status(request):
+        schedule_id = request.POST.get('schedule_id')
+        checked = request.POST.get('checked')
+
+        # Retrieve the schedule by ID
+        schedule = EmployeeSchedule.objects.get(id=schedule_id)
+        if schedule.schedule_status == 0:
+            schedule.schedule_status =  1
+        else: 
+            schedule.schedule_status =  0
+        schedule.save()
+        return JsonResponse({'success': True})
+
+
+def executive_scheduleFilter(request):
+
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+        name=dash_details.emp_name
+        
+        # dummy notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+
+        schedules=EmployeeSchedule.objects.filter(emp_id=dash_details).order_by('-start_time')
+        print(schedules)
+        
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'name':name,
+            'schedules':schedules,
+        }
+
+        return render(request,'Executive_scheduleFilter.html',content)
+
+    else:
+            return redirect('/')
+     
 
 # logout
 

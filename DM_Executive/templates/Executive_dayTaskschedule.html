@@ -22,8 +22,11 @@
                     <form action="{% url 'executive_schedule_save' %}" method="post" >
 
                         {% csrf_token %}
-            
-    
+                        
+                        <div class="add-items d-flex ">
+                            <input type="date" class="form-control text-offwhite" name="date" id="date">
+                        </div>
+                        
                         <div class="add-items d-flex ">
                             
                             <input type="time" class="form-control text-offwhite" name="stime" placeholder="start time.." required id="timePicker1">
@@ -165,6 +168,7 @@
                     $('#timePicker2').val(data.end_time);
                     $('#task_head').val(data.task_head);
                     $('#task_content').val(data.task_content);
+                    // $('#task_content').val(data.task_content);
                     // Show/hide the form based on its current visibility
                     $("#schedule-add").toggle();
                     // Change the icon
