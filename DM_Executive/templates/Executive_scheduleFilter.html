@@ -27,44 +27,45 @@
                 <h4 class="card-title mb-5">Scheduled Task List</h4>
                 <div class="serach-schedule mt-3 mb-2">
                     <form action="#" method="post">
-                        {% csrf_token %}
+                      {% csrf_token %}
 
-                        <div class="row">
-                            
-                           
-                           
-                            <div class="col-sm-12 col-lg-3 col-md-3">
-                                <div class="form-group">
-                                  <label>from date</label>
-                                  <input type="date" class="form-control text-offwhite" name="#" >                    
-                                </div>
+                      <div class="row">
+                          
+                          
+                          
+                        <div class="col-sm-12 col-lg-3 col-md-3">
+                            <div class="form-group">
+                              <label>from date</label>
+                              <input type="date" class="form-control text-offwhite" name="frmdate" id="frmdate" >                    
                             </div>
-                            <div class="col-sm-12 col-lg-3 col-md-2">
-                                <div class="form-group">
-                                  <label>to date</label>
-                                  <input type="date" class="form-control text-offwhite" name="#" >                       
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-lg-1 col-md-1 d-flex  justify-content-center  align-items-center">
-                               
-                                <button class=" btn btn-primary " type="submit"><i class="mdi mdi-magnify mdi-18px"></i></button> 
-
-                            </div>
-                            <div class="col-sm-12 col-lg-2 col-md-2"></div>
-                            <div class="col-sm-12 col-lg-3 col-md-3">
-                                <div class="form-group">
-                                  <label></span>filter by schedule </label>
-                                  <select class="form-control text-offwhite" name="#" id="#" >
-                                     
-                                      <option>All</option>
-                                      <option>Upcoming schedule</option>
-                                  </select>
-                                 
-                                </div>
-                            </div>
-                            
-                            
                         </div>
+                        <div class="col-sm-12 col-lg-3 col-md-2">
+                            <div class="form-group">
+                              <label>to date</label>
+                              <input type="date" class="form-control text-offwhite" name="todate" id="todate" >                       
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-1 col-md-1 d-flex  justify-content-center  align-items-center">
+                            
+                            <button class=" btn btn-primary " id="schedulefilter_button" type="button"><i class="mdi mdi-magnify mdi-18px"></i></button> 
+
+                        </div>
+                        <div class="col-sm-12 col-lg-2 col-md-2"></div>
+                        <div class="col-sm-12 col-lg-3 col-md-3">
+                            <div class="form-group">
+                              <label></span>filter by schedule </label>
+                              <select class="form-control text-offwhite" name="fltschedule" id="fltschedule" >
+                                  
+                                  <option value="All">All</option>
+                                  <option value="Upcoming schedules">Upcoming schedules</option>
+                                  <option value="Completed schedules">Completed schedules</option>
+                              </select>
+                              
+                            </div>
+                        </div>
+                          
+                          
+                      </div>
                     </form>
                 </div>
 
@@ -72,7 +73,7 @@
                     <div class="col-md-12">
                         <h4 class="card-title">Schedules ({{name}})</h4>
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table" id="filtertable">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -85,7 +86,7 @@
                                     {% for i in schedules %}
                                     <tr>
                                         <td>
-                                            <p>{{i.schedule_date}}</p>    
+                                            <p>{{i.schedule_date|date:"Y-m-d" }}</p>    
                                         </td>
                                         <td><p>{{i.start_time}} to {{i.end_time}}</p></td>
                                         <td>
@@ -113,6 +114,122 @@
     </div>
     
 </div>
+
+<!-- ajax function to filter Schedules -->
+
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function formatTime(time) {
+      // Function to format time from 24-hour format to AM/PM format
+      var [hours, minutes] = time.split(':');
+      hours = parseInt(hours);
+      var period = hours < 12 ? 'a.m.' : 'p.m.';
+      if (hours > 12) {
+      hours -= 12;
+      }
+      return hours + ':' + minutes + ' ' + period;
+  }
+  $(document).ready(function() {
+    $("#schedulefilter_button").click(function() {
+      // Get the selected dates from the date inputs
+      var from_date = $("#frmdate").val();
+      var to_date = $("#todate").val();
+
+      // Perform an AJAX request to your Django view
+      $.ajax({
+        url: '{% url "executive_scheduleFilterday" %}',  // Replace with the actual URL
+        method: 'GET',
+        data: {
+          'from_date': from_date,
+          'to_date': to_date,
+        },
+        success: function(data) {
+          // Get a reference to the table body
+          var tableBody = $("#filtertable tbody");
+
+          // Clear existing table rows
+          tableBody.empty();
+
+          // Iterate through the filtered data and add rows to the table
+          $.each(data.schedules, function(index, item) {
+            var startTime = formatTime(item.start_time);
+            var endTime = formatTime(item.end_time);
+
+            var row = '<tr>' +
+              '<td>' + item.schedule_date + '</td>' +
+              '<td>' + startTime + ' to ' + endTime +  '</td>' +
+              '<td>' +
+                '<h5>' + item.schedule_head + '</h5>' +
+                '<p>' + item.todo_content + '</p>' +
+              '</td>' +
+              '<td>' + (item.schedule_status ? 'Completed' : 'Not finished') + '</td>' +
+              '</tr>';
+            tableBody.append(row);
+          });
+        },
+        error: function() {
+          // Handle errors
+          console.log('Error in AJAX request');
+        }
+      });
+    });
+  });
+</script>
+  
+<!-- AJAX Function -->
+<script>
+  function formatTime(time) {
+    // Function to format time from 24-hour format to AM/PM format
+    var [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    var period = hours < 12 ? 'a.m.' : 'p.m.';
+    if (hours > 12) {
+      hours -= 12;
+    }
+    return hours + ':' + minutes + ' ' + period;
+  }
+
+  $(document).ready(function() {
+    $("#fltschedule").on("change", function() {
+      var selectedOption = $(this).val();
+      $.ajax({
+        url: "{% url 'filter_schedules' %}",
+        data: { option: selectedOption },
+        dataType: "json",
+        success: function(data) {
+          var table = $("#filtertable tbody");
+          table.empty();
+
+          $.each(data.schedules, function(index, item) {
+            var startTime = formatTime(item.start_time);
+            var endTime = formatTime(item.end_time);
+
+            var row = '<tr>' +
+              '<td>' + item.schedule_date + '</td>' +
+              '<td>' + startTime + ' to ' + endTime + '</td>' +
+              '<td>' +
+              '<h5>' + item.schedule_head + '</h5>' +
+              '<p>' + item.todo_content + '</p>' +
+              '</td>' +
+              '<td>' + (item.schedule_status ? 'Completed' : 'Not finished') + '</td>' +
+              '</tr>';
+
+            table.append(row);
+          });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          // Handle the error, e.g., display an error message to the user.
+          console.error("AJAX Request Error: " + errorThrown);
+        }
+      });
+    });
+  });
+</script>
+
+
+
 
 {% endblock %}
 

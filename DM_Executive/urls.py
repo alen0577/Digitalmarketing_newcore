@@ -64,7 +64,9 @@ urlpatterns = [
     path('Executive-schedule-save',views.executive_schedule_save,name='executive_schedule_save'),
     path('Executive-schedule-Edit',views.ScheduleEdit,name='ScheduleEdit'),
     path('Executive-update_schedule_status',views.update_schedule_status,name='update_schedule_status'),
-    path('Executive-schedule-filter',views.executive_scheduleFilter,name='executive_scheduleFilter'),
+    path('Executive-schedule-View',views.executive_scheduleview,name='executive_scheduleview'),
+    path('Executive-schedule-filterday',views.executive_scheduleFilterday,name='executive_scheduleFilterday'),
+    path('Executive-filter_schedules', views.filter_schedules, name='filter_schedules'),
 
 
 

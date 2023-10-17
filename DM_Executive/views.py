@@ -765,7 +765,7 @@ def executive_schedule(request):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
           
         today = date.today()
-        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
+        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today).order_by('-schedule_date','-start_time')
         schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
         content = {'emp_dash':emp_dash,
@@ -805,7 +805,7 @@ def executive_scheduleRemove(request,pk):
         error_text = 'Schedule task removed'
         
         today = date.today()
-        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
+        schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today).order_by('-schedule_date','-start_time')
         schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
         content = {'emp_dash':emp_dash,
@@ -858,7 +858,7 @@ def executive_schedule_save(request):
                 schedule_obj.save()
 
                 today = date.today()
-                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
+                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today).order_by('-schedule_date','-start_time')
                 schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
                 success_text = 'Schedule edit successful.'
                 success = True
@@ -880,7 +880,7 @@ def executive_schedule_save(request):
                 schedule_obj.save()
 
                 today = date.today()
-                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today)
+                schedules = EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date=today).order_by('-schedule_date','-start_time')
                 schedule_days = EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date=today).values('schedule_date').distinct()
 
                 success_text = 'Schedule save successful.'
@@ -936,7 +936,7 @@ def update_schedule_status(request):
         return JsonResponse({'success': True})
 
 
-def executive_scheduleFilter(request):
+def executive_scheduleview(request):
 
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
@@ -953,8 +953,8 @@ def executive_scheduleFilter(request):
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
 
-        schedules=EmployeeSchedule.objects.filter(emp_id=dash_details).order_by('-start_time')
-        print(schedules)
+        schedules=EmployeeSchedule.objects.filter(emp_id=dash_details).order_by('-schedule_date','-start_time')
+        
         
 
         content = {
@@ -971,6 +971,45 @@ def executive_scheduleFilter(request):
     else:
             return redirect('/')
      
+
+def executive_scheduleFilterday(request):
+    
+    if request.session.has_key('emp_id'):
+        emp_id = request.session['emp_id']
+    emp_dash = LogRegister_Details.objects.get(id=emp_id)
+    dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    schedules=list(EmployeeSchedule.objects.filter(emp_id=dash_details,schedule_date__range=[from_date, to_date]).order_by('-schedule_date','-start_time').values())
+   
+    return JsonResponse({'schedules': schedules})
+
+
+
+def filter_schedules(request):
+    option = request.GET.get('option', 'All')  # Default to 'All' if 'option' is not provided
+    schedules = []
+
+    if request.session.get('emp_id'):
+        emp_id = request.session['emp_id']
+        try:
+            emp_dash = LogRegister_Details.objects.get(id=emp_id)
+            dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+        except (LogRegister_Details.DoesNotExist, EmployeeRegister_Details.DoesNotExist):
+            # Handle exceptions when the objects are not found
+            return JsonResponse({'schedules': schedules})
+
+        if option == 'All':
+            schedules = list(EmployeeSchedule.objects.filter(emp_id=dash_details).order_by('-schedule_date', '-start_time').values())
+        elif option == 'Upcoming schedules':
+            tomorrow = date.today() + timedelta(days=1)
+            schedules = list(EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_date__gte=tomorrow).order_by('-schedule_date', '-start_time').values())
+        elif option == 'Completed schedules':
+            schedules = list(EmployeeSchedule.objects.filter(emp_id=dash_details, schedule_status=1).order_by('-schedule_date', '-start_time').values())
+
+    return JsonResponse({'schedules': schedules})
+
 
 # logout
 
