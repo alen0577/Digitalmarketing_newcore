@@ -26,46 +26,40 @@
             <div class="card-body">
                 <h4 class="card-title mb-5">Employee Schedule Filter List</h4>
                 <div class="serach-schedule mt-3 mb-2">
-                    <form action="#" method="post">
+                    <form action="{% url 'head_scheduleFilter' %}" method="post">
                         {% csrf_token %}
 
                         <div class="row">
                             
-                            <div class="col-sm-12 col-lg-3 col-md-3">
+                            <div class="col-sm-12 col-lg-5 col-md-5">
                                 <div class="form-group">
                                   <label> select employee</label>
-                                  <select class="form-control text-offwhite" name="#" id="#" required>
-                                      <option></option>
+                                  <select class="form-control text-offwhite" name="emp_name" id="#" required>
+                                    <option value="0">----select employee----</option>
+                                    {% for emp in employees %}
+                                      <option value="{{emp.id}}">{{emp.emp_name}}</option>
+                                    {% endfor %}
                                   </select>                        
                                 </div>
                             </div>
                            
+                           
                             <div class="col-sm-12 col-lg-3 col-md-3">
                                 <div class="form-group">
                                   <label>from date</label>
-                                  <input type="date" class="form-control text-offwhite" name="#" >                    
+                                  <input type="date" class="form-control text-offwhite" name="fDate" >                    
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-lg-3 col-md-2">
+                            <div class="col-sm-12 col-lg-3 col-md-3">
                                 <div class="form-group">
                                   <label>to date</label>
-                                  <input type="date" class="form-control text-offwhite" name="#" >                       
+                                  <input type="date" class="form-control text-offwhite" name="toDate" >                       
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-lg-2 col-md-2">
-                                <div class="form-group">
-                                  <label></span>filter by schedule </label>
-                                  <select class="form-control text-offwhite" name="#" id="#" >
-                                     
-                                      <option>All</option>
-                                      <option>Upcoming schedule</option>
-                                  </select>
-                                 
-                                </div>
-                            </div>
+                            
                             <div class="col-sm-12 col-lg-1 col-md-1 d-flex  justify-content-center  align-items-center">
                                
-                                    <button class=" btn btn-primary " type="submit"><i class="mdi mdi-magnify mdi-18px"></i></button> 
+                              <button class=" btn btn-primary " type="submit"><i class="mdi mdi-magnify mdi-18px"></i></button> 
 
                             </div>
                             
@@ -77,82 +71,73 @@
                     <div class="col-12 grid-margin">
                       <div class="card">
                         <div class="card-body">
-                          <h4 class="card-title">Schedules (Shebin Shaji)</h4>
+                          <h4 class="card-title">Schedules ({{emp_obj.emp_name|default:" "}})</h4>
+                          
+                          {% if schedules %}
                           <div class="table-responsive">
                             <table class="table">
                               <thead>
                                 <tr>
-                                  <th> Day and Date </th>
-                                  <th> Schedule Task </th>
+                                  <th> Scheduled Date and Time </th>
+                                  <th> Scheduled Task </th>
                                 </tr>
                               </thead>
                               <tbody>
+                                {% for schedule in schedules %}
                                 <tr>
-                                  <td> Cash on delivered </td>
                                   <td class="#">
-                                    <div class="sechedule-task d-flex">
+                                   
                                         <div class="left-date-time">
-                                            <p class="schedule-date">Aug. 10 2023</p>
-                                            <div class="form-check form-check-primary">
-                                                 <label class="form-check-label">
-                                                <input class="checkbox" type="checkbox"> Time - 12:12 am to 02:05 pm
-                                            </label>
-                                            </div>
+                                          {% if schedule.schedule_status == 1 %}
+                                            <p class="schedule-date" style="text-decoration: line-through;">{{schedule.schedule_date}}</p>
+                                            <p class="schedule-date"  style="text-decoration: line-through;">Time - {{schedule.start_time}} to {{schedule.end_time}}</p>
+                                          {% else %}
+                                          <p class="schedule-date" >{{schedule.schedule_date}}</p>
+                                          <p class="schedule-date">Time - {{schedule.start_time}} to {{schedule.end_time}}</p>
+                                          {% endif %}
+                                            
                                         </div>
-                                        <div class="right-scheduletask d-flex">
-                                            <div class="inner-schedule-content">
-                                                <h6>Digital Marketing work</h6>
-                                                <p>Filler text is text that shares some characteristics of a real written text, 
-                                                    but is random or otherwise generated. 
-                                                </p>
-                                            </div>
-                                            <div class="schedule-change">
-                                                <a href="#" class="test-primary"><i class=" mdi mdi-pencil"></i></a>
-                                                <a href="#" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
-                                            </div>
-                                           
-                
+                                  
+                                  </td>
+                                  <td class="#">
+                                    
+                                    <div class="right-scheduletask d-flex">
+
+                                        <div class="inner-schedule-content">
+                                          {% if schedule.schedule_status == 1 %}
+
+                                            <h6 style="text-decoration: line-through;">{{schedule.schedule_head}}</h6>
+                                            <p class="mb-2" style="text-decoration: line-through;">( {{schedule.emp_id.emp_name}} )</p>
+                                            <p style="text-decoration: line-through;">{{schedule.todo_content}} </p>
+                                             
+                                          {% else %}
+                                            <h6>{{schedule.schedule_head}}</h6>
+                                            <p class="mb-2">( {{schedule.emp_id.emp_name}} )</p>
+                                            <p>{{schedule.todo_content}} </p>
+
+
+                                          {% endif%}
                                         </div>
+                                    
+ 
                                     </div>
                                   </td>
                                 </tr>
-                                <tr>
-                                  <td> App design </td>
-                                  <td>
-                                    <div class="sechedule-task d-flex">
-                                        <div class="left-date-time">
-                                            <p class="schedule-date">Aug. 10 2023</p>
-                                            <div class="form-check form-check-primary">
-                                                 <label class="form-check-label">
-                                                <input class="checkbox" type="checkbox"> Time - 12:12 am to 02:05 pm
-                                            </label>
-                                            </div>
-                                        </div>
-                                        <div class="right-scheduletask d-flex">
-                                            <div class="inner-schedule-content">
-                                                <h6>Digital Marketing work</h6>
-                                                <p>Filler text is text that shares some characteristics of a real written text, 
-                                                    but is random or otherwise generated. 
-                                                </p>
-                                            </div>
-                                            <div class="schedule-change">
-                                                <a href="#" class="test-primary"><i class=" mdi mdi-pencil"></i></a>
-                                                <a href="#" class="text-danger"><i class=" mdi mdi-close-box"></i></a>
-                                            </div>
-                                           
-                
-                                        </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                                
+                                {% endfor %}
+                               
                               </tbody>
                             </table>
                           </div>
+                          {% else %}
+                          <div class="d-flex justify-content-center">
+                            <img src="{% static 'images\file-icons\no-data-file.png' %}">
+                          </div>
+                          {% endif %}
+
                         </div>
                       </div>
                     </div>
-                  </div>
+                </div>
                 
             </div>
         </div>

@@ -25,7 +25,7 @@
             
     
                         <div class="add-items d-flex ">
-                            
+                            <input type="date" class="form-control text-offwhite" name="schedule_date"  required id="datePicker">
                             <input type="time" class="form-control text-offwhite" name="stime" placeholder="start time.." required id="timePicker1">
                             <input type="time" class="form-control ml-2  text-offwhite" name="etime"  placeholder="end time.." required id="timePicker2">  
                             <button class=" btn btn-primary " type="submit">Add</button> 
@@ -130,6 +130,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
+
+    $(document).ready(function() {
+        let currentDate = new Date().toISOString().split('T')[0];
+  
+        $('#datePicker').attr('min', currentDate);
+      
+        $('#datePicker').val(currentDate);
+        
+      });
+      
     $(document).ready(function() {
         $("#schedule-btn").click(function() {
             // Toggle the card visibility

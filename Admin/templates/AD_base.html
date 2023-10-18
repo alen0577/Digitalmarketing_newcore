@@ -118,23 +118,23 @@
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
-                <i class="mdi mdi-calendar-clock"></i>
+                <i class="mdi mdi-cube-outline"></i>
               </span>
               <span class="menu-title">Link Name</span>
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" data-toggle="collapse" href="#" aria-expanded="false" aria-controls="auth">
+            <a class="nav-link" data-toggle="collapse" href="#company" aria-expanded="false" aria-controls="company">
               <span class="menu-icon">
                 <i class="mdi mdi-security"></i>
               </span>
-              <span class="menu-title">Link Name</span>
+              <span class="menu-title">Company</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="auth">
+            <div class="collapse" id="company">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="#"> Link Name  </a></li>
-                <li class="nav-item"> <a class="nav-link" href="#"> Link Name </a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'admin_department' %}">  Departments </a></li>
+                <li class="nav-item"> <a class="nav-link" href="{% url 'admin_designation' %}"> Designations </a></li>
                 <li class="nav-item"> <a class="nav-link" href="#"> Link Name </a></li>
                 <li class="nav-item"> <a class="nav-link" href="#"> Link Name </a></li>
                 <li class="nav-item"> <a class="nav-link" href="#"> Link Name </a></li>
@@ -341,7 +341,7 @@
                  <span class="mdi mdi-checkbox-marked-circle mdi-24px alert-icon"></span>
                  <div class="message">
                    <span class="text-message text-1 text-success font-weight-500">Success</span>
-                   <span class="text-small text-2 mt-1">Your authenticated successfully.</span>
+                   <span class="text-small text-2 mt-1">{{success_text}}</span>
                  </div>
                  <span class="mdi mdi-close alert-icon" id="closeToast"></span>
                  <div class="toast-progress"></div>

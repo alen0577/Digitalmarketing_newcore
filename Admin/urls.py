@@ -11,7 +11,13 @@ urlpatterns = [
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
     path('Admin-Logout',views.admin_logout,name='admin_logout'),
 
+    # Departmet ---------------------------------
     
+    path('Admin-Department',views.admin_department,name='admin_department'),
+
+    # Designation -------------------------------
+
+    path('Admin-Designations',views.admin_designation,name='admin_designation'),
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
