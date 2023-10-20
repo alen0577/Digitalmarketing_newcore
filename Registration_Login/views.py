@@ -77,7 +77,11 @@ def login_submitt(request):
 
                            
 
-                        content = {'Admin_dash':Admin_dash,'dash_details':dash_details,'success':success}
+                        content = {'Admin_dash':Admin_dash,
+                                   'dash_details':dash_details,
+                                   'success':success,
+                                   'success_text':success_text}
+                        
                         return render(request,'AD_dashboard.html',content)
                     
                     except BusinessRegister_Details.DoesNotExist:
@@ -151,7 +155,14 @@ def login_submitt(request):
                                    'dash_details':dash_details,
                                    'success':success,
                                    'success_text':success_text}
-                                   
+                        
+                        # Dashbord List-----
+                        
+                        # ----Dashbord Name ---  --Dashboard ID--
+                        # Digital Marketing Head -     1
+                        # Team Lead              -     2
+                        # Exicutive              -     3
+                        
                         if dash_details.emp_designation_id.dashboard_id == 1:
                         
                             return render(request,'HD_dashboard.html',content)
@@ -161,12 +172,10 @@ def login_submitt(request):
                             print('Team Lead dashboard')
 
                         elif dash_details.emp_designation_id.dashboard_id == 3:
-                            return render(request,'Executive_dashboard.html',content)    
-                        
+                            return render(request,'Executive_dashboard.html',content) 
+                               
                         else:
-                            return render(request,'error-404.html')           
-                        
-                        
+                            return render(request,'error-404.html')
 
                     except EmployeeRegister_Details.DoesNotExist:
                         error=True
@@ -230,7 +239,7 @@ def company_registration_form_save(request):
 
 
 def employee_registration_form(request):
-    companyees = BusinessRegister_Details.objects.filter(company_active_status=0)
+    companyees = BusinessRegister_Details.objects.filter(company_active_status=1)
     title = 'Digital Markenting Core\Employee Registration'
     
     content = {'title':title,'companyees':companyees}

@@ -294,7 +294,7 @@ def executive_allnotification(request):
         # dummy notification-----------
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
-        allnotification=Notification.objects.exclude(emp_id=dash_details,notific_status=2).order_by('-notific_date','-notific_time')
+        allnotification=Notification.objects.filter(Q(emp_id=dash_details,notific_status=0) | Q(emp_id=dash_details,notific_status=1)).order_by('-notific_date','-notific_time')
 
         
 
@@ -331,7 +331,7 @@ def exdelete_notification(request,pk):
     return redirect('executive_allnotification')
 
 
-# delete notifications
+# delete multiple notifications
 def delete_selected_notifications(request):
 
     if request.method == 'POST':

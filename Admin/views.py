@@ -177,8 +177,7 @@ def admin_viewEmployees(request):
             'dash_details':dash_details,
             'employees':employees
         }
-        # elif dash_details.emp_designation_id.dashboard_id == 3:
-        #     return render(request,'Executive_dashboard.html',content)    
+        
         
         # else:
         #     return render(request,'error-404.html')  

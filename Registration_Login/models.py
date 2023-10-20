@@ -55,18 +55,20 @@ class DepartmentRegister_details(models.Model):
     brd_id = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='')
     dept_name = models.CharField(max_length=255,default='',null=True,blank=True)
     dept_active_status = models.IntegerField(default=0)
+    dept_content = models.TextField(default='',null=True,blank=True)
     dept_reg_date = models.DateField(auto_now_add=True,null=True)
 
 
 class DesignationRegister_details(models.Model):
     desig_brd_id = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='')
     dept_id = models.ForeignKey(DepartmentRegister_details, on_delete=models.CASCADE, null=True,default='')
+    dashboard_id =  models.IntegerField(default=0)
     desig_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    desig_content = models.TextField(default='',null=True,blank=True)
     desig_active_status = models.IntegerField(default=0)
     desig_reg_date = models.DateField(auto_now_add=True,null=True)
-    dashboard_id =  models.IntegerField(default=0)
 
-   
+  
 class EmployeeRegister_Details(models.Model):
     logreg_id = models.ForeignKey(LogRegister_Details, on_delete=models.CASCADE, null=True,default='')
     emp_comp_id = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='')
@@ -74,6 +76,7 @@ class EmployeeRegister_Details(models.Model):
     emp_designation_id = models.ForeignKey(DesignationRegister_details, on_delete=models.CASCADE, null=True,default='')
 
     emp_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    emp_regId = models.CharField(max_length=255,default='',null=True,blank=True)
     emp_contact_no = models.CharField(max_length=255,default='',null=True,blank=True)
     emp_email =  models.EmailField(max_length=255,default='email@gmail.com')
     emp_profile = models.ImageField(upload_to='profiles',default='')

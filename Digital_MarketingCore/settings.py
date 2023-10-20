@@ -84,13 +84,12 @@ WSGI_APPLICATION = 'Digital_MarketingCore.wsgi.application'
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.db.backends.mysql',
-         'NAME': 'Digital_MarketingCore_db',
-            
-            'USER': 'root',
-            'PASSWORD': '',
-            'HOST': 'localhost',
-            'PORT': '3306',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Digital_MarketingCore_db',   
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
