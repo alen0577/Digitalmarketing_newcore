@@ -567,7 +567,7 @@ def addex_complaint(request):
             compaint_content=request.POST['compaint_content']
             complaint_date=date.today()
 
-            complaint=Complaints(complaint_emp_id=id1, compaint_head= compaint_head,compaint_content=compaint_content,complaint_date=complaint_date)
+            complaint=Complaints(complaint_emp_id=dash_details, compaint_head= compaint_head,compaint_content=compaint_content,complaint_date=complaint_date)
             complaint.save()
             success_text = 'Complaint Registered'
             success = True
@@ -687,7 +687,7 @@ def exapply_leave(request):
             leave_reason=request.POST['reason']
             leave_apply_date=date.today()
 
-            leave_details=EmployeeLeave(emp_id=id1,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date)
+            leave_details=EmployeeLeave(emp_id=dash_details,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date)
             leave_details.save()
 
             start_date = datetime.strptime(start_date, '%Y-%m-%d')

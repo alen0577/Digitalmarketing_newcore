@@ -116,11 +116,11 @@
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'admin_employees_section' %}">
               <span class="menu-icon">
-                <i class="mdi mdi-cube-outline"></i>
+                <i class="mdi mdi-account-group"></i>
               </span>
-              <span class="menu-title">Link Name</span>
+              <span class="menu-title">Employees</span>
             </a>
           </li>
           <li class="nav-item menu-items">
@@ -292,7 +292,7 @@
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
                     <img class="img-xs rounded-circle" src="{% static 'images/faces/face15.jpg' %}" alt="">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p>
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">{{dash_details.owner_fname}}</p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>

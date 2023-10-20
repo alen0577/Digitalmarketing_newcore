@@ -11934,6 +11934,9 @@ input[type="button"].btn-block {
     .progress-bar {
       transition: none; } }
 
+.progress.progress-sm {
+        height: 0.575rem;
+}
 .progress-bar-striped {
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-size: 1rem 1rem; }
@@ -21369,4 +21372,91 @@ opacity: 0.2;
 .text-lineon
 {
   text-decoration:line-through
+}
+
+.form-control-raiod 
+{
+  display: flex;
+  width: 100%;
+  justify-content:flex-start;
+  align-items: center;
+  padding: 0.86rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #495057;
+  background-clip: padding-box;
+  border: 1px solid #2c2e33;
+  border-radius: 2px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-control-raiod span
+{
+  margin-right: 2rem;
+  font-size: 0.870rem;
+}
+.form-group input[type='time']
+{
+  background-color: #2A3038;
+}
+.blinking {
+  -webkit-animation: 1s blink ease infinite;
+  -moz-animation: 1s blink ease infinite;
+  -ms-animation: 1s blink ease infinite;
+  -o-animation: 1s blink ease infinite;
+  animation: 1s blink ease infinite;
+  
+}
+
+@keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes blink {
+  from, to {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.a-hover:hover
+{
+  text-decoration: none;
+
+}
+.a-hover h4{
+  color: rgb(224, 229, 233);
 }

@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from Registration_Login.models import *
+from django.db.models import Q
 
 
 
@@ -123,6 +124,105 @@ def admin_designation(request):
     else:
             return redirect('/')
      
+
+
+
+# Employees Section ---------------------------------
+
+
+def admin_employees_section(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+        
+        content = {
+
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+        }
+
+        return render(request,'AD_employeeSection.html',content)
+
+    else:
+            return redirect('/')
+
+
+
+def admin_viewEmployees(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        # elif dash_details.emp_designation_id.dashboard_id == 3:
+        #     return render(request,'Executive_dashboard.html',content)    
+        
+        # else:
+        #     return render(request,'error-404.html')  
+
+        return render(request,'AD_employeeView.html',content)
+
+    else:
+            return redirect('/')    
+
+
+def admin_resignedEmployees(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=2)
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeeresignView.html',content)
+
+    else:
+            return redirect('/')    
+
+
+
+
+
+
+
+
 
 
 
