@@ -24,6 +24,8 @@ urlpatterns = [
     path('Admin-Employees-Section',views.admin_employees_section,name='admin_employees_section'),
     path('Admin-Employees-View',views.admin_viewEmployees,name='admin_viewEmployees'),
     path('Admin-Employees-Resigned',views.admin_resignedEmployees,name='admin_resignedEmployees'),
+    path('Admin-Employees-Leaves',views.admin_Employeesleaves,name='admin_Employeesleaves'),
+    path('Admin-Employee-leaveDetails',views.admin_get_employee_details,name='admin_get_employee_details'),
 
     # path('Employees-Allocate',views.head_employeeAllocate,name='head_employeeAllocate'),
     # path('Employees-Allocate-List',views.head_employeeAllocated_list,name='head_employeeAllocated_list'),

@@ -1,6 +1,8 @@
 from django.shortcuts import render,redirect
 from Registration_Login.models import *
 from django.db.models import Q
+from DM_Head.models import *
+from django.http import JsonResponse
 
 
 
@@ -216,7 +218,51 @@ def admin_resignedEmployees(request):
             return redirect('/')    
 
 
+def admin_Employeesleaves(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
 
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeeLeaves.html',content)
+
+    else:
+            return redirect('/')    
+
+
+
+def admin_get_employee_details(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        employees = EmployeeRegister_Details.objects.get(id=employee_id)
+
+        # Query your database to fetch employee details based on the employee_id.
+        # Replace 'EmployeeLeave' with the actual model that stores employee details.
+
+        employee_details = list(EmployeeLeave.objects.filter(emp_id=employee_id).values())
+        print(employee_details)
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': employee_details})
+
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 
