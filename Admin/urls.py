@@ -25,7 +25,16 @@ urlpatterns = [
     path('Admin-Employees-View',views.admin_viewEmployees,name='admin_viewEmployees'),
     path('Admin-Employees-Resigned',views.admin_resignedEmployees,name='admin_resignedEmployees'),
     path('Admin-Employees-Leaves',views.admin_Employeesleaves,name='admin_Employeesleaves'),
-    path('Admin-Employee-leaveDetails',views.admin_get_employee_details,name='admin_get_employee_details'),
+    path('Admin-Employee-leaveDetails',views.admin_get_employee_leavedetails,name='admin_get_employee_leavedetails'),
+    path('Admin-Employees-ActionTakens',views.admin_Employees_actiontaken,name='admin_Employees_actiontaken'),
+    path('Admin-Employee-ActionDetails',views.admin_get_employee_actiondetails,name='admin_get_employee_actiondetails'),
+    path('Admin-Employees-Feedbacks',views.admin_Employees_feedback,name='admin_Employees_feedback'),
+    path('Admin-Employee-FeedbackDetails',views.admin_get_employee_feedbackdetails,name='admin_get_employee_feedbackdetails'),
+    path('Admin-Employees-Complaints',views.admin_Employees_complaints,name='admin_Employees_complaints'),
+    path('Admin-Employee-ComplaintDetails',views.admin_get_employee_complaintdetails,name='admin_get_employee_complaintdetails'),
+    path('Admin-Employees-Schedules',views.admin_Employees_schedules,name='admin_Employees_schedules'),
+    path('Admin-Employee-ScheduleDetails',views.admin_get_employee_scheduledetails,name='admin_get_employee_scheduledetails'),
+
     # path('Employees-Allocate',views.head_employeeAllocate,name='head_employeeAllocate'),
     # path('Employees-Allocate-List',views.head_employeeAllocated_list,name='head_employeeAllocated_list'),
 ]

@@ -6,7 +6,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">Employees Leaves</li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Employees Action Takens</li>
         </ol>
       </nav>
 </div>
@@ -42,12 +42,12 @@
   </div>
 </div>
 
-<div class="row" id="leavetable" style="display: none;">
+<div class="row" id="actiontable" style="display: none;">
   <div class="col-12 grid-margin">
     <div class="card">
       <div class="card-body">
         <div class="d-flex">
-          <h4 class="card-title">All Leave Details</h4>
+          <h4 class="card-title">All Actions Taken</h4>
             
         </div>
         
@@ -77,12 +77,11 @@
             <thead>
               <tr>
                 <th> No. </th>
-                <th> Start Date </th>
-                <th> End Date </th>
-                <th> Leave Type </th>
-                <th> Leave Reason </th>
-                <th> No.of Days </th>
-                <th> Leave Status </th>
+                <th> Action Date </th>
+                <th> Action Taken By </th>
+                <th> Action Regarding </th>
+                <th> Action Reason </th>
+                
                 
                 
                 
@@ -94,18 +93,15 @@
                 <td>
                   {{forloop.counter}}
                 </td>
-                <td> {{emp.start_date}} </td>
-                <td> {{emp.end_date}} </td>
-                <td> {{emp.leave_type}} </td>
-                <td> {{emp.leave_reason}} </td>
-                <td> {{emp.no_of_days}} </td>
-                <td>
-                  {% if emp.leave_status == 1 %}
-                  <span class="mdi mdi-check-circle-outline text-success mdi-18px"></span>
-                  {% else %}
-                  <span class="mdi mdi-close-circle-outline text-danger  mdi-18px"></span>
-                  {% endif %}
+                <td> {{emp.action_date}} </td>
+                <td> {{emp.act_from_name}} </td>
+                <td> {{emp.act_head}} </td>
+                <td> 
+                  <h6>{{emp.act_reason}}</h6> 
+                  <p>{{emp.act_content}}</p>
+
                 </td>
+                
                 
               </tr>
               {% endfor %}
@@ -129,11 +125,11 @@
       
       if (selectedEmployee) {
         // Show the table
-        $('#leavetable').show();
+        $('#actiontable').show();
         
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_employee_leavedetails" %}',
+          url: '{% url "admin_get_employee_actiondetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
             'employee_id': selectedEmployee
@@ -145,23 +141,18 @@
             // Populate the table with the received data
             for (var i = 0; i < data.details.length; i++) {
               var emp = data.details[i];
-              var leaveStatusText = '';
-              if (emp.leave_status === 1) {
-                leaveStatusText = '<button class="btn btn-outline-success btn-sm w-100">Approved</button>';
-              } else if (emp.leave_status === 0) {
-                leaveStatusText = '<button class="btn btn-outline-warning btn-sm  w-100">Pending</button>';
-              } else {
-                leaveStatusText = '<button class="btn btn-outline-danger btn-sm w-100">Rejected</button>';
-              }
+              
               var newRow = `
                 <tr>
                   <td>${i + 1}</td>
-                  <td>${emp.start_date}</td>
-                  <td>${emp.end_date}</td>
-                  <td>${emp.leave_type}</td>
-                  <td>${emp.leave_reason}</td>
-                  <td>${emp.no_of_days}</td>
-                  <td>${leaveStatusText}</td>
+                  <td>${emp.action_date}</td>
+                  <td>${emp.act_from_name}</td>
+                  <td>${emp.act_head}</td>
+                  <td>
+                    <h6>${emp.act_reason}</h6>
+                    <p>${emp.act_content}</p>
+                  </td>
+                  
                 </tr>
               `;
               $('#employee-details tbody').append(newRow);
@@ -170,7 +161,7 @@
         });
       } else {
         // If no option is selected, hide the table
-        $('#leavetable').hide();
+        $('#actiontable').hide();
       }
     });
   });
@@ -199,7 +190,7 @@
   }
 
 </script>
-  
+
 <!-- clear date input whenever an employee is selecte -->
 
 <script>
@@ -210,5 +201,6 @@
   }
   
 </script> 
+
 
 {% endblock %}

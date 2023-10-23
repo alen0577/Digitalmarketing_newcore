@@ -27,7 +27,7 @@ def admin_dashboard(request):
 
     else:
             return redirect('/')
-    
+
 
 
 # Department ---------------------
@@ -264,7 +264,7 @@ def admin_Employeesleaves(request):
 
 # Employee wise leave details---------------------------------
 
-def admin_get_employee_details(request):
+def admin_get_employee_leavedetails(request):
     if request.method == 'POST':
         employee_id = request.POST.get('employee_id')
         
@@ -282,14 +282,222 @@ def admin_get_employee_details(request):
         return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
+# Employee wise action page---------------------------------
+
+def admin_Employees_actiontaken(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeeactions.html',content)
+
+    else:
+            return redirect('/')    
+
+# Employee wise action details---------------------------------
+
+def admin_get_employee_actiondetails(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        # Replace 'EmployeeLeave' with the actual model that stores employee details.
+
+        employee_details = list(ActionTaken.objects.filter(act_emp_id=employee_id).order_by('-action_date').values())
+        
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': employee_details})
+
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+# Employee wise feedback page---------------------------------
+
+def admin_Employees_feedback(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeefeedback.html',content)
+
+# Employee wise feedback details---------------------------------
+
+def admin_get_employee_feedbackdetails(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        # Replace 'EmployeeLeave' with the actual model that stores employee details.
+
+        employee_details = Feedback.objects.filter(from_id=employee_id).order_by('-feedback_date')
+        details_list=[]
+
+        for i in employee_details:
+            feedback_date= i.feedback_date
+            feedback_to=i.feedback_emp_id.emp_name
+            feedback_content=i.feedback_content
+
+            details_list.append({
+                'feedback_date':feedback_date,
+                'feedback_to':feedback_to,
+                'feedback_content':feedback_content,
+            })
+
+        
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': details_list})
+
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 
+# Employee wise complaint page---------------------------------
+
+def admin_Employees_complaints(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeecomplaint.html',content)
 
 
+# Employee wise complaint details---------------------------------
 
+def admin_get_employee_complaintdetails(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
 
+        # Query your database to fetch employee details based on the employee_id.
+        # Replace 'EmployeeLeave' with the actual model that stores employee details.
 
+        employee_details = list(Complaints.objects.filter(complaint_emp_id=employee_id).order_by('-complaint_date').values())
+        
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': employee_details})
+
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+# Employee wise Schedules page---------------------------------
+
+def admin_Employees_schedules(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+        
+
+        return render(request,'AD_employeeschedules.html',content)
+
+# Employee wise schedule details---------------------------------
+
+def admin_get_employee_scheduledetails(request):
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        # Replace 'EmployeeLeave' with the actual model that stores employee details.
+
+        employee_details = EmployeeSchedule.objects.filter(emp_id=employee_id).order_by('-schedule_date','-start_time')
+        details_list=[]
+
+        for i in employee_details:
+            schedule_date= i.schedule_date
+            start_time=i.start_time
+            end_time=i.end_time
+            schedule_head=i.schedule_head
+            content=i.todo_content
+            schedule_status=i.schedule_status
+            
+
+            details_list.append({
+                'schedule_date':schedule_date,
+                'starttime': start_time,
+                'endtime': end_time,
+                'schedule_head':schedule_head,
+                'content':content,
+                'schedule_status':schedule_status,
+            })
+
+        
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': details_list})
 
 
 # Logout Section ---------------------------------

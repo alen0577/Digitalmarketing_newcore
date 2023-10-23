@@ -6,7 +6,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">Employees Leaves</li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Employees Schedules</li>
         </ol>
       </nav>
 </div>
@@ -42,12 +42,12 @@
   </div>
 </div>
 
-<div class="row" id="leavetable" style="display: none;">
+<div class="row" id="scheduletable" style="display: none;">
   <div class="col-12 grid-margin">
     <div class="card">
       <div class="card-body">
         <div class="d-flex">
-          <h4 class="card-title">All Leave Details</h4>
+          <h4 class="card-title">All Sechedules Details</h4>
             
         </div>
         
@@ -77,14 +77,10 @@
             <thead>
               <tr>
                 <th> No. </th>
-                <th> Start Date </th>
-                <th> End Date </th>
-                <th> Leave Type </th>
-                <th> Leave Reason </th>
-                <th> No.of Days </th>
-                <th> Leave Status </th>
-                
-                
+                <th> Date </th>
+                <th> Time</th>
+                <th> Scheduled Task </th>
+                <th> Task Status </th>
                 
               </tr>
             </thead>
@@ -94,18 +90,12 @@
                 <td>
                   {{forloop.counter}}
                 </td>
-                <td> {{emp.start_date}} </td>
-                <td> {{emp.end_date}} </td>
-                <td> {{emp.leave_type}} </td>
-                <td> {{emp.leave_reason}} </td>
-                <td> {{emp.no_of_days}} </td>
-                <td>
-                  {% if emp.leave_status == 1 %}
-                  <span class="mdi mdi-check-circle-outline text-success mdi-18px"></span>
-                  {% else %}
-                  <span class="mdi mdi-close-circle-outline text-danger  mdi-18px"></span>
-                  {% endif %}
-                </td>
+                <td> {{emp.feedback_date}} </td>
+                <td> {{emp.feedback_to}}</td>
+                <td> {{emp.feedback_to}} </td>
+                <td> {{emp.feedback_content}} </td>
+               
+                
                 
               </tr>
               {% endfor %}
@@ -123,17 +113,27 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  function formatTime(time) {
+    // Function to format time from 24-hour format to AM/PM format
+    var [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    var period = hours < 12 ? 'a.m.' : 'p.m.';
+    if (hours > 12) {
+    hours -= 12;
+    }
+    return hours + ':' + minutes + ' ' + period;
+  }  
   $(document).ready(function () {
     $('#employee-select').change(function () {
       var selectedEmployee = $(this).val();
       
       if (selectedEmployee) {
         // Show the table
-        $('#leavetable').show();
+        $('#scheduletable').show();
         
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_employee_leavedetails" %}',
+          url: '{% url "admin_get_employee_scheduledetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
             'employee_id': selectedEmployee
@@ -145,23 +145,27 @@
             // Populate the table with the received data
             for (var i = 0; i < data.details.length; i++) {
               var emp = data.details[i];
-              var leaveStatusText = '';
-              if (emp.leave_status === 1) {
-                leaveStatusText = '<button class="btn btn-outline-success btn-sm w-100">Approved</button>';
-              } else if (emp.leave_status === 0) {
-                leaveStatusText = '<button class="btn btn-outline-warning btn-sm  w-100">Pending</button>';
+              var startTime = formatTime(emp.starttime);
+              var endTime = formatTime(emp.endtime);
+              var ScheduleStatusText = '';
+              if (emp.schedule_status === 1) {
+                ScheduleStatusText = '<button class="btn btn-outline-success btn-sm">Finished</button>';
               } else {
-                leaveStatusText = '<button class="btn btn-outline-danger btn-sm w-100">Rejected</button>';
+                ScheduleStatusText = '<button class="btn btn-outline-warning btn-sm">Not Finished</button>';
               }
+              
               var newRow = `
                 <tr>
                   <td>${i + 1}</td>
-                  <td>${emp.start_date}</td>
-                  <td>${emp.end_date}</td>
-                  <td>${emp.leave_type}</td>
-                  <td>${emp.leave_reason}</td>
-                  <td>${emp.no_of_days}</td>
-                  <td>${leaveStatusText}</td>
+                  <td>${emp.schedule_date}</td>
+                  <td>${startTime} to ${endTime} </td>
+                  <td>
+                    <h6>${emp.schedule_head}</h6>
+                    <p>${emp.content}</p>
+                  </td>
+                  <td>${ScheduleStatusText}</td>
+                 
+                  
                 </tr>
               `;
               $('#employee-details tbody').append(newRow);
@@ -170,7 +174,7 @@
         });
       } else {
         // If no option is selected, hide the table
-        $('#leavetable').hide();
+        $('#scheduletable').hide();
       }
     });
   });
@@ -204,11 +208,11 @@
 
 <script>
 
-  function clearDateInputs() {
-    document.getElementById("fdate").value = "";
-    document.getElementById("edate").value = "";
-  }
-  
-</script> 
+    function clearDateInputs() {
+      document.getElementById("fdate").value = "";
+      document.getElementById("edate").value = "";
+    }
+    
+  </script> 
 
 {% endblock %}

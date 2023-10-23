@@ -122,14 +122,14 @@
 
 <script>
   function formatTime(time) {
-      // Function to format time from 24-hour format to AM/PM format
-      var [hours, minutes] = time.split(':');
-      hours = parseInt(hours);
-      var period = hours < 12 ? 'a.m.' : 'p.m.';
-      if (hours > 12) {
-      hours -= 12;
-      }
-      return hours + ':' + minutes + ' ' + period;
+    // Function to format time from 24-hour format to AM/PM format
+    var [hours, minutes] = time.split(':');
+    hours = parseInt(hours);
+    var period = hours < 12 ? 'a.m.' : 'p.m.';
+    if (hours > 12) {
+    hours -= 12;
+    }
+    return hours + ':' + minutes + ' ' + period;
   }
   $(document).ready(function() {
     $("#schedulefilter_button").click(function() {
@@ -213,7 +213,7 @@
               '<h5>' + item.schedule_head + '</h5>' +
               '<p>' + item.todo_content + '</p>' +
               '</td>' +
-              '<td>' + (item.schedule_status ? 'Completed' : 'Not finished') + '</td>' +
+              '<td>' + (item.schedule_status ? 'Finished' : 'Not finished') + '</td>' +
               '</tr>';
 
             table.append(row);
