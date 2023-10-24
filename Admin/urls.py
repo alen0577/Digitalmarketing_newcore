@@ -9,7 +9,15 @@ urlpatterns = [
     #  Admin Module --------------------------------
 
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
+    path('Admin-Login-Approve\<int:pk>',views.admin_login_approve,name='admin_login_approve'),
+    path('Admin-Login-Reject\<int:pk>',views.admin_login_reject,name='admin_login_reject'),
     path('Admin-Logout',views.admin_logout,name='admin_logout'),
+
+    # Profile ------------------------------
+
+    path('Admin_Profile',views.admin_profile,name='admin_profile'),
+    # path('Exprofile-Update',views.Profile_detailsUpdate,name='Profile_detailsUpdate'),
+    # path('Exprofile-Image\Remove',views.profileImage_remove,name='profileImage_remove'),
 
     # Department ---------------------------------
     
