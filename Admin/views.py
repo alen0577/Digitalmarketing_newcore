@@ -129,6 +129,80 @@ def admin_profile(request):
 
 
 
+# Password Section -----------------------------------
+
+def admin_password(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # notification-----------
+        
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+           
+        }
+
+        return render(request,'AD_password.html',content)
+
+    else:
+            return redirect('/')
+
+def admin_passwordUpdate(request):
+
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+        
+
+        # notification-----------
+       
+
+        if request.POST:
+           
+           Admin_dash.log_username = request.POST['emp_uname']
+           Admin_dash.log_password = request.POST['emp_password']
+
+           Admin_dash.save()  
+           success = True
+           success_text = 'User name or password change.'
+        
+           content = {
+                'Admin_dash':Admin_dash,
+                'dash_details':dash_details,
+                'success':success,
+                'success_text':success_text
+            }
+        else:
+
+            error=True
+            error_text = 'Oops! something went wrong.'
+            content = {
+                'Admin_dash':Admin_dash,
+                'dash_details':dash_details,
+                'error':error,
+                'error_text':error_text
+            }
+
+        return render(request,'AD_password.html',content)
+
+    else:
+            return redirect('/')
+
 
 # Department ---------------------
 

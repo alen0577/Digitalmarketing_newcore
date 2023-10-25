@@ -19,6 +19,13 @@ urlpatterns = [
     # path('Exprofile-Update',views.Profile_detailsUpdate,name='Profile_detailsUpdate'),
     # path('Exprofile-Image\Remove',views.profileImage_remove,name='profileImage_remove'),
 
+
+    # Password ----------------------------
+
+    path('Admin-password',views.admin_password,name='admin_password'),
+    path('Adminpassword-Update',views.admin_passwordUpdate,name='admin_passwordUpdate'),
+
+
     # Department ---------------------------------
     
     path('Admin-Department',views.admin_department,name='admin_department'),
