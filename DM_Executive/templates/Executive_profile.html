@@ -16,7 +16,7 @@
                     <img src="{{ dash_details.emp_profile.url }}" id="profile-pic" alt="Profile Image.." >
                     
                     {% else %}
-                        <img src="{% static 'images/faces/profile-icon.png' %}" id="profile-pic" alt="Profile Image.." >
+                      <img src="{% static 'images/faces/profile-icon.png' %}" id="profile-pic" alt="Profile Image.." >
                     {% endif %}
                     <div class="flex-row action-box ">
                         <button class="btn text-danger" id="image-remove" data-empid={{dash_details.id}} >
@@ -176,57 +176,39 @@
       </div>
 </div>
 
-
-<!-- Profile image show -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#profilePic').change(function() {
-            // Get the selected file
-            var selectedFile = this.files[0];
-
-            if (selectedFile) {
-                // Read the file as a Data URL
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    // Set the Data URL as the source of the image
-                    $('#profile-pic').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(selectedFile);
-            }
-        });
-    });
-</script>
-
 <!-- Profile Remove -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('#image-remove').click(function() {
-            var empId = $(this).data('empid');  // Retrieve the empid from data-empid attribute
-            removeRequest(empId);
-        });
-        
-        function removeRequest(empId) {
-            var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-            var img = $("#profile-pic")
-            $.ajax({
-                url: "{% url 'profileImage_remove' %}",  
-                type: 'POST', 
-                headers: { "X-CSRFToken": csrftoken }, 
-                data: {
-                    'emp_id': empId  
-                },
-                success: function(response) {
-                    img.attr('src', '{% static "images/faces/profile-icon.png" %}');
-                    console.log('AJAX request successful');
-                },
-                error: function(error) {
-                    // Handle any errors
-                    console.error('Error:', error);
-                }
-            });
-        }
+  $(document).ready(function() {
+    $('#image-remove').click(function() {
+      var empId = $(this).data('empid');  // Retrieve the empid from data-empid attribute
+      removeRequest(empId);
     });
+    
+    function removeRequest(empId) {
+      var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+      var img = $("#profile-pic")
+      $.ajax({
+        url: "{% url 'profileImage_remove' %}",  
+        type: 'POST', 
+        headers: { "X-CSRFToken": csrftoken }, 
+        data: {
+          'emp_id': empId  
+        },
+        success: function(response) {
+          img.attr('src', '{% static "images/faces/profile-icon.png" %}');
+          console.log('AJAX request successful');
+          
+        },
+        error: function(error) {
+          // Handle any errors
+          console.error('Error:', error);
+        }
+      });
+    }
+  });
 </script>
 
 

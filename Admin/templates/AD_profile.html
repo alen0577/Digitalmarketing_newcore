@@ -12,7 +12,7 @@
             <div class="d-flex  justify-content-center ">
                 <div class="image-box flex-column d-flex justify-content-center ">
                    
-                    {% if dash_details.emp_profile %}
+                    {% if dash_details.company_image %}
                     <img src="{{ dash_details.company_image.url }}" id="profile-pic" alt="Profile Image.." >
                     
                     {% else %}
@@ -70,7 +70,7 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-4">Profile Settings</h4>
-            <form action="{% url 'Profile_detailsUpdate' %}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'admin_Profile_detailsUpdate' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div class="row">
@@ -158,10 +158,11 @@
                       <input type="text" class="form-control text-offwhite" name="empState" value="{{dash_details.company_state}}" required>
                     </div>
                   </div>
+                  
                   <div class="col-sm-12 col-lg-4 col-md-6">
                     <div class="form-group">
-                      <label>Resume *</label>
-                      <input type="file" class="form-control text-offwhite" name="empResume">
+                      <label>Website *</label>
+                      <input type="text" class="form-control text-offwhite" name="cwebsite" value="{{dash_details.company_website}}">
                     </div>
                   </div>
                   <div class="col-sm-12 col-lg-2 col-md-6">
@@ -180,13 +181,7 @@
                       <input type="file" id="profilePic" class="form-control text-offwhite" name="empProfile" >
                     </div>
                   </div>
-                  <div class="col-sm-12 col-lg-6 col-md-6">
-                    <div class="form-group">
-                      <label>Website</label>
-                      <input type="email" class="form-control text-offwhite " name="cwebsite" id="website" value="{{dash_details.company_website}}">
-                      
-                    </div>
-                  </div>
+                  
                   
                 </div>
                
@@ -202,56 +197,39 @@
 </div>
 
 
-<!-- Profile image show -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#profilePic').change(function() {
-            // Get the selected file
-            var selectedFile = this.files[0];
-
-            if (selectedFile) {
-                // Read the file as a Data URL
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    // Set the Data URL as the source of the image
-                    $('#profile-pic').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(selectedFile);
-            }
-        });
-    });
-</script>
 
 <!-- Profile Remove -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#image-remove').click(function() {
-            var empId = $(this).data('empid');  // Retrieve the empid from data-empid attribute
-            removeRequest(empId);
-        });
-        
-        function removeRequest(empId) {
-            var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-            var img = $("#profile-pic")
-            $.ajax({
-                url: "{% url 'profileImage_remove' %}",  
-                type: 'POST', 
-                headers: { "X-CSRFToken": csrftoken }, 
-                data: {
-                    'emp_id': empId  
-                },
-                success: function(response) {
-                    img.attr('src', '{% static "images/faces/profile-icon.png" %}');
-                    console.log('AJAX request successful');
-                },
-                error: function(error) {
-                    // Handle any errors
-                    console.error('Error:', error);
-                }
-            });
-        }
+  $(document).ready(function() {
+    $('#image-remove').click(function() {
+      var empId = $(this).data('empid');  // Retrieve the empid from data-empid attribute
+      removeRequest(empId);
     });
+    
+    function removeRequest(empId) {
+      var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+      var img = $("#profile-pic")
+      $.ajax({
+          url: "{% url 'admin_profileImage_remove' %}",  
+          type: 'POST', 
+          headers: { "X-CSRFToken": csrftoken }, 
+          data: {
+            'emp_id': empId  
+          },
+          success: function(response) {
+            img.attr('src', '{% static "images/faces/profile-icon.png" %}');
+            console.log('AJAX request successful');
+            location.reload();
+          },
+          error: function(error) {
+            // Handle any errors
+            console.error('Error:', error);
+          }
+      });
+    }
+  });
 </script>
 
 

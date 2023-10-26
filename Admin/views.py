@@ -127,7 +127,88 @@ def admin_profile(request):
     else:
             return redirect('/')
 
+def admin_Profile_detailsUpdate(request):
+     
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+        
+        # notification-----------
+        
 
+
+        # Details Save -----------------
+
+        if request.POST:
+             
+            emp_obj = BusinessRegister_Details.objects.get(id=dash_details.id)
+
+            emp_obj.company_name = request.POST['cname']
+            emp_obj.owner_fname = request.POST['fname']
+            emp_obj.owner_lname = request.POST['lname']
+            emp_obj.contact_no = request.POST['contactno']
+            emp_obj.company_email = request.POST['empEmail']
+            emp_obj.company_address1 = request.POST['add1']
+            emp_obj.company_address2 = request.POST['add2']
+            emp_obj.company_address3 = request.POST['add3']
+            emp_obj.company_pin = request.POST['pincode']
+            emp_obj.company_location = request.POST['loc']
+            emp_obj.company_district = request.POST['empdist']
+            emp_obj.company_state = request.POST['empState']
+            emp_obj.company_website = request.POST['cwebsite']
+
+            if request.FILES.get('empProfile'):
+                emp_obj.company_image = request.FILES.get('empProfile')
+
+            else:
+                emp_obj.company_image =  emp_obj.company_image 
+
+             
+
+            emp_obj.save()
+            success_text = 'Profile Details Updated.'
+            success = True
+
+        
+        
+            content = {
+                'Admin_dash':Admin_dash,
+                'dash_details':dash_details,
+                'success_text':success_text,
+                'success':success
+            }
+            return redirect('admin_profile')
+
+        else:
+            error_text = 'Profile Details Updated.'
+            error = True
+            content = {
+                'Admin_dash':Admin_dash,
+                'dash_details':dash_details,
+                'error_text':error_text,
+                'error':error
+            }
+
+        return render(request,'AD_profile.html',content)
+
+    else:
+            return redirect('/')
+    
+
+# Remove Profile Image ---------------
+
+def admin_profileImage_remove(request):
+    emp_id = request.POST.get('emp_id')
+    dash_details = BusinessRegister_Details.objects.get(id=emp_id)
+    dash_details.company_image = ''
+    dash_details.save()
+    return JsonResponse({'message': 'Received emp_id: ' + emp_id})
 
 # Password Section -----------------------------------
 

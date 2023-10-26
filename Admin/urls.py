@@ -15,9 +15,9 @@ urlpatterns = [
 
     # Profile ------------------------------
 
-    path('Admin_Profile',views.admin_profile,name='admin_profile'),
-    # path('Exprofile-Update',views.Profile_detailsUpdate,name='Profile_detailsUpdate'),
-    # path('Exprofile-Image\Remove',views.profileImage_remove,name='profileImage_remove'),
+    path('Admin-Profile',views.admin_profile,name='admin_profile'),
+    path('Admin-profile-Update',views.admin_Profile_detailsUpdate,name='admin_Profile_detailsUpdate'),
+    path('Adminprofile-Image\Remove',views.admin_profileImage_remove,name='admin_profileImage_remove'),
 
 
     # Password ----------------------------
