@@ -103,14 +103,14 @@ class ClientRegister(models.Model):
     client_address1 = models.CharField(max_length=255,default='',null=True,blank=True)
     client_address2 = models.CharField(max_length=255,default='',null=True,blank=True)
     client_address3 = models.CharField(max_length=255,default='',null=True,blank=True)
-    client_pincode = models.CharField(max_length=255,default='',null=True,blank=True)
+    client_place = models.CharField(max_length=255,default='',null=True,blank=True)
     client_district = models.CharField(max_length=255,default='',null=True,blank=True)
     client_state = models.CharField(max_length=255,default='',null=True,blank=True)
     client_profile = models.ImageField(upload_to='client\profile',default='')
     
 
     # Bussiness Details ---
-
+    client_bussiness_name = models.CharField(max_length=255,default='9000000009',null=True,blank=True)
     client_bussiness_email_primary = models.EmailField(default='client@gmail.com',null=True,blank=True)
     client_bussiness_email_alter = models.EmailField(default='client@gmail2.com',null=True,blank=True)
     client_bussiness_phone = models.CharField(max_length=255,default='9000000009',null=True,blank=True)
@@ -119,10 +119,10 @@ class ClientRegister(models.Model):
     client_bussiness_address1 = models.CharField(max_length=255,default='',null=True,blank=True)
     client_bussiness_address2 = models.CharField(max_length=255,default='',null=True,blank=True)
     client_bussiness_address3 = models.CharField(max_length=255,default='',null=True,blank=True)
-    client_bussiness_pincode = models.CharField(max_length=255,default='',null=True,blank=True)
+    client_bussiness_place = models.CharField(max_length=255,default='',null=True,blank=True)
     client_bussiness_district = models.CharField(max_length=255,default='',null=True,blank=True)
     client_bussiness_state = models.CharField(max_length=255,default='',null=True,blank=True)
-    client_bussiness_file = models.FileField(upload_to='client\files',default='')
+    client_bussiness_file = models.ImageField(upload_to=r'client\files',default='')
     bussiness_logo = models.ImageField(upload_to='client\logo',default='')
 
     more_discription = models.TextField(default='',null=True,blank=True)
@@ -132,10 +132,12 @@ class ClientRegister(models.Model):
 
 
 class WorkRegister(models.Model):
+    wcompId = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='') 
     clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
+    allocated_emp = models.ManyToManyField(EmployeeRegister_Details, related_name='works_allocated')
     work_discription = models.TextField(default='',null=True,blank=True)
     work_create_time = models.TimeField(auto_now_add=True,null=True,blank=True)
-    work_file = models.FileField(upload_to='work\files',default='')
+    work_file = models.FileField(upload_to=r'work\files',default='')
     work_progress = models.IntegerField(default=0)
     work_allocate_status = models.IntegerField(default=0)
     work_status = models.IntegerField(default=0)
@@ -144,10 +146,61 @@ class WorkRegister(models.Model):
 
 
 class ClientTask_Register(models.Model):
+    cTcompId = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='') 
     client_Id = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
     work_Id = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
+    task_name = models.CharField(max_length=255,default='',null=True,blank=True)
     task_discription = models.TextField(default='',null=True,blank=True)
-    task_file = models.FileField(upload_to='work\task\files',default='')
+    task_file = models.FileField(upload_to=r'work\task\files',default='')
     task_allocate_status = models.IntegerField(default=0)
+    task_total_progress = models.IntegerField(default=0)
     task_status = models.IntegerField(default=0)
     task_create_date = models.DateField(auto_now=False,null=True)
+
+
+
+# Work Assign Table maintains the data of allocated work details
+
+class WorkAssign(models.Model):
+    wa_compId = models.ForeignKey(BusinessRegister_Details, on_delete=models.CASCADE, null=True,default='') 
+    wa_clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
+    wa_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
+    wa_work_allocate = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='', related_name='allocated_tl') 
+    wa_tasksId = models.ManyToManyField(ClientTask_Register, related_name='task_allocated')
+    allocated_exemp = models.ManyToManyField(EmployeeRegister_Details, related_name='co_works_allocated')
+    wa_discription = models.TextField(default='',null=True,blank=True)
+    wa_file = models.FileField(upload_to=r'work\files',default='')
+    work_assign_progress = models.IntegerField(default=0)
+    work_assign_date = models.DateField(auto_now=True,null=True)
+    wa_from_date = models.DateField(auto_now=False,null=True)
+    wa_due_date = models.DateField(auto_now=False,null=True)
+    wa_status = models.IntegerField(default=0)
+    wa_type = models.IntegerField(default=0)
+
+
+class TaskAssign(models.Model):
+    ta_workAssignId = models.ForeignKey(WorkAssign, on_delete=models.CASCADE, null=True,default='') 
+    ta_workerId = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='') 
+    ta_taskId = models.ForeignKey(ClientTask_Register, on_delete=models.CASCADE, null=True,default='') 
+    ta_discription = models.TextField(default='',null=True,blank=True)
+    ta_file = models.FileField(upload_to=r'work\files',default='')
+    ta_progress = models.IntegerField(default=0)
+    ta_allocate_date = models.DateField(auto_now=False,null=True)
+    ta_start_date = models.DateField(auto_now=False,null=True)
+    ta_due_date = models.DateField(auto_now=False,null=True)
+    ta_target = models.IntegerField(default=0)
+    ta_target_achived = models.IntegerField(default=0)
+    ta_status = models.IntegerField(default=0)
+    ta_accept_status = models.IntegerField(default=0)
+    ta_accept_date = models.DateField(auto_now=False,null=True)
+    ta_type = models.IntegerField(default=0)
+
+
+class TaskDetails(models.Model):
+    tad_taskAssignId = models.ForeignKey(TaskAssign, on_delete=models.CASCADE, null=True,default='') 
+    tad_collect_date = models.DateField(auto_now=True,null=True)
+    tad_title = models.CharField(max_length=255,default='',null=True,blank=True)
+    tad_discription = models.TextField(default='',null=True,blank=True)
+    tad_file = models.JSONField(default=list)
+    tad_target = models.IntegerField(default=0)
+    tad_status = models.IntegerField(default=0)

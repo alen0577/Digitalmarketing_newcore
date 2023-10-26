@@ -1011,6 +1011,39 @@ def filter_schedules(request):
 
     return JsonResponse({'schedules': schedules})
 
+# work section
+
+def executive_worksection(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # dummy notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+        }
+
+        return render(request,'Executive_work.html',content)
+
+    else:
+            return redirect('/')
+
+
+
+
+
 
 # logout
 

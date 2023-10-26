@@ -68,7 +68,9 @@ urlpatterns = [
     path('Executive-schedule-filterday',views.executive_scheduleFilterday,name='executive_scheduleFilterday'),
     path('Executive-filter_schedules', views.filter_schedules, name='filter_schedules'),
 
+    # work section
 
+    path('Executive-Works',views.executive_worksection,name='executive_worksection'),
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
