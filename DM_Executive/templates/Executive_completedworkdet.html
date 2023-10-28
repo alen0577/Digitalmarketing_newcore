@@ -6,12 +6,54 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_worksection' %}">Works</a></li>
-            <li class="breadcrumb-item active text-md" aria-current="page">Completed Workdetails</li>
+            <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_completedwork' %}">Completed Works</a></li>
+            <li class="breadcrumb-item active text-md" aria-current="page">Workdetails</li>
         </ol>
     </nav>
 </div>
 
 <div class="row">
+    <div class="col-sm-12 grid-margin">
+        
+        <div class="card">
+            <div class="card-body">
+                <h5>Task details</h5>
+                <div class="row mt-3">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <th>No</th>
+                                <th>Task Name</th>
+                                <th>Start date</th>
+                                <th>End date</th>
+                                <th>Allocated date</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                
+                            </thead>
+                            <tbody>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-primary btn-sm">View</button>
+                                </td>
+                                <td>
+                                    <button type="button" id="acceptbtn" class="btn btn-outline-success btn-sm">Completed</button>
+                                </td>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
     
    
 </div>

@@ -6,7 +6,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_worksection' %}">Works</a></li>
-            <li class="breadcrumb-item active text-md" aria-current="page">New Workdetails</li>
+            <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_newwork' %}">New work</a></li>
+            <li class="breadcrumb-item active text-md" aria-current="page">Work details</li>
         </ol>
     </nav>
 </div>
@@ -36,8 +37,12 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-primary btn-sm">View</button>
+                                </td>
+                                <td>
+                                    <button type="button" id="acceptbtn" class="btn btn-outline-success btn-sm">Accept</button>
+                                </td>
                             </tbody>
                         </table>
                     </div>
