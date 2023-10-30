@@ -72,11 +72,10 @@ urlpatterns = [
 
     path('Executive-Works',views.executive_worksection,name='executive_worksection'),
     path('Executive-NewWorks',views.executive_newwork,name='executive_newwork'),
+    path('Executive-NewWorkAccept/<int:pk>',views.executive_newwork_accept,name='executive_newwork_accept'),
     path('Executive-OngoingWorks',views.executive_ongoingwork,name='executive_ongoingwork'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),
-    path('Executive-NewWorksdetails',views.executive_newworkdet,name='executive_newworkdet'),
-    path('Executive-OngoingWorksdetails',views.executive_ongoingworkdet,name='executive_ongoingworkdet'),
-    path('Executive-CompletedWorksdetails',views.executive_completedworkdet,name='executive_completedworkdet'),
+   
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

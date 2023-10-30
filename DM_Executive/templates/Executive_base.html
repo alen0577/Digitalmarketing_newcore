@@ -31,7 +31,9 @@
               <div class="profile-pic">
                 <div class="count-indicator">
                   {% if dash_details.emp_profile %}
-                  <img class="img-xs rounded-circle " src="{{dash_details.emp_profile.url}}" alt="profile image">
+                  <img class="img-xs rounded-circle " src="{{dash_details.emp_profile.url}}" alt="">
+                  {% else %}
+                  <img class="img-xs rounded-circle " src="{% static 'images/faces/profile-icon.png' %}" alt="">
                   {% endif %}
                   <span class="count bg-success"></span>
                 </div>
@@ -259,7 +261,10 @@
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
                     {% if dash_details.emp_profile %}
-                    <img class="img-xs rounded-circle" src="{{dash_details.emp_profile.url}}" alt="profile image">
+                    <img class="img-xs rounded-circle" src="{{dash_details.emp_profile.url}}" alt="">
+                    {% else %}
+                    <img class="img-xs rounded-circle " src="{% static 'images/faces/profile-icon.png' %}" alt="">
+                       
                     {% endif %}
                     <p class="mb-0 d-none d-sm-block navbar-profile-name">{{dash_details.emp_name}}</p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
