@@ -17,9 +17,16 @@
         <div class="card">
             <div class="card-body">
                 <h5>Task details</h5>
+
+                <div class="add-items d-flex mt-4 ">
+              
+                  <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
+                  <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button> 
+                </div>
+
                 <div class="row mt-3">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table" id="task-details">
                             <thead>
                                 <th>No</th>
                                 <th>Task Name</th>
@@ -112,17 +119,19 @@
                                 
                             </div>
                             <div class="row mb-3">
-                                <div class="col-sm-12 col-lg-6 col-md-6">
+                                <div class="col-sm-12 col-lg-12 col-md-12">
                                   <div class="form-group">
                                     <label>Task Name</label>
                                     <h6 class="form-control">{{task.ta_taskId.task_name }}</h6>
                                     
                                   </div>
                                 </div>
-                                <div class="col-sm-12 col-lg-6 col-md-6">
+                                <div class="col-sm-12 col-lg-12 col-md-12">
                                     <div class="form-group">
                                       <label>Task Description</label>
-                                      <h6 class="form-control">{{task.ta_discription}}</h6>
+                                      <div>
+                                        <p class="">{{task.ta_discription}}</p>
+                                      </div>
                                       
                                     </div>
                                   </div>
@@ -157,10 +166,13 @@
                                 
                             </div>
                             <div class="row mb-3">
-                                <label  class="col-sm-2 col-form-label">File</label>
-                                <div class="col-sm-10">
-                                    <button type="button" class="btn btn-outline-success btn-sm mt-1">Download</button>
-                                </div>
+                              {% if task.ta_file %}
+                              <label  class="col-sm-2 col-form-label">File</label>
+                              <div class="col-sm-10">
+                                <a href="{{ task.ta_file.url }}" download><button class="btn btn-outline-success btn-sm mt-1">Download File</button></a>
+                              </div>
+                              {% endif %}
+                                
                             </div>
                             
                             
@@ -184,6 +196,50 @@
 {% endfor %}
 <!-- Modal Ends --> 
 
+<!-- search task name in table -->
+<script>
+  
+  const inputField = document.getElementById('search-data');
+  const closeBtn = document.getElementById('closeBtn');
+  const taskTable = document.getElementById('task-details');
+  closeBtn.style.display = 'none';
+
+  inputField.addEventListener('input', function() {
+      filterTable();
+  });
+
+
+    // To display the close button and hide the close button based on the search input 
+  inputField.addEventListener('input', function() {
+  if (inputField.value == '') {
+      closeBtn.style.display = 'none';
+      
+  } else {
+      closeBtn.style.display = 'block';
+      
+  }
+  });
+
+  closeBtn.addEventListener('click', function() {
+  inputField.value = '';
+  closeBtn.style.display = 'none';
+  filterTable(); // Display the full table data
+  });
+
+  function filterTable() {
+    const searchText = inputField.value.toLowerCase();
+    const rows = taskTable.getElementsByTagName('tbody');
+
+    for (let row of rows) {
+      const taskName = row.getElementsByTagName('td')[1].textContent.toLowerCase();
+      if (taskName.includes(searchText)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  }
+</script>
 
 
 

@@ -60,6 +60,7 @@ class EmployeeLeave(models.Model):
     leave_status = models.IntegerField(default=0)
     leave_apply_date = models.DateField(auto_now=False,null=True)
     leave_statuChange_date = models.DateField(auto_now=False,null=True)
+    leave_request_file = models.FileField(upload_to=r'leave\files',default='')
 
 
 class Allocation_Details(models.Model):

@@ -1112,6 +1112,96 @@ def executive_ongoingwork(request):
     else:
             return redirect('/')
 
+def executive_ongoingwork_complete(request,pk):
+
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1).order_by('-ta_start_date')
+
+        #task complete 
+        task=TaskAssign.objects.get(id=pk)
+
+        # total count of details of task
+        task_det_total_count=TaskDetails.objects.filter(tad_taskAssignId=task).count()
+        
+        if task_det_total_count > 0:
+            #count of task details with status=1
+            task_det_with_status1_count=TaskDetails.objects.filter(tad_taskAssignId=task,tad_status=1).count()
+
+            #check condition
+            if task_det_total_count == task_det_with_status1_count:
+                task.ta_status=1
+                task.save()
+                success_text = 'Task completed successfully.'
+                success = True
+                return redirect('executive_ongoingwork')
+            
+                content = {
+                    'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'notification':notification,
+                    'tasks':tasks,
+                    'success_text':success_text,
+                    'success': success,
+                }
+
+            else:
+
+                error=True
+                error_text = 'Oops! Check all daily tasks are verified.'
+                content = {
+                    'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'notification':notification,
+                    'tasks':tasks,
+                    'error':error,
+                    'error_text':error_text,    
+                }  
+
+        else:
+
+            # Handle the case where there are no task details to process
+            error = True
+            error_text = 'No daily task details to process.'
+
+            content = {
+                'emp_dash': emp_dash,
+                'dash_details': dash_details,
+                'notifications': notifications,
+                'notification': notification,
+                'tasks': tasks,
+                'error': error,
+                'error_text': error_text,
+                            
+            }
+        return render(request,'Executive_ongoingwork.html',content)
+
+    else:
+        return redirect('/')
+
+def executive_ongoingwork_progress(request,pk):
+
+    if request.POST:
+        task=TaskAssign.objects.get(id=pk)
+        task.ta_progress=request.POST['newProgress']
+        task.save()
+        return redirect('executive_ongoingwork')
+
 
 
 def executive_completedwork(request):
@@ -1129,11 +1219,15 @@ def executive_completedwork(request):
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
+        # taskassign details
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_status=1).order_by('-ta_start_date')
+
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
             'notification':notification,
+            'tasks':tasks,
         }
 
         return render(request,'Executive_completedwork.html',content)

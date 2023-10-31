@@ -74,6 +74,8 @@ urlpatterns = [
     path('Executive-NewWorks',views.executive_newwork,name='executive_newwork'),
     path('Executive-NewWorkAccept/<int:pk>',views.executive_newwork_accept,name='executive_newwork_accept'),
     path('Executive-OngoingWorks',views.executive_ongoingwork,name='executive_ongoingwork'),
+    path('Executive-OngoingWorksComplete/<int:pk>',views.executive_ongoingwork_complete,name='executive_ongoingwork_complete'),
+    path('Executive-OngoingWorksProgress/<int:pk>',views.executive_ongoingwork_progress,name='executive_ongoingwork_progress'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),
    
 
