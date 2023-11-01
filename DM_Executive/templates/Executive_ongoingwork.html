@@ -12,70 +12,78 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-12 grid-margin">
-        
-        <div class="card">
-            <div class="card-body">
-                <h5>Task details</h5>
-                <div class="add-items d-flex mt-4 ">
-              
-                  <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
-                  <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button> 
-                </div>
-                <div class="row mt-3">
-                    <div class="table-responsive">
-                        <table class="table" id="task-details">
-                            <thead>
-                                <th>No</th>
-                                <th>Task Name</th>
-                                <th>Start date</th>
-                                <th>End date</th>
-                                <th>Accepted date</th>
-                                <th>Details</th>
-                                <th>Progress</th>
-                                <th>Action</th>
-                
-                            </thead>
-                            {% for task in tasks %}
-                            <tbody>
-                                <td>{{forloop.counter}}</td>
-                                <td>{{task.ta_taskId.task_name}}</td>
-                                <td>{{task.ta_start_date|date:"Y-m-d"}}</td>
-                                <td>{{task.ta_due_date|date:"Y-m-d"}}</td>
-                                <td>{{task.ta_accept_date|date:"Y-m-d" }}</td>
-                                <td>
-                                  <div class="badge badge-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
-                                </td>
-                                <td>
-                                  <div class="progress progress-lg rounded"data-toggle="modal" data-target="#updateProgressModal{{task.id}}">
-                                    <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped"
-                                      role="progressbar"
-                                      aria-valuenow="{{ task.ta_progress }}"
-                                      style="width: {{ task.ta_progress }}%"
-                                      aria-valuemin="0"
-                                      aria-valuemax="100">{{ task.ta_progress }} %
-                                    </div>
-                                  </div>
-                                
-                                <td>
-                                  <a href="{% url 'executive_ongoingwork_complete' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Complete</button></a>
-                                </td>
-                            </tbody> 
-                            {% endfor %}
-                        </table>
-                    </div>
-                
-                    
-                </div>
-
-                
-            </div>
-
-
-
+  <div class="col-sm-12 grid-margin">
+      
+    <div class="card">
+      <div class="card-body">
+        <h5>Task details</h5>
+        <div class="add-items d-flex mt-4 ">
+      
+          <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
+          <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button> 
         </div>
+        <div class="row mt-3">
+          <div class="table-responsive">
+            <table class="table" id="task-details">
+              <thead>
+                <th>No</th>
+                <th>Task Name</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Accepted date</th>
+                <th>Task Details</th>
+                <th>Add Daily Work</th>
+                <th>View Daily Works</th>
+                <th>Progress</th>
+                <th>Action</th>
+  
+              </thead>
+              {% for task in tasks %}
+              <tbody>
+                <td>{{forloop.counter}}</td>
+                <td>{{task.ta_taskId.task_name}}</td>
+                <td>{{task.ta_start_date|date:"Y-m-d"}}</td>
+                <td>{{task.ta_due_date|date:"Y-m-d"}}</td>
+                <td>{{task.ta_accept_date|date:"Y-m-d" }}</td>
+                <td>
+                  <div class="btn btn-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
+                </td>
+                <td>
+                  <a class="btn btn-outline-primary" href="" >Add</a>
+                </td>
+                <td>
+                  <a class="btn btn-outline-primary" href="{% url 'executive_ongoingwork_dailyworks' task.id %}">View</a>
+                </td>
+                <td>
+                  <div class="progress progress-lg rounded"data-toggle="modal" data-target="#updateProgressModal{{task.id}}">
+                    <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped"
+                      role="progressbar"
+                      aria-valuenow="{{ task.ta_progress }}"
+                      style="width: {{ task.ta_progress }}%"
+                      aria-valuemin="0"
+                      aria-valuemax="100">{{ task.ta_progress }} %
+                    </div>
+                  </div>
+                
+                <td>
+                  <a href="{% url 'executive_ongoingwork_complete' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Complete</button></a>
+                </td>
+              </tbody> 
+              {% endfor %}
+            </table>
+          </div>
         
+            
+        </div>
+
+          
+      </div>
+
+
+
     </div>
+      
+  </div>
    
 </div>
 
@@ -148,104 +156,104 @@
             
             {% csrf_token %}
             <div class="row">
-                <div class="col-xl-12 col-sm-12 grid-margin ">
-                    <div class="card" >
+              <div class="col-xl-12 col-sm-12 grid-margin ">
+                <div class="card" >
+                    
+                  <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12 col-lg-12 col-md-12">
+                          <div class="form-group">
+                            <label>Client Name</label>
+                            <h6 class="form-control">{{task.ta_taskId.client_Id.client_name}}</h6>
+                            
+                          </div>
+                        </div>
                         
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-sm-12 col-lg-12 col-md-12">
-                                  <div class="form-group">
-                                    <label>Client Name</label>
-                                    <h6 class="form-control">{{task.ta_taskId.client_Id.client_name}}</h6>
-                                    
-                                  </div>
-                                </div>
-                                
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-12 col-lg-6 col-md-6">
-                                  <div class="form-group">
-                                    <label>Allocated By</label>
-                                    <h6 class="form-control">{{task.ta_workAssignId.wa_work_allocate.emp_name}}</h6>
-                                    
-                                  </div>
-                                </div>
-                                <div class="col-sm-12 col-lg-6 col-md-6">
-                                    <div class="form-group">
-                                      <label>Allocated Date</label>
-                                      <h6 class="form-control">{{task.ta_allocate_date}}</h6>
-                                      
-                                    </div>
-                                  </div>
-                                
-                            </div>
-                            <div class="row mb-3">
-                              <div class="col-sm-12 col-lg-12 col-md-12">
-                                <div class="form-group">
-                                  <label>Task Name</label>
-                                  <h6 class="form-control">{{task.ta_taskId.task_name }}</h6>
-                                  
-                                </div>
-                              </div>
-                              <div class="col-sm-12 col-lg-12 col-md-12">
-                                <div class="form-group">
-                                  <label>Task Description</label>
-                                  <div>
-                                    <p>{{task.ta_discription}}</p>
-                                  </div>
-                                  
-                                </div>
-                              </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-12 col-lg-6 col-md-6">
+                          <div class="form-group">
+                            <label>Allocated By</label>
+                            <h6 class="form-control">{{task.ta_workAssignId.wa_work_allocate.emp_name}}</h6>
+                            
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-6 col-md-6">
+                            <div class="form-group">
+                              <label>Allocated Date</label>
+                              <h6 class="form-control">{{task.ta_allocate_date}}</h6>
                               
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-sm-12 col-lg-6 col-md-6">
-                                  <div class="form-group">
-                                    <label>Start Date</label>
-                                    <h6 class="form-control">{{task.ta_start_date}}</h6>
-                                    
-                                  </div>
-                                </div>
-                                <div class="col-sm-12 col-lg-6 col-md-6">
-                                    <div class="form-group">
-                                      <label>End Date</label>
-                                      <h6 class="form-control">{{task.ta_due_date}}</h6>
-                                      
-                                    </div>
-                                  </div>
-                                
-                            </div>
-                            <div class="row mb-3">
-                               
-                                <div class="col-sm-12 col-lg-12 col-md-12">
-                                    <div class="form-group">
-                                      <label>Target</label>
-                                      <h6 class="form-control">{{task.ta_target}}</h6>
-                                      
-                                    </div>
-                                  </div>
-                                
-                            </div>
-                            <div class="row mb-3">
-                              {% if task.ta_file %}
-                              <label  class="col-sm-2 col-form-label">File</label>
-                              <div class="col-sm-10">
-                                <a href="{{ task.ta_file.url }}" download><button class="btn btn-outline-success btn-sm mt-1">Download File</button></a>
-                              </div>
-                              {% endif %}
-                                
-                            </div>
-                            
-                            
-                        </div>
+                          </div>
+                        
                     </div>
+                    <div class="row mb-3">
+                      <div class="col-sm-12 col-lg-12 col-md-12">
+                        <div class="form-group">
+                          <label>Task Name</label>
+                          <h6 class="form-control">{{task.ta_taskId.task_name }}</h6>
+                          
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-lg-12 col-md-12">
+                        <div class="form-group">
+                          <label>Task Description</label>
+                          <div>
+                            <p>{{task.ta_discription}}</p>
+                          </div>
+                          
+                        </div>
+                      </div>
+                      
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-12 col-lg-6 col-md-6">
+                          <div class="form-group">
+                            <label>Start Date</label>
+                            <h6 class="form-control">{{task.ta_start_date}}</h6>
+                            
+                          </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-6 col-md-6">
+                            <div class="form-group">
+                              <label>End Date</label>
+                              <h6 class="form-control">{{task.ta_due_date}}</h6>
+                              
+                            </div>
+                          </div>
+                        
+                    </div>
+                    <div class="row mb-3">
+                        
+                        <div class="col-sm-12 col-lg-12 col-md-12">
+                            <div class="form-group">
+                              <label>Target</label>
+                              <h6 class="form-control">{{task.ta_target}}</h6>
+                              
+                            </div>
+                          </div>
+                        
+                    </div>
+                    <div class="row mb-3">
+                      {% if task.ta_file %}
+                      <label  class="col-sm-2 col-form-label">File</label>
+                      <div class="col-sm-10">
+                        <a href="{{ task.ta_file.url }}" download><button class="btn btn-outline-success btn-sm mt-1">Download File</button></a>
+                      </div>
+                      {% endif %}
+                        
+                    </div>
+                    
+                      
+                  </div>
                 </div>
+              </div>
                 
             </div>
         
             
         
-        </form>
+          </form>
 
         </div>
 
@@ -302,7 +310,14 @@
   }
 </script>
 
-
+<style>
+  a{
+    text-decoration: none;
+  }
+  a:hover{
+    text-decoration: none;
+  }
+</style>
 
 
 

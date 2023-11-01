@@ -1202,6 +1202,40 @@ def executive_ongoingwork_progress(request,pk):
         task.save()
         return redirect('executive_ongoingwork')
 
+def executive_ongoingwork_dailyworks(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'daily_works':daily_works,
+        }
+
+        return render(request,'Executive_ongoingwork_dailyworks.html',content)
+
+    else:
+            return redirect('/')
+
+    
 
 
 def executive_completedwork(request):
@@ -1236,7 +1270,41 @@ def executive_completedwork(request):
             return redirect('/')
 
 
+def executive_completedwork_dailyworks(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
 
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'daily_works':daily_works,
+        }
+
+        return render(request,'Executive_completedwork_dailyworks.html',content)
+
+    else:
+            return redirect('/')
+
+    
+    
 
 # logout
 

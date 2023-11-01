@@ -31,13 +31,14 @@
                               <th>Start date</th>
                               <th>End date</th>
                               <th>Accepted date</th>
-                              <th>Details</th>
+                              <th>Task Details</th>
+                              <th>Daily Works</th>
                               <th>Progress</th>
                               <th>Status</th>
                 
                             </thead>
 
-                            {% for task in tasks %}
+                            {% for task in tasks  %}
                             <tbody>
                               <td>{{forloop.counter}}</td>
                               <td>{{task.ta_taskId.task_name}}</td>
@@ -45,8 +46,9 @@
                               <td>{{task.ta_due_date|date:"Y-m-d"}}</td>
                               <td>{{task.ta_accept_date|date:"Y-m-d" }}</td>
                               <td>
-                                <div class="badge badge-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
+                                <div class="btn btn-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
                               </td>
+                              <td><a class="btn btn-outline-primary" href="{% url 'executive_completedwork_dailyworks' task.id %}">View</a></td>
                               <td>
                                 <div class="progress progress-lg rounded">
                                   <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped"
@@ -60,7 +62,7 @@
                                 
                               
                               <td>
-                                <button class="btn btn-outline-success" type="button" class="btn btn-outline-success">Completed</button>
+                                <p class="badge badge-outline-success">Completed</p>
                               </td>
                             </tbody> 
                             {% endfor %}
@@ -69,7 +71,6 @@
                 
                     
                 </div>
-
                 
             </div>
 

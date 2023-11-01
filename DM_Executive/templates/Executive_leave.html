@@ -162,11 +162,11 @@
                         <td>{{i.leave_type}}</td>
                         <td>{{i.leave_reason}}</td>
                         {% if i.leave_status == 1 %}
-                        <td><button class="btn btn-outline-success btn-sm">Approved</button></td>
+                        <td><p class="badge badge-outline-success btn-sm">Approved</p></td>
                         {% elif i.leave_status == 0 %}
-                        <td><button class="btn btn-outline-warning btn-sm">Pending</button></td>
+                        <td><p class="badge badge-outline-warning btn-sm">Pending</p></td>
                         {% else %}
-                        <td><button class="btn btn-outline-danger btn-sm">Rejected</button></td>
+                        <td><p class="badge badge-outline-danger btn-sm">Rejected</p></td>
                         {% endif %}
                         
                       </tr>
@@ -257,11 +257,11 @@
           $.each(data.myleave, function(index, item) {
             var leaveStatusText = '';
             if (item.leave_status === 1) {
-              leaveStatusText = '<button class="btn btn-outline-success btn-sm">Approved</button>';
+              leaveStatusText = '<p class="badge badge-outline-success btn-sm">Approved</p>';
             } else if (item.leave_status === 0) {
-              leaveStatusText = '<button class="btn btn-outline-warning btn-sm">Pending</button>';
+              leaveStatusText = '<p class="badge badge-outline-warning btn-sm">Pending</p>';
             } else {
-              leaveStatusText = '<button class="btn btn-outline-danger btn-sm">Rejected</button>';
+              leaveStatusText = '<p class="badge badge-outline-danger btn-sm">Rejected</p>';
             }
             var row = '<tr>' +
               '<td>' + (index + 1) + '</td>' +
