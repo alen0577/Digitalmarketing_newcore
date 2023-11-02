@@ -686,9 +686,10 @@ def exapply_leave(request):
             end_date=request.POST['to']
             leave_type=request.POST['type_select']
             leave_reason=request.POST['reason']
+            leave_request_file = request.FILES['leave_request_file']
             leave_apply_date=date.today()
 
-            leave_details=EmployeeLeave(emp_id=dash_details,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date)
+            leave_details=EmployeeLeave(emp_id=dash_details,start_date=start_date,end_date=end_date,leave_type=leave_type,leave_reason=leave_reason,leave_apply_date=leave_apply_date,leave_request_file=leave_request_file)
             leave_details.save()
 
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
@@ -1201,6 +1202,81 @@ def executive_ongoingwork_progress(request,pk):
         task.ta_progress=request.POST['newProgress']
         task.save()
         return redirect('executive_ongoingwork')
+
+def executive_ongoingwork_dailyworkadd(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+        tdate=date.today()
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'daily_works':daily_works,
+            'tdate':tdate,
+        }
+
+        return render(request,'Executive_ongoingwork_dailyworkadd.html',content)
+
+    else:
+            return redirect('/')
+
+
+
+
+def executive_ongoingwork_dailyworkadd_lead(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+        tdate=date.today()
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'daily_works':daily_works,
+            'tdate':tdate,
+        }
+
+        return render(request,'Executive_ongoingwork_dailyworkadd_lead.html',content)
+
+    else:
+            return redirect('/')
+
+
 
 def executive_ongoingwork_dailyworks(request,pk):
     if 'emp_id' in request.session:

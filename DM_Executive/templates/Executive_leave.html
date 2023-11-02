@@ -65,7 +65,7 @@
         <div class="card-body">
           <div class="leave-form">
             <h4 class="card-title mb-4">Leave apply </h4>
-            <form action="{% url 'exapply_leave' %}" method="post">
+            <form action="{% url 'exapply_leave' %}" method="post" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="row">
                 <div class="col-sm-12 col-lg-6 col-md-6">
@@ -95,6 +95,12 @@
                   <div class="form-group add-items">
                     <label>Reason</label>
                     <textarea  class="to-do-textarea  text-offwhite" name="reason" id="task_content" placeholder="enter reason.." required></textarea>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-lg-12 col-md-12">
+                  <div class="form-group add-items">
+                    <label>Leave Request File</label>
+                    <input type="file" class="form-control text-offwhite" name="leave_request_file" id="leave_request_file">
                   </div>
                 </div>
                 <div class="col-sm-12 col-lg-12 col-md-12 d-flex  justify-content-center  align-items-center">       
@@ -136,18 +142,13 @@
                   <table class="table" id="LeaveTable">
                     <thead>
                       <tr>
-                        <!-- <th>
-                          <div class="form-check form-check-muted m-0">
-                            <label class="form-check-label">
-                              <input type="checkbox" class="form-check-input">
-                            </label>
-                          </div>
-                        </th> -->
+                        
                         <th> Sl No </th>
                         <th> From Date </th>
                         <th> To Date </th>
                         <th> Leave Type </th>
                         <th> Reason </th>
+                        <!-- <th>File</th> -->
                         <th> Action </th>
                       </tr>
                     </thead>
@@ -161,6 +162,15 @@
                         <td>{{i.end_date|date:"Y-m-d" }}</td>
                         <td>{{i.leave_type}}</td>
                         <td>{{i.leave_reason}}</td>
+                        <!-- {% if i.leave_request_file %}
+                        <td>
+                          <a href="{{ i.leave_request_file.url }}" download><button class="btn btn-outline-success btn-sm mt-1">Download File</button></a>
+                        </td>
+                        {% else %}
+                        <td>
+                          <button class="btn btn-outline-success btn-sm mt-1" disabled>Download File</button>
+                        </td>
+                        {% endif %} -->
                         {% if i.leave_status == 1 %}
                         <td><p class="badge badge-outline-success btn-sm">Approved</p></td>
                         {% elif i.leave_status == 0 %}

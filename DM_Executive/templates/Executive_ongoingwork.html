@@ -49,7 +49,11 @@
                   <div class="btn btn-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
                 </td>
                 <td>
-                  <a class="btn btn-outline-primary" href="" >Add</a>
+                  {% if task.ta_taskId.task_name == 'Lead Collection' %}
+                  <a class="btn btn-outline-primary" href="{% url 'executive_ongoingwork_dailyworkadd_lead' task.id %}" >Add</a>
+                  {% else %}
+                  <a class="btn btn-outline-primary" href="{% url 'executive_ongoingwork_dailyworkadd' task.id %}" >Add</a>
+                  {% endif %}
                 </td>
                 <td>
                   <a class="btn btn-outline-primary" href="{% url 'executive_ongoingwork_dailyworks' task.id %}">View</a>
