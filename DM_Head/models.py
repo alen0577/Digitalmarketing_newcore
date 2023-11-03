@@ -205,3 +205,4 @@ class TaskDetails(models.Model):
     tad_file = models.JSONField(default=list)
     tad_target = models.IntegerField(default=0)
     tad_status = models.IntegerField(default=0)
+    tad_verified_target = models.IntegerField(default=0)

@@ -78,7 +78,9 @@ urlpatterns = [
     path('Executive-OngoingWorksProgress/<int:pk>',views.executive_ongoingwork_progress,name='executive_ongoingwork_progress'),
     path('Executive-OngoingWork-Dailyworks/<int:pk>',views.executive_ongoingwork_dailyworks,name='executive_ongoingwork_dailyworks'),
     path('Executive-OngoingWork-Dailyworkadd/<int:pk>',views.executive_ongoingwork_dailyworkadd,name='executive_ongoingwork_dailyworkadd'),
+    path('Executive-OngoingWork-Dailyworksave/<int:pk>',views.executive_ongoingwork_dailyworksave,name='executive_ongoingwork_dailyworksave'),
     path('Executive-OngoingWork-Dailyworkadd_leadcollection/<int:pk>',views.executive_ongoingwork_dailyworkadd_lead,name='executive_ongoingwork_dailyworkadd_lead'),
+    path('download_file/<int:task_id>/<int:file_index>/', views.download_file, name='download_file'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),
     path('Executive-CompletedWorks-Dailyworks/<int:pk>',views.executive_completedwork_dailyworks,name='executive_completedwork_dailyworks'),
    

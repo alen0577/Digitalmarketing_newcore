@@ -63,12 +63,24 @@
                 <td>{{daily_work.tad_collect_date|date:"Y-m-d"}}</td>
                 <td>{{daily_work.tad_title}}</td>
                 <td>{{daily_work.tad_discription}}</td>
-                <td><a href="{{ daily_work.tad_file.url }}" download><button class="btn btn-outline-success btn-sm mt-1">Download File</button></a></td>
+                {% if daily_work.tad_file %}
+                <td>
+                  {% for file_info in daily_work.tad_file %}
+                  <a class="badge badge-outline-primary badge-sm mt-2 mb-2" href="{% url 'download_file' daily_work.id forloop.counter0 %}">Download file {{ forloop.counter }}</a><br>
+                  {% endfor %}
+                </td>
+                {% else %}
+                <td><p class="text-primary">No files</p></td>
+                {% endif %}
                 <td>
                   <div class="badge badge-outline-primary">{{daily_work.tad_target}}</div>
                 </td>
                 <td>
-                  <button class="btn btn-outline-success" type="button" class="btn btn-outline-success">Completed</button>
+                  {% if daily_work.tad_status %}
+                  <p  class="badge badge-outline-success">Verified</p>
+                  {% else %}
+                  <p class="badge badge-outline-warning">pending</p>
+                  {% endif %}
                 </td>
               </tbody> 
               {% endfor %}
@@ -89,6 +101,11 @@
    
 </div>
 
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <!-- search task name in table -->
 <script>

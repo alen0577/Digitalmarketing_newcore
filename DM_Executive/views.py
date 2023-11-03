@@ -1,3 +1,6 @@
+import os
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from Registration_Login.models import *
 from .models import *
@@ -7,6 +10,7 @@ from datetime import date
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.files.storage import FileSystemStorage
 
 
 # Create your views here.
@@ -1098,7 +1102,7 @@ def executive_ongoingwork(request):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         # taskassign details
-        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1).order_by('-ta_start_date')
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=0).order_by('-ta_start_date')
 
         content = {
             'emp_dash':emp_dash,
@@ -1130,7 +1134,7 @@ def executive_ongoingwork_complete(request,pk):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         # taskassign details
-        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1).order_by('-ta_start_date')
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=0).order_by('-ta_start_date')
 
         #task complete 
         task=TaskAssign.objects.get(id=pk)
@@ -1148,7 +1152,7 @@ def executive_ongoingwork_complete(request,pk):
                 task.save()
                 success_text = 'Task completed successfully.'
                 success = True
-                return redirect('executive_ongoingwork')
+                # return redirect('executive_ongoingwork')
             
                 content = {
                     'emp_dash':emp_dash,
@@ -1238,6 +1242,53 @@ def executive_ongoingwork_dailyworkadd(request,pk):
     else:
             return redirect('/')
 
+def executive_ongoingwork_dailyworksave(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # taskassign details
+        task=task=TaskAssign.objects.get(id=pk)
+
+        if request.method == 'POST':
+            # Retrieve form data from POST request
+            tad_title = request.POST.get('tad_title')
+            tad_discription = request.POST.get('tad_discription')
+            tad_target = request.POST.get('tad_target')
+            tad_collect_date = date.today()
+
+            # Handle file inputs
+            tad_files = request.FILES.getlist('tad_file')
+
+            task_details = TaskDetails(
+                tad_taskAssignId=task,
+                tad_collect_date=tad_collect_date,
+                tad_title=tad_title,
+                tad_discription=tad_discription,
+                tad_target=tad_target,           
+            )
+
+            task_details.save()
+
+            for file in tad_files:
+                # Save the file to a location on your server
+                fs = FileSystemStorage()
+                filename = fs.save(file.name, file)
+                
+                # Store the file path or any relevant file information in the tad_file field
+                task_details.tad_file.append({'file_name': file.name, 'file_path': filename})   
+
+            task_details.save()
+            return redirect('executive_ongoingwork')
+
+    else:
+        return redirect('/')
 
 
 
@@ -1311,7 +1362,27 @@ def executive_ongoingwork_dailyworks(request,pk):
     else:
             return redirect('/')
 
-    
+def download_file(request, task_id, file_index):
+    task = get_object_or_404(TaskDetails, pk=task_id)
+
+    # Get the file information from the tad_file field
+    try:
+        file_info = task.tad_file[file_index]
+        file_path = file_info.get('file_path', '')
+        file_name = file_info.get('file_name', '')
+    except (IndexError, KeyError):
+        return HttpResponse("File not found", status=404)
+
+    # Construct the file path
+    file_path = os.path.join('media', file_path)  # Replace 'your_file_directory' with the actual directory path where files are stored
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+    else:
+        return HttpResponse("File not found", status=404)   
 
 
 def executive_completedwork(request):

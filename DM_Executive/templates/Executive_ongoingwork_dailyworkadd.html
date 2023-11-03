@@ -16,7 +16,7 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title mb-4">Daily Works</h4>
-            <form action="{% url 'Profile_detailsUpdate' %}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'executive_ongoingwork_dailyworksave' task.id  %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-sm-12 col-lg-6 col-md-6">
@@ -51,10 +51,16 @@
                         <textarea class="form-control text-offwhite" name="tad_discription" rows="10" placeholder="enter all your daily works for this task" required></textarea>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-lg-4 col-md-4">
+                    <div class="col-sm-12 col-lg-6 col-md-6">
                         <div class="form-group">
                             <label>Target*</label>
-                            <input type="number" class="form-control text-offwhite " name="tad_title" required>
+                            <input type="number" class="form-control text-offwhite " name="tad_target" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-lg-6 col-md-6">
+                        <div class="form-group">
+                            <label>Files*</label>
+                            <input type="file"  class="form-control text-offwhite " name="tad_file" multiple required>
                         </div>
                     </div>
                 
