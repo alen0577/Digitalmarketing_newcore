@@ -15,6 +15,13 @@ from django.core.files.storage import FileSystemStorage
 
 # Create your views here.
 
+# logout
+
+def executive_logout(request):
+    request.session.pop('emp_id', None)
+    return redirect('login_page')    
+
+
 def executive_dashboard(request):
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
@@ -1450,11 +1457,85 @@ def executive_completedwork_dailyworks(request,pk):
     else:
             return redirect('/')
 
-    
-    
 
-# logout
 
-def executive_logout(request):
-    request.session.pop('emp_id', None)
-    return redirect('login_page')            
+def Executive_lead_file_upload(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # Notification-----------
+        notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
+
+        works_obj = WorkRegister.objects.get(id=pk)
+        data_list = {}
+
+        if request.POST:
+
+
+            exfile = request.FILES.get('upload_File')
+
+            # Read the Excel file using pandas
+            df = pd.read_excel(exfile)
+
+            # Check if the DataFrame is empty
+            if df.empty:
+                return redirect('head_lead_collected_data',pk)
+            
+            else:
+
+                # Create a list of column headers from the DataFrame
+                headers = df.columns.tolist()
+
+                # Process and save the data to the Lead model (adjust as needed)
+                for _, row in df.iterrows():
+                    lead_data = {header: row[header] for header in headers}
+
+                    lead = Leads()
+                    lead.lead_work_regId = works_obj
+                    lead.lead_collect_Emp_id = dash_details
+                    lead.lead_name = lead_data['Full Name']
+                    lead.lead_email = lead_data['Email Id']
+                    lead.lead_contact = lead_data['Contact Number']
+                    lead.save()
+
+                    for key, value in lead_data.items():
+                        if key not in ('Full Name', 'Email Id', 'Contact Number'):
+                            lead_details = lead_Details(leadId=lead, lead_field_name=key, lead_field_data=value)
+                            lead_details.leadId = lead
+                            lead_details.save()
+
+
+                success = True
+                success_text = 'File uploaded successfully.'
+                data_list = {'success':success,'success_text':success_text}
+
+
+        
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+
+        
+
+        content = {'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'works_obj':works_obj,
+                    'leads_obj':leads_obj,
+                    'lead_Details_obj':lead_Details_obj,
+                    }
+        
+        content = {**data_list, **content}
+
+        return render(request,'HD_ClientLead_datalist.html',content)
+
+    else:
+            return redirect('/')      
+
+        
