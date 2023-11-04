@@ -1109,7 +1109,7 @@ def executive_ongoingwork(request):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         # taskassign details
-        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=0).order_by('-ta_start_date')
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=1).order_by('-ta_start_date')
 
         content = {
             'emp_dash':emp_dash,
@@ -1155,7 +1155,7 @@ def executive_ongoingwork_complete(request,pk):
 
             #check condition
             if task_det_total_count == task_det_with_status1_count:
-                task.ta_status=1
+                task.ta_status=2
                 task.save()
                 success_text = 'Task completed successfully.'
                 success = True
@@ -1408,7 +1408,7 @@ def executive_completedwork(request):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         # taskassign details
-        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_status=1).order_by('-ta_start_date')
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_status=2).order_by('-ta_start_date')
 
         content = {
             'emp_dash':emp_dash,

@@ -1,5 +1,6 @@
 {% extends 'HD_base.html' %}
 {% load static %}
+{% load custom_filters %}
 {% block body %}
 
 <div>
@@ -42,8 +43,10 @@
                     <thead>
                         <tr>
                         <th> No </th>
-                        <th> Work Task </th>
                         <th> Action </th>
+                        <th> Work Task </th>
+                        <th> Discription </th>
+                       
                         </tr>
                     </thead>
                     <tbody>
@@ -53,17 +56,16 @@
                         <td>
                             {{forloop.counter}}
                         </td>
-                        
-                        <td> {{task.task_name}} </td>
-                            
                         <td> 
                             <a href="#" class="text-primary"><span class="mdi mdi-pencil mdi-18px"></span></a>
                             <a href="#" class="text-danger"><span class="mdi mdi-close-circle-outline mdi-18px"></span></a>
                         </td>
-                        
+                        <td> {{task.task_name}} </td>
+                        <td> {{ task.task_discription|tostr|split_into_paragraphs:70|safe }}</td>
                         
                         </tr>
                     {% endfor %}
+
                     </tbody>
                     </table>
                 </div>

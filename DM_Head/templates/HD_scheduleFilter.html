@@ -1,5 +1,6 @@
 {% extends 'HD_base.html' %}
 {% load static %}
+{% load custom_filters %}
 {% block body %}
 
 <style>
@@ -108,12 +109,12 @@
 
                                             <h6 style="text-decoration: line-through;">{{schedule.schedule_head}}</h6>
                                             <p class="mb-2" style="text-decoration: line-through;">( {{schedule.emp_id.emp_name}} )</p>
-                                            <p style="text-decoration: line-through;">{{schedule.todo_content}} </p>
+                                            <p style="text-decoration: line-through;">{{schedule.todo_content|tostr|split_into_paragraphs:50|safe }} </p>
                                              
                                           {% else %}
                                             <h6>{{schedule.schedule_head}}</h6>
                                             <p class="mb-2">( {{schedule.emp_id.emp_name}} )</p>
-                                            <p>{{schedule.todo_content}} </p>
+                                            <p>{{schedule.todo_content|tostr|split_into_paragraphs:50|safe }} </p>
 
 
                                           {% endif%}
