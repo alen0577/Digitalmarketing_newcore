@@ -83,6 +83,13 @@ urlpatterns = [
     path('download_file/<int:task_id>/<int:file_index>/', views.download_file, name='download_file'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),
     path('Executive-CompletedWorks-Dailyworks/<int:pk>',views.executive_completedwork_dailyworks,name='executive_completedwork_dailyworks'),
+    path('Executive-WeeklyProgress',views.executive_weekly_progress,name='executive_weekly_progress'),
+    path('Executive-MonthlyProgress',views.executive_monthly_progress,name='executive_monthly_progress'),
+    path('Executive-Progress-Save',views.executive_progress_save,name='executive_progress_save'),
+    path('download_progressfile/<int:progress_id>/<int:file_index>/', views.download_progressfile, name='download_progressfile'),
+
+
+
    
 
 ]

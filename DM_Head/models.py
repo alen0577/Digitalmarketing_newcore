@@ -235,9 +235,10 @@ class TaskDetails(models.Model):
     tad_verified_target = models.IntegerField(default=0)
 
 class WorkProgress(models.Model):
-    wp_workAssignId = models.ForeignKey(WorkAssign, on_delete=models.CASCADE, null=True,default='') 
     wp_workerId = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='') 
     wp_add_date = models.DateField(auto_now=True,null=True)
+    wp_from_date = models.DateField(auto_now=False,null=True) 
+    wp_to_date = models.DateField(auto_now=False,null=True)
     work_discription = models.TextField(default='',null=True,blank=True)
     wp_type = models.CharField(max_length=255,default='',null=True,blank=True)
     wp_progress = models.IntegerField(default=0)

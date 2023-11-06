@@ -1141,7 +1141,7 @@ def executive_ongoingwork_complete(request,pk):
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
         # taskassign details
-        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=0).order_by('-ta_start_date')
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=1).order_by('-ta_start_date')
 
         #task complete 
         task=TaskAssign.objects.get(id=pk)
@@ -1155,21 +1155,36 @@ def executive_ongoingwork_complete(request,pk):
 
             #check condition
             if task_det_total_count == task_det_with_status1_count:
-                task.ta_status=2
-                task.save()
-                success_text = 'Task completed successfully.'
-                success = True
-                # return redirect('executive_ongoingwork')
-            
-                content = {
-                    'emp_dash':emp_dash,
-                    'dash_details':dash_details,
-                    'notifications':notifications,
-                    'notification':notification,
-                    'tasks':tasks,
-                    'success_text':success_text,
-                    'success': success,
-                }
+
+                if task.ta_progress == 100:
+
+                    task.ta_status=2
+                    task.save()
+                    success_text = 'Task completed successfully.'
+                    success = True
+                    # return redirect('executive_ongoingwork')
+                
+                    content = {
+                        'emp_dash':emp_dash,
+                        'dash_details':dash_details,
+                        'notifications':notifications,
+                        'notification':notification,
+                        'tasks':tasks,
+                        'success_text':success_text,
+                        'success': success,
+                    }
+                else:
+                    error=True
+                    error_text = 'Oops! Check your task progress.'
+                    content = {
+                        'emp_dash':emp_dash,
+                        'dash_details':dash_details,
+                        'notifications':notifications,
+                        'notification':notification,
+                        'tasks':tasks,
+                        'error':error,
+                        'error_text':error_text,    
+                    }  
 
             else:
 
@@ -1538,4 +1553,166 @@ def Executive_lead_file_upload(request,pk):
     else:
             return redirect('/')      
 
+
+
+
+def executive_weekly_progress(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
         
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # weekly progress
+
+        progress= WorkProgress.objects.filter(wp_workerId=dash_details,wp_type='Weekly').order_by('-wp_from_date',)
+        
+        
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'progress':progress,
+            
+        }
+
+        return render(request,'Executive_weeklyprogress.html',content)
+
+    else:
+            return redirect('/')
+
+
+
+def executive_monthly_progress(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # monthly progress
+
+        progress= WorkProgress.objects.filter(wp_workerId=dash_details,wp_type='Monthly').order_by('-wp_from_date')
+        
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'progress':progress,
+            
+        }
+
+        return render(request,'Executive_monthlyprogress.html',content)
+
+    else:
+            return redirect('/')
+
+
+def executive_progress_save(request):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # work progress details
+        if request.POST:
+            wp_workerId=dash_details
+            wp_type1=request.POST['type']
+            wp_type2=request.POST['type']
+            work_discription=request.POST['description']
+            wp_progress=request.POST['progress']
+            wp_from_date=request.POST['fdate']
+            wp_to_date=request.POST['tdate']
+
+            # Handle file inputs
+            files = request.FILES.getlist('files')
+
+            if  wp_type1 == 'Weekly':
+
+                progress=WorkProgress(wp_workerId=wp_workerId,wp_type=wp_type1,work_discription=work_discription,wp_progress=wp_progress,wp_from_date=wp_from_date,wp_to_date=wp_to_date)
+                progress.save()
+
+
+
+                for file in files:
+                    # Save the file to a location on your server
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+        
+                    # Store the file path or any relevant file information in the tad_file field
+                    progress.wp_file.append({'file_name': file.name, 'file_path': filename})   
+
+                progress.save()
+                return redirect('executive_weekly_progress')
+
+            else:
+                
+                progress=WorkProgress(wp_workerId=wp_workerId,wp_type=wp_type2,work_discription=work_discription,wp_progress=wp_progress,wp_from_date=wp_from_date,wp_to_date=wp_to_date)
+                progress.save()
+
+
+
+                for file in files:
+                    # Save the file to a location on your server
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+        
+                    # Store the file path or any relevant file information in the tad_file field
+                    progress.wp_file.append({'file_name': file.name, 'file_path': filename})   
+
+                progress.save()
+                return redirect('executive_monthly_progress')
+
+    else:
+        return redirect('/')
+
+def download_progressfile(request, progress_id, file_index):
+    progress = get_object_or_404(WorkProgress, pk=progress_id)
+
+    # Get the file information from the wp_file field
+    try:
+        file_info = progress.wp_file[file_index]
+        file_path = file_info.get('file_path', '')
+        file_name = file_info.get('file_name', '')
+    except (IndexError, KeyError):
+        return HttpResponse("File not found", status=404)
+
+    # Construct the file path
+    file_path = os.path.join('media', file_path)  # Replace 'your_file_directory' with the actual directory path where files are stored
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as file:
+            response = HttpResponse(file.read(), content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+    else:
+        return HttpResponse("File not found", status=404)   
