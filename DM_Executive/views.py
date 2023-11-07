@@ -11,6 +11,13 @@ from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.db.models import Q
 from django.core.files.storage import FileSystemStorage
+import pandas as pd
+import random
+import io, os
+from openpyxl.workbook import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from django.http import HttpResponse
+
 
 
 # Create your views here.
@@ -1331,17 +1338,23 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
         
         # taskassign details
         task=TaskAssign.objects.get(id=pk)
-        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
-        tdate=date.today()
+        
 
+        clientid=task.ta_taskId.client_Id.id
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        
+        leadinfo=LeadField_Register.objects.filter(field_work_regId=work_id)
+
+        print(leadinfo)
+
+        print(work_id)
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
             'notification':notification,
             'task':task,
-            'daily_works':daily_works,
-            'tdate':tdate,
+            'leadinfo':leadinfo,
         }
 
         return render(request,'Executive_ongoingwork_dailyworkadd_lead.html',content)
@@ -1349,6 +1362,125 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
     else:
             return redirect('/')
 
+def executive_lead_add_page(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # Notification-----------
+        notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
+        task=TaskAssign.objects.get(id=pk)
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        
+        works_obj = WorkRegister.objects.get(id=work_id)
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+        
+        
+
+        content = {'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'works_obj':works_obj,
+                    'leads_obj':leads_obj,
+                     'lead_Details_obj':lead_Details_obj,
+                     'leads_obj_count':leads_obj_count,
+                     'lf_obj':lf_obj,
+                     'pk':pk,
+                    }
+
+        return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
+
+    else:
+            return redirect('/')
+
+def executive_lead_add(request,pk):
+     
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # Notification-----------
+        notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
+
+        works_obj = WorkRegister.objects.get(id=pk)
+
+        if request.POST:
+             
+
+            ld_obj = Leads()
+            ld_obj.lead_work_regId = works_obj
+            ld_obj.lead_collect_Emp_id = dash_details.id
+            ld_obj.lead_name = request.POST['leadName']
+            ld_obj.lead_email = request.POST['leadEmail']
+            ld_obj.lead_contact =request.POST['leadContact']
+            ld_obj.save()
+
+            lead_deatils_data  = request.POST.getlist('leadfield')
+        
+        
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+        
+        
+
+        content = {'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'works_obj':works_obj,
+                    'leads_obj':leads_obj,
+                     'lead_Details_obj':lead_Details_obj,
+                     'leads_obj_count':leads_obj_count,
+                     'lf_obj':lf_obj,
+                    }
+
+        return render(request,'HD_ClientLead_datalist.html',content)
+
+    else:
+            return redirect('/')
+
+# Excel File Create Section ---------------------------------------
+
+    
+def download_excelfile(request,pk):
+    wId = WorkRegister.objects.get(id=pk)
+ 
+    data = LeadField_Register.objects.filter(field_work_regId=wId).values('field_name')
+
+    # Create a new Excel workbook
+    wb = Workbook()
+    ws = wb.active
+
+    additional_headers = ["Full Name", "Email Id", "Contact Number"]
+
+    headers = list(LeadField_Register.objects.filter(field_work_regId=wId).values_list('field_name', flat=True))
+    all_headers = additional_headers + headers
+    ws.append(all_headers)
+
+  
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = f'attachment; filename="{wId.clientId.client_name}.xlsx"'
+
+    # Save the Excel workbook to the response
+    wb.save(response)
+
+    return response
 
 
 def executive_ongoingwork_dailyworks(request,pk):
