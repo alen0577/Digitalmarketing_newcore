@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.core.files.storage import FileSystemStorage
 import pandas as pd
+from django.db.models import Count
 import random
 import io, os
 from openpyxl.workbook import Workbook
@@ -1319,6 +1320,88 @@ def executive_ongoingwork_dailyworksave(request,pk):
     else:
         return redirect('/')
 
+def executive_ongoingwork_leads_dailywork(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+        tdate=date.today()
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'daily_works':daily_works,
+            'tdate':tdate,
+        }
+
+        return render(request,'Executive_ongoingwork_leads_dailywork.html',content)
+
+    else:
+            return redirect('/')
+
+def executive_ongoingwork_leadsdailyworksave(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # taskassign details
+        task=task=TaskAssign.objects.get(id=pk)
+
+        if request.method == 'POST':
+            # Retrieve form data from POST request
+            tad_title = request.POST.get('tad_title')
+            tad_discription = request.POST.get('tad_discription')
+            tad_target = request.POST.get('tad_target')
+            tad_collect_date = date.today()
+
+            # Handle file inputs
+            tad_files = request.FILES.getlist('tad_file')
+
+            task_details = TaskDetails(
+                tad_taskAssignId=task,
+                tad_collect_date=tad_collect_date,
+                tad_title=tad_title,
+                tad_discription=tad_discription,
+                tad_target=tad_target,           
+            )
+
+            task_details.save()
+
+            for file in tad_files:
+                # Save the file to a location on your server
+                fs = FileSystemStorage()
+                filename = fs.save(file.name, file)
+                
+                # Store the file path or any relevant file information in the tad_file field
+                task_details.tad_file.append({'file_name': file.name, 'file_path': filename})   
+
+            task_details.save()
+            return redirect('executive_ongoingwork_dailyworkadd_lead',pk)
+
+    else:
+        return redirect('/')
 
 
 def executive_ongoingwork_dailyworkadd_lead(request,pk):
@@ -1345,7 +1428,7 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
         
         leadinfo=LeadField_Register.objects.filter(field_work_regId=work_id)
 
-        print(leadinfo)
+        
 
         print(work_id)
         content = {
@@ -1377,30 +1460,34 @@ def executive_lead_add_page(request,pk):
         notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
         task=TaskAssign.objects.get(id=pk)
         work_id=(task.ta_workAssignId.wa_work_regId).id
+        today=date.today()
         
         works_obj = WorkRegister.objects.get(id=work_id)
         lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
-        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
-        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj).count()
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
         
         
 
-        content = {'emp_dash':emp_dash,
-                    'dash_details':dash_details,
-                    'notifications':notifications,
-                    'works_obj':works_obj,
-                    'leads_obj':leads_obj,
-                     'lead_Details_obj':lead_Details_obj,
-                     'leads_obj_count':leads_obj_count,
-                     'lf_obj':lf_obj,
-                     'pk':pk,
-                    }
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'works_obj':works_obj,
+            'leads_obj':leads_obj,
+            'lead_Details_obj':lead_Details_obj,
+            'leads_obj_count':leads_obj_count,
+            'lf_obj':lf_obj,
+            'pk':pk,
+            'task':task,
+        }
 
         return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
 
     else:
-            return redirect('/')
+        return redirect('/')
+
 
 def executive_lead_add(request,pk):
      
@@ -1416,41 +1503,58 @@ def executive_lead_add(request,pk):
 
         # Notification-----------
         notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
+        task=TaskAssign.objects.get(id=pk)
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        works_obj = WorkRegister.objects.get(id=work_id)
+        today=date.today()
 
-        works_obj = WorkRegister.objects.get(id=pk)
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
 
         if request.POST:
              
 
             ld_obj = Leads()
             ld_obj.lead_work_regId = works_obj
-            ld_obj.lead_collect_Emp_id = dash_details.id
+            ld_obj.lead_collect_Emp_id = dash_details
             ld_obj.lead_name = request.POST['leadName']
             ld_obj.lead_email = request.POST['leadEmail']
             ld_obj.lead_contact =request.POST['leadContact']
             ld_obj.save()
 
-            lead_deatils_data  = request.POST.getlist('leadfield')
+
+            leadfield_values = request.POST.getlist('leadfield')
+
+            for idx, field in enumerate(lf_obj):
+                lead_detail = lead_Details(leadId=ld_obj, lead_field_name=field.field_name, lead_field_data=leadfield_values[idx])
+                lead_detail.save()
+
+
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+
+        task.ta_target_achived=leads_target_count
+        task.save()    
         
         
-        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
-        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
-        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj).count()
-        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
         
         
 
-        content = {'emp_dash':emp_dash,
-                    'dash_details':dash_details,
-                    'notifications':notifications,
-                    'works_obj':works_obj,
-                    'leads_obj':leads_obj,
-                     'lead_Details_obj':lead_Details_obj,
-                     'leads_obj_count':leads_obj_count,
-                     'lf_obj':lf_obj,
-                    }
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'works_obj':works_obj,
+            'leads_obj':leads_obj,
+            'lead_Details_obj':lead_Details_obj,
+            'leads_obj_count':leads_obj_count,
+            'lf_obj':lf_obj,
+            'pk':pk,
+            'task':task,
+        }
 
-        return render(request,'HD_ClientLead_datalist.html',content)
+        return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
 
     else:
             return redirect('/')
@@ -1459,7 +1563,10 @@ def executive_lead_add(request,pk):
 
     
 def download_excelfile(request,pk):
-    wId = WorkRegister.objects.get(id=pk)
+    task=TaskAssign.objects.get(id=pk)
+    work_id=(task.ta_workAssignId.wa_work_regId).id
+    wId = WorkRegister.objects.get(id=work_id)
+
  
     data = LeadField_Register.objects.filter(field_work_regId=wId).values('field_name')
 
@@ -1481,6 +1588,220 @@ def download_excelfile(request,pk):
     wb.save(response)
 
     return response
+
+def executive_lead_file_upload(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # Notification-----------
+        notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
+
+        task=TaskAssign.objects.get(id=pk)
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        works_obj = WorkRegister.objects.get(id=work_id)
+        today=date.today()
+        data_list = {}
+
+        if request.POST:
+
+
+            exfile = request.FILES.get('upload_File')
+
+            # Read the Excel file using pandas
+            df = pd.read_excel(exfile)
+
+            # Check if the DataFrame is empty
+            if df.empty:
+                return redirect('executive_lead_add_page', pk)
+            
+            else:
+
+                # Create a list of column headers from the DataFrame
+                headers = df.columns.tolist()
+
+                # Process and save the data to the Lead model (adjust as needed)
+                for _, row in df.iterrows():
+                    lead_data = {header: row[header] for header in headers}
+
+                    lead = Leads()
+                    lead.lead_work_regId = works_obj
+                    lead.lead_collect_Emp_id = dash_details
+                    lead.lead_name = lead_data['Full Name']
+                    lead.lead_email = lead_data['Email Id']
+                    lead.lead_contact = lead_data['Contact Number']
+                    lead.save()
+
+                    for key, value in lead_data.items():
+                        if key not in ('Full Name', 'Email Id', 'Contact Number'):
+                            lead_details = lead_Details(leadId=lead, lead_field_name=key, lead_field_data=value)
+                            lead_details.leadId = lead
+                            lead_details.save()
+
+
+                success = True
+                success_text = 'File uploaded successfully.'
+                data_list = {'success':success,'success_text':success_text}
+
+
+        
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+
+        task.ta_target_achived=leads_target_count
+        task.save()
+
+
+        
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'works_obj':works_obj,
+            'leads_obj':leads_obj,
+            'lead_Details_obj':lead_Details_obj,
+            'leads_obj_count':leads_obj_count,
+            'lf_obj':lf_obj,
+            'pk':pk,
+            'task':task,
+        }
+
+        
+        content = {**data_list, **content}
+
+        return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
+
+    else:
+            return redirect('/')      
+
+
+def remove_duplicate_leads(request,pk):
+
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        works_obj = WorkRegister.objects.get(id=work_id)
+        today=date.today()
+
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+
+       
+        # Get a list of duplicates based on name, email, and contact
+        duplicate_leads = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).values('lead_name', 'lead_email', 'lead_contact').annotate(count=Count('id')).filter(count__gt=1)
+
+        for duplicate_lead in duplicate_leads:
+            name = duplicate_lead['lead_name']
+            email = duplicate_lead['lead_email']
+            contact = duplicate_lead['lead_contact']
+
+            # Get the duplicate leads with the same name, email, and contact
+            duplicates = Leads.objects.filter(Q(lead_name=name) & Q(lead_email=email) & Q(lead_contact=contact))
+
+            # Keep one lead and delete the rest
+            lead_to_keep = duplicates.first()
+            duplicate_lead_ids = duplicates.exclude(pk=lead_to_keep.pk).values_list('id', flat=True)
+
+            # Delete related records in lead_Details
+            lead_Details.objects.filter(leadId__in=duplicate_lead_ids).delete()
+
+            # Delete duplicate leads
+            duplicates.exclude(pk=lead_to_keep.pk).delete()
+
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+
+        task.ta_target_achived=leads_target_count
+        task.save()    
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'works_obj':works_obj,
+            'leads_obj':leads_obj,
+            'lead_Details_obj':lead_Details_obj,
+            'leads_obj_count':leads_obj_count,
+            'lf_obj':lf_obj,
+            'pk':pk,
+            'task':task,
+        }
+
+
+        return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
+
+    else:
+            return redirect('/')
+
+
+def executive_ongoingwork_dailywork_leads(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        works_obj = WorkRegister.objects.get(id=work_id)
+        today=date.today()
+
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).order_by('-lead_add_date','-lead_add_time')
+        leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,).count()
+        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'works_obj':works_obj,
+            'leads_obj':leads_obj,
+            'lead_Details_obj':lead_Details_obj,
+            'leads_obj_count':leads_obj_count,
+            'lf_obj':lf_obj,
+            'pk':pk,
+        }
+
+        return render(request,'Executive_ongoingwork_dailywork_leads.html',content)
+
+    else:
+            return redirect('/')
+
 
 
 def executive_ongoingwork_dailyworks(request,pk):
@@ -1515,6 +1836,106 @@ def executive_ongoingwork_dailyworks(request,pk):
 
     else:
             return redirect('/')
+
+
+def executive_ongoingwork_leadcomplete(request,pk):
+
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        tasks=TaskAssign.objects.filter(ta_workerId=dash_details,ta_accept_status=1,ta_status=1).order_by('-ta_start_date')
+
+        #task complete 
+        task=TaskAssign.objects.get(id=pk)
+
+        # total count of details of task
+        task_det_total_count=TaskDetails.objects.filter(tad_taskAssignId=task).count()
+        
+        if task_det_total_count > 0:
+            #count of task details with status=1
+            task_det_with_status1_count=TaskDetails.objects.filter(tad_taskAssignId=task,tad_status=1).count()
+
+            #check condition
+            if task_det_total_count == task_det_with_status1_count:
+
+                if task.ta_progress == 100 and (task.ta_target == task.ta_target_achived) :
+
+                    task.ta_status=2
+                    task.save()
+                    success_text = 'Task completed successfully.'
+                    success = True
+                    # return redirect('executive_ongoingwork')
+                
+                    content = {
+                        'emp_dash':emp_dash,
+                        'dash_details':dash_details,
+                        'notifications':notifications,
+                        'notification':notification,
+                        'tasks':tasks,
+                        'success_text':success_text,
+                        'success': success,
+                    }
+                else:
+                    error=True
+                    error_text = 'Oops! Check your task progress or target acheived.'
+                    content = {
+                        'emp_dash':emp_dash,
+                        'dash_details':dash_details,
+                        'notifications':notifications,
+                        'notification':notification,
+                        'tasks':tasks,
+                        'error':error,
+                        'error_text':error_text,    
+                    }  
+
+            else:
+
+                error=True
+                error_text = 'Oops! Check all daily tasks are verified.'
+                content = {
+                    'emp_dash':emp_dash,
+                    'dash_details':dash_details,
+                    'notifications':notifications,
+                    'notification':notification,
+                    'tasks':tasks,
+                    'error':error,
+                    'error_text':error_text,    
+                }  
+
+        else:
+
+            # Handle the case where there are no task details to process
+            error = True
+            error_text = 'No daily task details to process.'
+
+            content = {
+                'emp_dash': emp_dash,
+                'dash_details': dash_details,
+                'notifications': notifications,
+                'notification': notification,
+                'tasks': tasks,
+                'error': error,
+                'error_text': error_text,
+                            
+            }
+        return render(request,'Executive_ongoingwork.html',content)
+
+    else:
+        return redirect('/')
+
+
 
 def download_file(request, task_id, file_index):
     task = get_object_or_404(TaskDetails, pk=task_id)
@@ -1605,85 +2026,6 @@ def executive_completedwork_dailyworks(request,pk):
             return redirect('/')
 
 
-
-def Executive_lead_file_upload(request,pk):
-    if 'emp_id' in request.session:
-        if request.session.has_key('emp_id'):
-            emp_id = request.session['emp_id']
-           
-        else:
-            return redirect('/')
-        
-        emp_dash = LogRegister_Details.objects.get(id=emp_id)
-        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
-
-        # Notification-----------
-        notifications = Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date')
-
-        works_obj = WorkRegister.objects.get(id=pk)
-        data_list = {}
-
-        if request.POST:
-
-
-            exfile = request.FILES.get('upload_File')
-
-            # Read the Excel file using pandas
-            df = pd.read_excel(exfile)
-
-            # Check if the DataFrame is empty
-            if df.empty:
-                return redirect('head_lead_collected_data',pk)
-            
-            else:
-
-                # Create a list of column headers from the DataFrame
-                headers = df.columns.tolist()
-
-                # Process and save the data to the Lead model (adjust as needed)
-                for _, row in df.iterrows():
-                    lead_data = {header: row[header] for header in headers}
-
-                    lead = Leads()
-                    lead.lead_work_regId = works_obj
-                    lead.lead_collect_Emp_id = dash_details
-                    lead.lead_name = lead_data['Full Name']
-                    lead.lead_email = lead_data['Email Id']
-                    lead.lead_contact = lead_data['Contact Number']
-                    lead.save()
-
-                    for key, value in lead_data.items():
-                        if key not in ('Full Name', 'Email Id', 'Contact Number'):
-                            lead_details = lead_Details(leadId=lead, lead_field_name=key, lead_field_data=value)
-                            lead_details.leadId = lead
-                            lead_details.save()
-
-
-                success = True
-                success_text = 'File uploaded successfully.'
-                data_list = {'success':success,'success_text':success_text}
-
-
-        
-        leads_obj = Leads.objects.filter(lead_work_regId=works_obj)
-        lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
-
-        
-
-        content = {'emp_dash':emp_dash,
-                    'dash_details':dash_details,
-                    'notifications':notifications,
-                    'works_obj':works_obj,
-                    'leads_obj':leads_obj,
-                    'lead_Details_obj':lead_Details_obj,
-                    }
-        
-        content = {**data_list, **content}
-
-        return render(request,'HD_ClientLead_datalist.html',content)
-
-    else:
-            return redirect('/')      
 
 
 

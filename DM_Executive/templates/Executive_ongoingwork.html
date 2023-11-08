@@ -56,7 +56,9 @@
                   {% endif %}
                 </td>
                 <td>
+                
                   <a class="btn btn-outline-primary" href="{% url 'executive_ongoingwork_dailyworks' task.id %}">View</a>
+                  
                 </td>
                 <td>
                   <div class="progress progress-lg rounded"data-toggle="modal" data-target="#updateProgressModal{{task.id}}">
@@ -70,7 +72,11 @@
                   </div>
                 
                 <td>
+                  {% if task.ta_taskId.task_name == 'Lead Collection' %}
+                  <a href="{% url 'executive_ongoingwork_leadcomplete' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Complete</button></a>
+                  {% else %}
                   <a href="{% url 'executive_ongoingwork_complete' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Complete</button></a>
+                  {% endif %}
                 </td>
               </tbody> 
               {% endfor %}

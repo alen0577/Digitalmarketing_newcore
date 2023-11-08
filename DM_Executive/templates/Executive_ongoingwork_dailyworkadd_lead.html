@@ -33,74 +33,78 @@
 
         <div class="table-responsive">
           <table class="table" id="leads-data-client">
-          <thead>
-            <tr>
-            
-            <th> No</th>
-            <th> Client Name</th>
-            <th> Start Date  </th>
-            <th> End Date </th>
-            
-            <th> Progress </th>
-            <th> Client Requried Fields  </th>
-            <th> Leads</th>
+            <thead>
+              <tr>
+              
+              <th> No</th>
+              <th> Client Name</th>
+              <th> Start Date  </th>
+              <th> End Date </th>
+              
+              <th> Progress </th>
+              <th> Client Requried Fields  </th>
+              <th> Leads</th>
+              <th> Daily Works</th>
 
-            </tr>
-          </thead>
-          <tbody>
-            
-            <tr>
-            
-            <td>1</td>
-            <td>{{ task.ta_taskId.client_Id.client_name }}</td>
-            <td>{{ task.ta_start_date }}</td>
-            <td>{{ task.ta_due_date }}</td>
-            <td>
-                {% if cl_task.task_total_progress <= 10 %}
-                <div class="progress progress-lg mt-2">
-                  <div class="progress-bar bg-danger" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                     <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                  </div>
-                </div>
-                {% elif cl_task.task_total_progress >= 10 and cl_task.task_total_progress <= 80 %}
-                <div class="progress progress-lg mt-2">
-                  <div class="progress-bar bg-warning" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                     <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                  </div>
-                </div>
-                {% else %}
-                <div class="progress progress-lg mt-2">
-                  <div class="progress-bar bg-success" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                     <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                  </div>
-                </div>
-                {% endif %}
-            </td>
-            <td>
-                
-                <ol>
-                   
-                    <li><p>Full Name</p></li>
-                    <li><p> Email</p></li>
-                    <li><p> Contact Number </p></li>
-                    {% if leadinfo %}
-                    {% for fields in leadinfo %}
-                    <li><p>{{ fields.field_name }}</p></li>
-                    {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              
+              <tr>
+              
+                <td>1</td>
+                <td>{{ task.ta_taskId.client_Id.client_name }}</td>
+                <td>{{ task.ta_start_date }}</td>
+                <td>{{ task.ta_due_date }}</td>
+                <td>
+                    {% if cl_task.task_total_progress <= 10 %}
+                    <div class="progress progress-lg mt-2">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
+                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
+                      </div>
+                    </div>
+                    {% elif cl_task.task_total_progress >= 10 and cl_task.task_total_progress <= 80 %}
+                    <div class="progress progress-lg mt-2">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
+                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
+                      </div>
+                    </div>
+                    {% else %}
+                    <div class="progress progress-lg mt-2">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
+                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
+                      </div>
+                    </div>
                     {% endif %}
-                </ol>
-               
-            </td>
-            <td>
-              <a href="{% url 'executive_lead_add_page' task.id %}"><button class="btn btn-outline-warning"><span class="small">Add Leads</span></button></a>
+                </td>
+                <td>
+                    
+                    <ol>
+                      
+                        <li><p>Full Name</p></li>
+                        <li><p> Email</p></li>
+                        <li><p> Contact Number </p></li>
+                        {% if leadinfo %}
+                        {% for fields in leadinfo %}
+                        <li><p>{{ fields.field_name }}</p></li>
+                        {% endfor %}
+                        {% endif %}
+                    </ol>
+                  
+                </td>
+                <td>
+                  <a href="{% url 'executive_lead_add_page' task.id %}"><button class="btn btn-outline-primary"><span class="small">Add Leads</span></button></a>
 
-            </td>
-            
-            
-            </tr>
-            
-        
-        </tbody>
+                </td>
+                
+                <td>
+                  <a href="{% url 'executive_ongoingwork_leads_dailywork' task.id %}"><button class="btn btn-outline-primary"><span class="small">Add Daily Works</span></button></a>
+
+                </td>
+              </tr>
+              
+          
+            </tbody>
 
         
           </table>

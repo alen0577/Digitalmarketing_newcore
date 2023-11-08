@@ -14,7 +14,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_ongoingwork_dailyworkadd_lead' pk %}">Add Daily Works</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">Collected Leads </li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Lead Collection </li>
         </ol>
       </nav>
 </div>
@@ -32,12 +32,12 @@
                     
                     </div>
                     
-                    <div class="col-sm-12 col-lg-6 col-md-6 col-xl-4 d-flex justify-content-end  grid-margin">
+                    <!-- <div class="col-sm-12 col-lg-6 col-md-6 col-xl-4 d-flex justify-content-end  grid-margin">
                     <div class="d-flex ">
                         <input  class="form-control text-offwhite mr-1" name="#" id="search-data" placeholder="search here..">
                         <span class="text-danger mdi mdi-close" id="closeBtn" type="button"></span> 
                     </div>
-                    </div>
+                    </div> -->
                     
                 </div>
                 <div class="row">
@@ -54,14 +54,14 @@
                         </a>
                     </div>
                     <div class="col-sm-6 col-lg-3 col-md-3 col-xl-2  grid-margin">
-                        <a href="{% url 'duplicate_data' works_obj.id %}">
-                            <button class="btn btn-outline-warning" data-toggle="tooltip" title="To check duplicates data based on email and Contact number">
-                                <span class="mdi mdi-file-multiple mr-1"></span><span class="small">Duplicates Data</span>
+                        <a href="{% url 'remove_duplicate_leads' task.id %}">
+                            <button class="btn btn-outline-success" data-toggle="tooltip" title="To check duplicates data based on email and Contact number">
+                                <span class="mdi mdi-file-multiple mr-1"></span><span class="small">Remove Duplicates</span>
                             </button>
                         </a>
                     </div>
                     <div class="col-sm-6 col-lg-3 col-md-3 col-xl-2 grid-margin ">
-                        <a href="{% url 'download_excelfile' works_obj.id %}">
+                        <a href="{% url 'download_excelfile' task.id %}">
                             <button class="btn btn-outline-danger" data-toggle="tooltip" title="Excel file format for data upload">
                                 <span class="mdi mdi-file-excel mr-1"></span><span class="small">File Download</span>
                             </button>
@@ -87,8 +87,8 @@
                             <th>Email id  </th>
                             <th>Contact No </th>
                             <th> Details  </th>
-                            <th> Verification Status </th>
-                            <th> Action </th>
+                            <th> Status </th>
+                           
                             
                         </tr>
                     </thead>
@@ -120,19 +120,13 @@
                         </td>
                         <td>
                             {% if lead.lead_status == 1 %}
-                            <a href="{% url 'head_lead_verify_unverify' lead.id %}" class=" btn btn-outline-success "><span class="mdi mdi-check-all mr-1 small"> Verified</span></a>
+                            <p class=" badge badge-outline-success "> Verified</p>
                             {% else %}
-                            <a href="{% url 'head_lead_verify_unverify' lead.id %}" class=" btn btn-danger "><span class="mdi mdi-close mr-1 small"> Unverified</span></a>
+                            <p class="badge badge-outline-warning">Pending</p>
                             {% endif %}
                            
                         </td>
-                        <td>
-                            {% if lead.waste_data == 0 %}
-                            <a href="{% url 'head_lead_mark_waste' lead.id %}" class=" btn btn-outline-warning "><span class="mdi mdi-delete-sweep mr-1 small"> Mark as waste</span></a>
-                            {% else %}
-                            <a href="{% url 'head_lead_mark_waste' lead.id %}" class="text-warning"><span class="small">* Already  marked as waste </span></a>
-                            {% endif %}
-                        </td>
+                        
                         
                         
                         
@@ -167,7 +161,7 @@
           
           <div class="card-body mt-0">
   
-            <form action="{% url 'Head_lead_file_upload' works_obj.id %}" method="post"  enctype="multipart/form-data">
+            <form action="{% url 'executive_lead_file_upload' task.id %}" method="post"  enctype="multipart/form-data">
              
               {% csrf_token %}
               <div class="form-group add-items mt-3">
@@ -206,7 +200,7 @@
           
           <div class="card-body mt-0">
   
-            <form action="{% url 'Head_lead_add' works_obj.id %}" method="post"  enctype="multipart/form-data">
+            <form action="{% url 'executive_lead_add' task.id %}" method="post"  enctype="multipart/form-data">
             
               {% csrf_token %}
               <div class="row">
@@ -259,75 +253,5 @@
 </div>
 
   
-<script>
-   
-    const inputField = document.getElementById('search-data');
-    const closeBtn = document.getElementById('closeBtn');
-    const empTable = document.getElementById('leads-data');
-    closeBtn.style.display = 'none';
   
-    inputField.addEventListener('input', function() {
-        filterTable();
-    });
-  
-    function filterTable() {
-        const filterValue = inputField.value.toLowerCase();
-        const rows = empTable.getElementsByTagName('tr');
-  
-        for (let i = 1; i < rows.length; i++) {
-            const Cell1 = rows[i].getElementsByTagName('td')[1];
-            const Cell2 = rows[i].getElementsByTagName('td')[2];
-            const Cell3 = rows[i].getElementsByTagName('td')[3];
-            const Cell4 = rows[i].getElementsByTagName('td')[4];
-            const Cell5 = rows[i].getElementsByTagName('td')[5];
-            const Cell6 = rows[i].getElementsByTagName('td')[6];
-            const Cell7 = rows[i].getElementsByTagName('td')[7];
-            
-  
-            if (Cell1 || Cell2 || Cell3 || Cell4|| Cell5 || Cell6 || Cell7) {
-  
-                const datacell1 = Cell1.textContent || Cell1.innerText;
-                const datacell2 = Cell2.textContent || Cell2.innerText;
-                const datacell3 = Cell3.textContent || Cell3.innerText;
-                const datacell4 = Cell4.textContent || Cell4.innerText;
-                const datacell5 = Cell5.textContent || Cell5.innerText;
-                const datacell6 = Cell6.textContent || Cell6.innerText;
-                const datacell7 = Cell7.textContent || Cell7.innerText;
-                
-                
-  
-                if (datacell1.toLowerCase().includes(filterValue) ||
-                 datacell2.toLowerCase().includes(filterValue) || 
-                 datacell3.toLowerCase().includes(filterValue) ||
-                 datacell4.toLowerCase().includes(filterValue) || 
-                 datacell5.toLowerCase().includes(filterValue) ||
-                 datacell6.toLowerCase().includes(filterValue) ||
-                 datacell7.toLowerCase().includes(filterValue)) 
-                {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
-        }
-    }
-  
-     // To display the close button and hide the close button based on the search input 
-    inputField.addEventListener('input', function() {
-    if (inputField.value == '') {
-        closeBtn.style.display = 'none';
-       
-    } else {
-        closeBtn.style.display = 'block';
-        
-    }
-    });
-  
-    closeBtn.addEventListener('click', function() {
-    inputField.value = '';
-    closeBtn.style.display = 'none';
-    filterTable(); // Display the full table data
-    });
-</script>
-
 {% endblock %}
