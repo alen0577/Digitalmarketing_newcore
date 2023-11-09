@@ -9,6 +9,7 @@ urlpatterns = [
     #  Admin Module --------------------------------
 
     path('Admin-Dashboard',views.admin_dashboard,name='admin_dashboard'),
+    path('Admin-Login-Requests',views.admin_login_requestpage,name='admin_login_requestpage'),
     path('Admin-Login-Approve\<int:pk>',views.admin_login_approve,name='admin_login_approve'),
     path('Admin-Login-Reject\<int:pk>',views.admin_login_reject,name='admin_login_reject'),
     path('Admin-Logout',views.admin_logout,name='admin_logout'),

@@ -1821,7 +1821,7 @@ def executive_ongoingwork_dailyworks(request,pk):
         
         # taskassign details
         task=TaskAssign.objects.get(id=pk)
-        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task)
+        daily_works=TaskDetails.objects.filter(tad_taskAssignId=task).order_by('-tad_collect_date')
 
         content = {
             'emp_dash':emp_dash,

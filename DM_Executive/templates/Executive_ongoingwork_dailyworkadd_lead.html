@@ -57,23 +57,29 @@
                 <td>{{ task.ta_start_date }}</td>
                 <td>{{ task.ta_due_date }}</td>
                 <td>
-                    {% if cl_task.task_total_progress <= 10 %}
-                    <div class="progress progress-lg mt-2">
-                      <div class="progress-bar bg-danger" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                      </div>
+                    {% if task.ta_progress <= 10 %}
+                    <div class="progress-bar bg-danger progress-bar-animated progress-bar-striped"
+                      role="progressbar"
+                      aria-valuenow="{{ task.ta_progress }}"
+                      style="width: {{ task.ta_progress }}%"
+                      aria-valuemin="0"
+                      aria-valuemax="100">{{ task.ta_progress }} %
                     </div>
-                    {% elif cl_task.task_total_progress >= 10 and cl_task.task_total_progress <= 80 %}
-                    <div class="progress progress-lg mt-2">
-                      <div class="progress-bar bg-warning" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                      </div>
+                    {% elif task.ta_progress >= 10 and task.ta_progress <= 80 %}
+                    <div class="progress-bar bg-warning progress-bar-animated progress-bar-striped"
+                      role="progressbar"
+                      aria-valuenow="{{ task.ta_progress }}"
+                      style="width: {{ task.ta_progress }}%"
+                      aria-valuemin="0"
+                      aria-valuemax="100">{{ task.ta_progress }} %
                     </div>
                     {% else %}
-                    <div class="progress progress-lg mt-2">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: {{ cl_task.task_total_progress}} %" aria-valuenow="{{ work_reg.work_progress}} " aria-valuemin="0" aria-valuemax="100">
-                        <span class="small ml-1">{{ cl_task.task_total_progress}}%</span>
-                      </div>
+                    <div class="progress-bar bg-success progress-bar-animated progress-bar-striped"
+                      role="progressbar"
+                      aria-valuenow="{{ task.ta_progress }}"
+                      style="width: {{ task.ta_progress }}%"
+                      aria-valuemin="0"
+                      aria-valuemax="100">{{ task.ta_progress }} %
                     </div>
                     {% endif %}
                 </td>

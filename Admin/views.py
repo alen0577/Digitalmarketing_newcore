@@ -19,11 +19,20 @@ def admin_dashboard(request):
         dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
         employees = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=0)
+        # counts section
+
+        employee_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=1).count()
+        department_count = DepartmentRegister_details.objects.filter(brd_id=dash_details).count()
+        client_count = ClientRegister.objects.filter(compId=dash_details).count()
+
         
         content = {
             'Admin_dash':Admin_dash,
             'dash_details':dash_details,
-            'employees':employees
+            'employees':employees,
+            'employee_count':employee_count,
+            'department_count':department_count,
+            'client_count':client_count,
         }
 
         return render(request,'AD_dashboard.html',content)
@@ -33,6 +42,32 @@ def admin_dashboard(request):
     
     
 #Appove Login 
+
+def admin_login_requestpage(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+
+        employees = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=0)
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'employees':employees
+        }
+
+        return render(request,'AD_login_requests.html',content)
+
+    else:
+            return redirect('/')
+
 
 def admin_login_approve(request,pk):
     if 'admin_id' in request.session:
@@ -61,7 +96,7 @@ def admin_login_approve(request,pk):
             'employees':employees
         }
 
-        return render(request,'AD_dashboard.html',content)
+        return render(request,'AD_login_requests.html',content)
 
     else:
             return redirect('/')
@@ -94,7 +129,7 @@ def admin_login_reject(request,pk):
             'employees':employees
         }
 
-        return render(request,'AD_dashboard.html',content)
+        return render(request,'AD_login_requests.html',content)
 
     else:
             return redirect('/')
