@@ -369,7 +369,83 @@ def admin_department(request):
 
     else:
             return redirect('/')
-    
+
+def admin_department_edit(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+        departments = DepartmentRegister_details.objects.filter(brd_id=dash_details)
+
+
+        # edit-----------
+        if request.POST:
+     
+            depart_obj = DepartmentRegister_details.objects.get(id=pk)
+            depart_obj.dept_name = request.POST['department_name']
+            depart_obj.dept_content = request.POST['department_discription']
+            depart_obj.save()
+
+            success = True
+            success_text = 'Department details edited successfully '
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'success':success,
+            'success_text':success_text,
+            'departments':departments
+           
+        }
+
+        return render(request,'AD_department.html',content)
+
+    else:
+            return redirect('/')
+
+
+def admin_department_delete(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+        departments = DepartmentRegister_details.objects.filter(brd_id=dash_details)
+
+
+        # delete-----------
+        if request.POST:
+     
+            depart_obj = DepartmentRegister_details.objects.get(id=pk)
+            depart_obj.delete()
+
+            success = True
+            success_text = 'Department deleted successfully '
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'success':success,
+            'success_text':success_text,
+            'departments':departments
+           
+        }
+
+        return render(request,'AD_department.html',content)
+
+    else:
+            return redirect('/')
+
+
 
 
 # Designation ----------------------------
@@ -403,6 +479,7 @@ def admin_designation(request):
             success = True
             success_text = 'New designation add successfully '
             designations = DesignationRegister_details.objects.filter(dept_id__in=departments)
+           
 
             content = {
                 'Admin_dash':Admin_dash,
@@ -427,7 +504,94 @@ def admin_designation(request):
     else:
             return redirect('/')
      
+def admin_designation_edit(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
+        departments = DepartmentRegister_details.objects.filter(brd_id=dash_details,dept_active_status=1)
+        designations = DesignationRegister_details.objects.filter(dept_id__in=departments)
+
+        # edit-----------
+
+        if request.POST:
+            
+            designation_obj = DesignationRegister_details.objects.get(id=pk)
+
+            designation_obj.desig_name = request.POST['designation_name']
+            designation_obj.desig_content = request.POST['designation_discription']
+            designation_obj.dept_id =  DepartmentRegister_details.objects.get(id=int(request.POST['deparmentId'])) 
+            designation_obj.dashboard_id = request.POST['dashboardId'] 
+            designation_obj.save()
+
+            success = True
+            success_text = 'Designation details edited successfully '
+
+            return redirect('admin_designation')
+           
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'departments':departments,
+            'designations':designations,
+            'success':success,
+            'success_text':success_text
+        }
+
+        
+
+        return render(request,'AD_designation.html',content)
+
+    else:
+        return redirect('/')
+
+def admin_designation_delete(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        departments = DepartmentRegister_details.objects.filter(brd_id=dash_details,dept_active_status=1)
+        designations = DesignationRegister_details.objects.filter(dept_id__in=departments)
+
+        # delete-----------
+
+        if request.POST:
+            
+            designation_obj = DesignationRegister_details.objects.get(id=pk)
+            designation_obj.delete()
+
+            success = True
+            success_text = 'Designation details deleted successfully '
+            return redirect('admin_designation')
+
+           
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'departments':departments,
+            'designations':designations,
+            'success':success,
+            'success_text':success_text
+        }
+
+        
+
+        return render(request,'AD_designation.html',content)
+
+    else:
+        return redirect('/')
 
 
 # Employees Section ---------------------------------

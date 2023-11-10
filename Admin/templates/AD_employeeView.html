@@ -61,7 +61,7 @@
                   </td> 
                   <td>
                     {% if emp.emp_profile %}
-                    <img src="{{emp.emp_profile.url}}" alt="Profile-image" />
+                    <img src="{{emp.emp_profile.url}}" alt="" />
                     {% else %}
                     <img src="{% static 'images/faces/profile-icon.png' %}" alt="Profile-image" />
                     {% endif %}
@@ -167,6 +167,14 @@
     });
 </script>
 
+<style>
+  a{
+      text-decoration: none;
+  }
+  a:hover{
+      text-decoration: none;
+  }
+</style> 
 
 
 {% endblock %}

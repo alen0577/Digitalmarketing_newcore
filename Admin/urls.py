@@ -30,10 +30,19 @@ urlpatterns = [
     # Department ---------------------------------
     
     path('Admin-Department',views.admin_department,name='admin_department'),
+    path('Admin-Department-Edit/<int:pk>',views.admin_department_edit,name='admin_department_edit'),
+    path('Admin-Department-Delete/<int:pk>',views.admin_department_delete,name='admin_department_delete'),
+
 
     # Designation -------------------------------
 
     path('Admin-Designations',views.admin_designation,name='admin_designation'),
+    path('Admin-Designations-Edit/<int:pk>',views.admin_designation_edit,name='admin_designation_edit'),
+    path('Admin-Designations-Delete/<int:pk>',views.admin_designation_delete,name='admin_designation_delete'),
+
+
+       
+
 
     # Employees Section -----------------
 
