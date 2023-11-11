@@ -39,7 +39,14 @@ def admin_dashboard(request):
 
     else:
             return redirect('/')
-    
+
+
+# Logout Section ---------------------------------
+
+def admin_logout(request):
+    request.session.pop('admin_id', None)
+    return redirect('login_page')
+        
     
 #Appove Login 
 
@@ -393,6 +400,8 @@ def admin_department_edit(request,pk):
 
             success = True
             success_text = 'Department details edited successfully '
+
+            return redirect('admin_department')
         
         content = {
             'Admin_dash':Admin_dash,
@@ -430,6 +439,8 @@ def admin_department_delete(request,pk):
 
             success = True
             success_text = 'Department deleted successfully '
+
+            return redirect('admin_department')
         
         content = {
             'Admin_dash':Admin_dash,
@@ -574,6 +585,7 @@ def admin_designation_delete(request,pk):
 
             success = True
             success_text = 'Designation details deleted successfully '
+
             return redirect('admin_designation')
 
            
@@ -620,7 +632,7 @@ def admin_employees_section(request):
         return render(request,'AD_employeeSection.html',content)
 
     else:
-            return redirect('/')
+        return redirect('/')
 
 
 # View Employees---------------------------------
@@ -653,7 +665,137 @@ def admin_viewEmployees(request):
         return render(request,'AD_employeeView.html',content)
 
     else:
-            return redirect('/')    
+        return redirect('/')    
+
+def admin_employee_verification(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+
+        if request.POST:
+
+            employee = EmployeeRegister_Details.objects.get(id=pk)
+            employee.emp_verify_status=1
+            employee.save()
+
+            success = True
+            success_text = 'Employee details verified'
+           
+
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees,
+            'success':success,
+            'success_text':success_text,
+        }
+        
+        
+        # else:
+        #     return render(request,'error-404.html')  
+
+        return render(request,'AD_employeeView.html',content)
+
+    else:
+        return redirect('/')    
+
+
+def admin_employee_inactive(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(Q(emp_comp_id=dash_details, emp_active_status=0) | Q(emp_comp_id=dash_details, emp_active_status=1))
+
+        if request.POST:
+
+            employee = EmployeeRegister_Details.objects.get(id=pk)
+            employee.emp_active_status=2
+            employee.save()
+
+            success = True
+            success_text = 'Success'
+           
+
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees,
+            'success':success,
+            'success_text':success_text,
+        }
+        
+        
+       
+
+        return render(request,'AD_employeeView.html',content)
+
+    else:
+        return redirect('/')    
+
+def admin_employee_active(request,pk):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+        # Notification-----------
+
+        employees = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=2)
+
+        if request.POST:
+
+            employee = EmployeeRegister_Details.objects.get(id=pk)
+            employee.emp_active_status=1
+            employee.save()
+
+            success = True
+            success_text = 'Success'
+           
+
+        
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'employees':employees,
+            'success':success,
+            'success_text':success_text,
+        }
+        
+        
+       
+
+
+        return render(request,'AD_employeeresignView.html',content)
+
+    else:
+        return redirect('/')    
+
 
 
 # View Resigned Employees ---------------------------------
@@ -954,11 +1096,218 @@ def admin_get_employee_scheduledetails(request):
         return JsonResponse({'details': details_list})
 
 
-# Logout Section ---------------------------------
 
-def admin_logout(request):
-    request.session.pop('admin_id', None)
-    return redirect('login_page')
-     
+# Employee Allocated list---------------------------------
+
+def admin_employeeAllocated_list(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=admin_dash)
+
+
+        # Notification-----------
+
+        team_lead = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2)
+        
+
+        content = {
+            'admin_dash':admin_dash,
+            'dash_details':dash_details,
+            'team_lead':team_lead,
+        }
+
+        return render(request,'AD_employeeAllocatedList.html',content)
+
+    else:
+            return redirect('/')    
+
+# teamlead wise employees allocated details---------------------------------
+
+def admin_get_employee_allocatedetails(request):
+    if request.method == 'POST':
+        teamlead_id = request.POST.get('employee_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+
+        employee_details = Allocation_Details.objects.filter(allocat_to=teamlead_id).order_by('-alloaction_date')
+        details_list=[]
+
+        for i in employee_details:
+            date= i.alloaction_date
+            emp_name=i.allocatEmp_id.emp_name
+            teamlead=i.allocat_to.emp_name
+            status=i.allocate_status
+            
+            
+            details_list.append({
+                'date':date,
+                'emp_name': emp_name,
+                'teamlead': teamlead,
+                'status':status,
+            })
+
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': details_list})
+
+def admin_all_works(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # counts section
+
+        head_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1).count()
+        tl_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2).count()
+        executive_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3).count()
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'head_count':head_count,
+            'tl_count':tl_count,
+            'executive_count':executive_count,
+        }
+
+        return render(request,'AD_workpage.html',content)
+
+    else:
+            return redirect('/')
+
+def admin_executivework_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # counts section
+
+        head_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1).count()
+        tl_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2).count()
+        executives = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3)
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'head_count':head_count,
+            'tl_count':tl_count,
+            'executives':executives,
+        }
+
+        return render(request,'AD_executivework_page.html',content)
+
+    else:
+            return redirect('/')
+
+
+# executive wise work, dailywork details---------------------------------
+
+def admin_get_executive_workdetails(request):
+    if request.method == 'POST':
+        executive_id = request.POST.get('employee_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+
+        ongoing_details = TaskAssign.objects.filter(ta_workerId=executive_id,ta_status=1,ta_accept_status=1).order_by('-ta_start_date')
+        completed_details = TaskAssign.objects.filter(ta_workerId=executive_id,ta_status=2).order_by('ta_start_date')
+
+        ongoing_list=[]
+        completed_list=[]
+
+
+        for i in ongoing_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            ongoing_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'progress': progress,
+                'status':status,
+            })
+
+        for i in completed_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            completed_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'progress': progress,
+                'status':status,
+            })
+
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details1': ongoing_list,'details2': completed_list})
+
+
+def admin_get_executive_dailyworkdetails(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        task= TaskAssign.objects.get(id=task_id)
+        dailywork_details = TaskDetails.objects.filter(tad_taskAssignId=task).order_by('-tad_collect_date')
+
+        daily_list=[]
+        
+
+        for i in dailywork_details:
+            t_id=i.id
+            date= i.tad_collect_date
+            title=i.tad_title
+            description=i.tad_discription
+            target=i.tad_target
+            status=i.tad_status
+            
+            
+            daily_list.append({
+                'id':t_id,
+                'date':date,
+                'title':title,
+                'description': description,
+                'target': target,
+                'status':status,
+            })
+
+        
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse({'details': daily_list,})
 
 

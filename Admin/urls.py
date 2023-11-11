@@ -48,6 +48,9 @@ urlpatterns = [
 
     path('Admin-Employees-Section',views.admin_employees_section,name='admin_employees_section'),
     path('Admin-Employees-View',views.admin_viewEmployees,name='admin_viewEmployees'),
+    path('Admin-Employee-Verification/<int:pk>',views.admin_employee_verification,name='admin_employee_verification'),
+    path('Admin-Employee-Inactive/<int:pk>',views.admin_employee_inactive,name='admin_employee_inactive'),  
+    path('Admin-Employee-Active/<int:pk>',views.admin_employee_active,name='admin_employee_active'),
     path('Admin-Employees-Resigned',views.admin_resignedEmployees,name='admin_resignedEmployees'),
     path('Admin-Employees-Leaves',views.admin_Employeesleaves,name='admin_Employeesleaves'),
     path('Admin-Employee-leaveDetails',views.admin_get_employee_leavedetails,name='admin_get_employee_leavedetails'),
@@ -59,9 +62,20 @@ urlpatterns = [
     path('Admin-Employee-ComplaintDetails',views.admin_get_employee_complaintdetails,name='admin_get_employee_complaintdetails'),
     path('Admin-Employees-Schedules',views.admin_Employees_schedules,name='admin_Employees_schedules'),
     path('Admin-Employee-ScheduleDetails',views.admin_get_employee_scheduledetails,name='admin_get_employee_scheduledetails'),
+    path('Admin-Employees/Allocated-Listpage',views.admin_employeeAllocated_list,name='admin_employeeAllocated_list'),
+    path('Admin-Employee-Allocated-EmployeeDetails',views.admin_get_employee_allocatedetails,name='admin_get_employee_allocatedetails'),
+    path('Admin-Employee-Works',views.admin_all_works,name='admin_all_works'),
+    path('Admin-Executive-Works',views.admin_executivework_page,name='admin_executivework_page'),
+    path('Admin-Executive-workDetails',views.admin_get_executive_workdetails,name='admin_get_exective_workdetails'),
+    path('Admin-Executive-dailyworkDetails',views.admin_get_executive_dailyworkdetails,name='admin_get_exective_dailyworkdetails'),
 
-    # path('Employees-Allocate',views.head_employeeAllocate,name='head_employeeAllocate'),
-    # path('Employees-Allocate-List',views.head_employeeAllocated_list,name='head_employeeAllocated_list'),
+
+
+
+
+
+
+    
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

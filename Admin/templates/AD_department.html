@@ -236,7 +236,7 @@
            
             {% csrf_token %}
             <div class="form-group add-items mt-3">
-              <h4 class="text-center text-danger">Are you sure to delete this department..?</h4>
+              <h4 class="text-center text-danger">Are you sure to delete <strong>{{department.dept_name}}</strong> department..?</h4>
             </div>
            
             <div class="add-items d-flex justify-content-center ">

@@ -5,8 +5,8 @@
 <div>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">Employee Section</li>
+            <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active text-md" aria-current="page">Employee Section</li>
         </ol>
       </nav>
 </div>
@@ -36,7 +36,7 @@
         </a>
     </div>
     <div class="col-xl-3 col-sm-6 grid-margin ">
-        <a href="" class="a-hover">
+        <a href="{% url 'admin_employeeAllocated_list' %}" class="a-hover">
             <div class="card">
                 <div class="card-body">
                 <div class="row">
@@ -190,7 +190,7 @@
         </a>
     </div>
     <div class="col-xl-3 col-sm-6 grid-margin">
-        <a href="" class="a-hover">
+        <a href="{% url 'admin_all_works' %}" class="a-hover">
             <div class="card">
                 <div class="card-body">
                 <div class="row">
@@ -206,7 +206,7 @@
                     </div>
                     </div>
                 </div>
-                <h6 class="text-muted font-weight-normal mt-2">The employees wise list of all works</h6>
+                <h6 class="text-muted font-weight-normal mt-2">The employees wise list of all works done</h6>
                 </div>
             </div>
         </a>
@@ -236,6 +236,8 @@
     
     
 </div>
+
+
 
 <style>
     a{

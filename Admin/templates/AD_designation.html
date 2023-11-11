@@ -288,7 +288,7 @@
            
             {% csrf_token %}
             <div class="form-group add-items mt-3">
-              <h4 class="text-center text-danger">Are you sure to delete this designation..?</h4>
+              <h4 class="text-center text-danger">Are you sure to delete <strong>{{designation.desig_name}}</strong> designation..?</h4>
             </div>
            
             <div class="add-items d-flex justify-content-center ">
