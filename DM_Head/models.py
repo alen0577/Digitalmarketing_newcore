@@ -204,6 +204,8 @@ class WorkAssign(models.Model):
     wa_due_date = models.DateField(auto_now=False,null=True)
     wa_status = models.IntegerField(default=0)
     wa_type = models.IntegerField(default=0)
+    wa_target = models.IntegerField(default=0)
+    wa_target_achived = models.IntegerField(default=0)
 
 
 class TaskAssign(models.Model):

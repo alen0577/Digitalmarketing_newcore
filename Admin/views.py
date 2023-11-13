@@ -1199,18 +1199,13 @@ def admin_executivework_page(request):
         Admin_dash = LogRegister_Details.objects.get(id=admin_id)
         dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
-        # counts section
-
-        head_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1).count()
-        tl_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2).count()
+        # executive section
         executives = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3)
 
         
         content = {
             'Admin_dash':Admin_dash,
             'dash_details':dash_details,
-            'head_count':head_count,
-            'tl_count':tl_count,
             'executives':executives,
         }
 
@@ -1222,19 +1217,31 @@ def admin_executivework_page(request):
 
 # executive wise work, dailywork details---------------------------------
 
-def admin_get_executive_workdetails(request):
+def admin_get_employee_workdetails(request):
     if request.method == 'POST':
-        executive_id = request.POST.get('employee_id')
+        employee_id = request.POST.get('employee_id')
+        head_company=EmployeeRegister_Details.objects.get(id=employee_id).emp_comp_id 
         
 
         # Query your database to fetch employee details based on the employee_id.
 
-        ongoing_details = TaskAssign.objects.filter(ta_workerId=executive_id,ta_status=1,ta_accept_status=1).order_by('-ta_start_date')
-        completed_details = TaskAssign.objects.filter(ta_workerId=executive_id,ta_status=2).order_by('ta_start_date')
+        ongoing_details = TaskAssign.objects.filter(ta_workerId=employee_id,ta_status=1,ta_accept_status=1).order_by('-ta_start_date')
+        completed_details = TaskAssign.objects.filter(ta_workerId=employee_id,ta_status=2).order_by('-ta_start_date')
+        allocation_details = WorkAssign.objects.filter(wa_work_allocate=employee_id).order_by('-work_assign_date')
+        workassign_details = WorkRegister.objects.filter(wcompId=head_company).order_by('-work_create_time')
+        client_details = ClientRegister.objects.filter(compId=head_company).order_by('-client_add_time')
+        clientwork_details=ClientTask_Register.objects.filter(cTcompId=head_company).order_by('-task_create_date')
+
+
 
         ongoing_list=[]
         completed_list=[]
+        allocation_list=[]
+        workassign_list=[]
+        client_list=[]
+        clientworks_list=[]
 
+        # ongoing work details of employees.
 
         for i in ongoing_details:
             t_id=i.id
@@ -1254,6 +1261,9 @@ def admin_get_executive_workdetails(request):
                 'status':status,
             })
 
+
+        # completed work details of employees.
+
         for i in completed_details:
             t_id=i.id
             sdate= i.ta_start_date
@@ -1272,16 +1282,135 @@ def admin_get_executive_workdetails(request):
                 'status':status,
             })
 
+
+        # allocation details of team lead employees.
+
+        for i in allocation_details:
+            t_id=i.id
+            adate= i.work_assign_date
+            sdate= i.wa_from_date
+            edate= i. wa_due_date
+            executive_names = [emp.emp_name for emp in i.allocated_exemp.all()]
+            task=[emp.task_name for emp in i.wa_tasksId.all()]
+            target=i.wa_target
+            atarget=i.wa_target_achived
+            progress=i.work_assign_progress
+            
+            
+            
+            allocation_list.append({
+                'id':t_id,
+                'adate':adate,
+                'sdate':sdate,
+                'edate':edate,
+                'name':executive_names,
+                'task':task,
+                'target':target,
+                'atarget':atarget,
+                'progress':progress,
+                
+            })
+
+
+        # allocation details of head employees.
+
+        for i in workassign_details:
+            t_id=i.id
+            cdate= i.work_create_date
+            edate= i.work_end_date
+            client=i.clientId.client_name
+            tl_names = [emp.emp_name for emp in i.allocated_emp.all()]
+            progress=i.work_progress
+            astatus=i.work_allocate_status
+            wstatus=i.work_status
+            
+            
+            workassign_list.append({
+                'id':t_id,
+                'cdate':cdate,
+                'edate':edate,
+                'client':client,
+                'tl_names':tl_names,
+                'progress':progress,
+                'astatus':astatus,
+                'wstatus':wstatus,
+                
+            })    
+
+
+        # client details under the company.
+
+        for i in client_details:
+            t_id=i.id
+            date= i.client_reg_date
+            name=i.client_name
+            email=i.client_email_primary
+            phone=i.client_phone
+            place=i.client_place
+            district=i.client_district
+            state=i.client_state
+            status=i.client_status
+            
+            
+            client_list.append({
+                'id':t_id,
+                'date':date,
+                'name':name,
+                'email':email,
+                'phone':phone,
+                'place':place,
+                'district':district,
+                'state':state,
+                'status':status,
+                
+            }) 
+
+
+        # client work details under the company.
+
+        for i in clientwork_details:
+            t_id=i.id
+            date= i.task_create_date
+            client=i.client_Id.client_name
+            task=i.task_name
+            description=i.task_discription
+            progress=i.task_total_progress
+            astatus=i.task_allocate_status
+            tstatus=i.task_status
+            
+            
+            clientworks_list.append({
+                'id':t_id,
+                'date':date,
+                'client':client,
+                'task':task,
+                'description':description,
+                'progress':progress,
+                'astatus':astatus,
+                'tstatus':tstatus,
+                
+            }) 
+       
+        context={
+            'details1':ongoing_list,
+            'details2':completed_list,
+            'details3':allocation_list,
+            'details4':workassign_list,
+            'details5':client_list,
+            'details6':clientworks_list,
+        }    
+        
+        
         # You might want to serialize the 'employee_details' to a JSON format.
-        return JsonResponse({'details1': ongoing_list,'details2': completed_list})
+        return JsonResponse(context)
 
 
-def admin_get_executive_dailyworkdetails(request):
+def admin_get_employee_dailyworkdetails(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
         
 
-        # Query your database to fetch employee details based on the employee_id.
+        # Query your database to fetch daily work details based on the task_id.
         task= TaskAssign.objects.get(id=task_id)
         dailywork_details = TaskDetails.objects.filter(tad_taskAssignId=task).order_by('-tad_collect_date')
 
@@ -1311,3 +1440,55 @@ def admin_get_executive_dailyworkdetails(request):
         return JsonResponse({'details': daily_list,})
 
 
+def admin_tlwork_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # tl section
+        tl = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2)
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'tl':tl,
+        }
+
+        return render(request,'AD_tlwork_page.html',content)
+
+    else:
+        return redirect('/')
+
+
+def admin_headwork_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        #head section
+        head = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1)
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'head':head,
+        }
+
+        return render(request,'AD_headwork_page.html',content)
+
+    else:
+        return redirect('/')

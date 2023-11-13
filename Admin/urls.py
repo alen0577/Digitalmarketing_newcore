@@ -66,8 +66,11 @@ urlpatterns = [
     path('Admin-Employee-Allocated-EmployeeDetails',views.admin_get_employee_allocatedetails,name='admin_get_employee_allocatedetails'),
     path('Admin-Employee-Works',views.admin_all_works,name='admin_all_works'),
     path('Admin-Executive-Works',views.admin_executivework_page,name='admin_executivework_page'),
-    path('Admin-Executive-workDetails',views.admin_get_executive_workdetails,name='admin_get_exective_workdetails'),
-    path('Admin-Executive-dailyworkDetails',views.admin_get_executive_dailyworkdetails,name='admin_get_exective_dailyworkdetails'),
+    path('Admin-Employee-workDetails',views.admin_get_employee_workdetails,name='admin_get_employee_workdetails'),
+    path('Admin-Employee-dailyworkDetails',views.admin_get_employee_dailyworkdetails,name='admin_get_employee_dailyworkdetails'),
+    path('Admin-TeamLead-Works',views.admin_tlwork_page,name='admin_tlwork_page'),
+    path('Admin-Head-Works',views.admin_headwork_page,name='admin_headwork_page'),
+
 
 
 
