@@ -159,33 +159,6 @@ class ClientTask_Register(models.Model):
     task_create_date = models.DateField(auto_now=False,null=True)
 
 
-class LeadField_Register(models.Model):
-    field_clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
-    field_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
-    field_name = models.CharField(max_length=255,default='',null=True,blank=True)
-    field_discription = models.TextField(default='',null=True,blank=True)
-    field_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
-    field_status = models.IntegerField(default=0)
-    field_add_date = models.DateField(auto_now=True,null=True)
-
-class Leads(models.Model):
-    lead_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
-    lead_collect_Emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
-    lead_name = models.CharField(max_length=255,default='',null=True,blank=True)
-    lead_email = models.EmailField(default='',null=True,blank=True)
-    lead_contact = models.CharField(max_length=255,default='',null=True,blank=True)
-    lead_add_date = models.DateField(auto_now=True,null=True)
-    lead_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
-    waste_data = models.IntegerField(default=0)
-    lead_status = models.IntegerField(default=0)
-    lead_transfer_date = models.DateField(auto_now=False,null=True)
-    lead_transfer_status = models.IntegerField(default=0)
-
-class lead_Details(models.Model):
-    leadId = models.ForeignKey(Leads, on_delete=models.CASCADE, null=True,default='') 
-    lead_field_name = models.CharField(max_length=255,default='',null=True,blank=True)
-    lead_field_data = models.CharField(max_length=855,default='',null=True,blank=True)
-
 
 # Work Assign Table maintains the data of allocated work details
 
@@ -235,6 +208,37 @@ class TaskDetails(models.Model):
     tad_target = models.IntegerField(default=0)
     tad_status = models.IntegerField(default=0)
     tad_verified_target = models.IntegerField(default=0)
+
+
+class LeadField_Register(models.Model):
+    field_clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
+    field_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
+    field_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    field_discription = models.TextField(default='',null=True,blank=True)
+    field_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
+    field_status = models.IntegerField(default=0)
+    field_add_date = models.DateField(auto_now=True,null=True)
+
+class Leads(models.Model):
+    lead_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
+    lead_collect_Emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
+    lead_taskAssignId = models.ForeignKey(TaskAssign, on_delete=models.CASCADE, null=True,default='')
+    lead_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    lead_email = models.EmailField(default='',null=True,blank=True)
+    lead_contact = models.CharField(max_length=255,default='',null=True,blank=True)
+    lead_add_date = models.DateField(auto_now=True,null=True)
+    lead_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
+    waste_data = models.IntegerField(default=0)
+    lead_status = models.IntegerField(default=0)
+    lead_transfer_date = models.DateField(auto_now=False,null=True)
+    lead_transfer_status = models.IntegerField(default=0)
+
+class lead_Details(models.Model):
+    leadId = models.ForeignKey(Leads, on_delete=models.CASCADE, null=True,default='') 
+    lead_field_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    lead_field_data = models.CharField(max_length=855,default='',null=True,blank=True)
+
+
 
 class WorkProgress(models.Model):
     wp_workerId = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='') 

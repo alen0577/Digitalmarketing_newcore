@@ -27,7 +27,7 @@
             <div class="col-md-4">
               <form action="" method="post">
                 {% csrf_token %}
-                <select name="employeeselect" id="employee-select" class="form-control text-white">
+                <select name="employeeselect" id="employee-select" class="form-control text-white" onchange="clearDateInputs()">
                   <option value="" hidden>Select</option>
                   {% for i in head %}
                   <option value="{{i.id}}">{{i.emp_name}}</option>
@@ -66,7 +66,7 @@
             </div>
             </div>
           </div>
-          <h6 class="text-muted font-weight-normal">All details of clients registered by Head</h6>
+          <h6 class="text-muted font-weight-normal mt-3">All details of clients registered by Head</h6>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
             </div>
             </div>
           </div>
-          <h6 class="text-muted font-weight-normal">All work details of clients</h6>
+          <h6 class="text-muted font-weight-normal mt-3">All work details of clients</h6>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
             </div>
             </div>
           </div>
-          <h6 class="text-muted font-weight-normal">All work details assigned by Head</h6>
+          <h6 class="text-muted font-weight-normal mt-3">All work details assigned by Head to team leads</h6>
           </div>
         </div>
       </div>
@@ -128,6 +128,24 @@
           <h4 class="card-title mb-4">Client Details</h4>
           
           <div class="table-responsive">
+            <div class="row mt-3 mb-3">
+
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>From date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="fdate1" required >                    
+                </div>
+              </div>
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>To date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="edate1" required  >                    
+                </div>
+              </div>
+              <div class="col-md-2"></div>
+              
+                        
+            </div>
             <table class="table" id="clienttable">
               <thead>
                 <tr>
@@ -166,6 +184,24 @@
       <div class="card-body">
         <h4 class="card-title mb-4">Client Works</h4>
         <div class="table-responsive">
+          <div class="row mt-3 mb-3">
+
+            <div class=" col-md-5">
+              <div class="form-group">
+                <label>From date</label>
+                <input type="date" class="form-control text-offwhite" name="#" id="fdate2" required >                    
+              </div>
+            </div>
+            <div class=" col-md-5">
+              <div class="form-group">
+                <label>To date</label>
+                <input type="date" class="form-control text-offwhite" name="#" id="edate2" required  >                    
+              </div>
+            </div>
+            <div class="col-md-2"></div>
+            
+                      
+          </div>
           <table class="table" id="cwtable">
           <thead>
             <tr>
@@ -205,6 +241,24 @@
           <h4 class="card-title mb-4">Works Assigned</h4>
           
           <div class="table-responsive">
+            <div class="row mt-3 mb-3">
+
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>From date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="fdate3" required >                    
+                </div>
+              </div>
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>To date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="edate3" required  >                    
+                </div>
+              </div>
+              <div class="col-md-2"></div>
+              
+                        
+            </div>
             <table class="table" id="watable">
               <thead>
                 <tr>
@@ -406,7 +460,7 @@
             // Populate the table with the assign data
             for (var i = 0; i < data.details4.length; i++) {
               var emp = data.details4[i];
-              var tlNames = emp.tl_names.join(', '); // Join names with a comma and space
+             
               var progress = `
                 <div class="progress">
                   <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped" role="progressbar" style="width: ${emp.progress}%" aria-valuenow="${emp.progress}" aria-valuemin="0" aria-valuemax="100">
@@ -421,6 +475,8 @@
                 statusText1 = '<p class="badge badge-outline-warning mb-2">Not assigned</p>';
               }
 
+              var tlNames = emp.tl_names.join(', '); // Join names with a comma and space
+
               var statusText2 = '';
               if (emp.wstatus === 1) {
                 statusText2 = '<p class="badge badge-outline-success  mb-2">Completed</p>';
@@ -434,9 +490,7 @@
                   <td>${emp.cdate}</td>
                   <td>${emp.edate}</td>
                   <td>${emp.client}</td>
-                  <td>
-                    <div style="width: 100px; overflow: auto;">${tlNames}</div>
-                  </td>
+                  <td>${tlNames}</td>
                   <td>${progress}</td>
                  
                   <td>${statusText2}</td>
@@ -533,6 +587,54 @@
 
   });
 </script>
+
+<script>
+  // Add event listener for client date input changes
+  $('#fdate1, #edate1').on('change', function () {
+    filterTableByDate('clienttable', 'fdate1', 'edate1');
+  });
+
+  // Add event listener for client works date input changes
+  $('#fdate2, #edate2').on('change', function () {
+    filterTableByDate('cwtable', 'fdate2', 'edate2');
+  });
+
+  // Add event listener for assigned works date input changes
+  $('#fdate3, #edate3').on('change', function () {
+    filterTableByDate('watable', 'fdate3', 'edate3');
+  });
+
+  
+  function filterTableByDate(tableId, fromDateId, toDateId) {
+    var startDate = $('#' + fromDateId).val();
+    var endDate = $('#' + toDateId).val();
+
+    // Iterate through the specified table rows and hide/show them based on the date range
+    $('#' + tableId + ' tbody tr').each(function () {
+      var rowAssignedDate = $(this).find('td:eq(1)').text(); // Assuming assigned date is in the second column
+
+      if ((startDate === '' || rowAssignedDate >= startDate) && (endDate === '' || rowAssignedDate <= endDate)) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  }
+</script>
+
+
+<script>
+
+  function clearDateInputs() {
+    document.getElementById("fdate1").value = "";
+    document.getElementById("edate1").value = "";
+    document.getElementById("fdate2").value = "";
+    document.getElementById("edate2").value = "";
+    document.getElementById("fdate3").value = "";
+    document.getElementById("edate3").value = "";
+  }
+  
+</script> 
 
 
 {% endblock %}
