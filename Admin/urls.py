@@ -70,6 +70,11 @@ urlpatterns = [
     path('Admin-Employee-dailyworkDetails',views.admin_get_employee_dailyworkdetails,name='admin_get_employee_dailyworkdetails'),
     path('Admin-TeamLead-Works',views.admin_tlwork_page,name='admin_tlwork_page'),
     path('Admin-Head-Works',views.admin_headwork_page,name='admin_headwork_page'),
+    path('Admin-Clients-Works',views.admin_clientswork_page,name='admin_clientswork_page'),
+    path('Admin-newClients-Works',views.admin_new_clientswork,name='admin_new_clientswork'),
+    path('Admin-CompletedClients-Works',views.admin_completed_clientswork,name='admin_completed_clientswork'),
+
+
 
 
 

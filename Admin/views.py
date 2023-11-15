@@ -1170,9 +1170,10 @@ def admin_all_works(request):
 
         # counts section
 
-        head_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1).count()
-        tl_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2).count()
-        executive_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3).count()
+        head_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1,emp_active_status=1).count()
+        tl_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2,emp_active_status=1).count()
+        executive_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3,emp_active_status=1).count()
+        client_count = ClientRegister.objects.filter(compId=dash_details,client_status=1).count()
 
         
         content = {
@@ -1181,6 +1182,7 @@ def admin_all_works(request):
             'head_count':head_count,
             'tl_count':tl_count,
             'executive_count':executive_count,
+            'client_count':client_count,
         }
 
         return render(request,'AD_workpage.html',content)
@@ -1200,7 +1202,7 @@ def admin_executivework_page(request):
         dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
         # executive section
-        executives = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3)
+        executives = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=3,emp_active_status=1)
 
         
         content = {
@@ -1452,7 +1454,7 @@ def admin_tlwork_page(request):
         dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
         # tl section
-        tl = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2)
+        tl = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=2,emp_active_status=1)
 
         
         content = {
@@ -1479,7 +1481,7 @@ def admin_headwork_page(request):
         dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
 
         #head section
-        head = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1)
+        head = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_designation_id=1,emp_active_status=1)
 
         
         content = {
@@ -1489,6 +1491,110 @@ def admin_headwork_page(request):
         }
 
         return render(request,'AD_headwork_page.html',content)
+
+    else:
+        return redirect('/')
+
+
+def admin_clientswork_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        #clients count
+        new_count = ClientRegister.objects.filter(
+            compId=dash_details
+        ).exclude(
+            id__in=WorkRegister.objects.filter(wcompId=dash_details).values('clientId').distinct()
+        ).count()
+
+        completed_count = ClientRegister.objects.filter(
+            id__in=WorkRegister.objects.filter(
+                wcompId=dash_details,
+                work_status=1,
+                work_progress=100
+            ).values('clientId').distinct()
+        ).count()
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'new_count':new_count,
+            'completed_count':completed_count,
+        }
+
+        return render(request,'AD_clientswork_page.html',content)
+
+    else:
+        return redirect('/')
+
+def admin_new_clientswork(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        #new clients section
+        newclients = ClientRegister.objects.filter(
+            compId=dash_details
+        ).exclude(
+            id__in=WorkRegister.objects.filter(wcompId=dash_details).values('clientId').distinct()
+        ).order_by('-client_reg_date')
+
+        
+        
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'newclients':newclients,
+        }
+
+        return render(request,'AD_new_clientswork.html',content)
+
+    else:
+        return redirect('/')
+
+
+def admin_completed_clientswork(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+       # Get a queryset of clients with completed work under this admin
+        completed_clients = ClientRegister.objects.filter(
+            id__in=WorkRegister.objects.filter(
+                wcompId=dash_details,
+                work_status=1,
+                work_progress=100
+            ).values('clientId').distinct()
+        )
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'completed_clients':completed_clients,
+        }
+
+        return render(request,'AD_completed_clientswork.html',content)
 
     else:
         return redirect('/')
