@@ -3,34 +3,33 @@
 {% block body %}
 
 <div>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          
-          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_employees_section' %}">Employees</a></li>
-          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_all_works' %}">Works</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">Team Lead Works</li>
-        </ol>
-      </nav>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_all_works' %}">Works</a></li>
+      <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_clientswork_page' %}">Clients</a></li>
+      <li class="breadcrumb-item active text-md" aria-current="page">Ongoing Clients</li>
+    </ol>
+  </nav>
 </div>
 
 <!-- choose employee section -->
 <div class="row">
-    <div class="col-12 grid-margin">
+    <div class="col-md-10 grid-margin">
       <div class="card">
         <div class="card-body">
   
           <div class="d-flex">
-            <h4 class="card-title">Select  Team Lead</h4>   
+            <h4 class="card-title">Select Client</h4>   
           </div>
   
           <div class="row mb-5 mt-3">
             <div class="col-md-4">
               <form action="" method="post">
                 {% csrf_token %}
-                <select name="employeeselect" id="employee-select" class="form-control text-white" onchange="clearDateInputs()">
+                <select name="clientselect" id="client-select" class="form-control text-white" onchange="clearDateInputs()">
                   <option value="" hidden>Select</option>
-                  {% for i in tl %}
-                  <option value="{{i.id}}">{{i.emp_name}}</option>
+                  {% for i in ongoing_clients %}
+                  <option value="{{i.id}}">{{i.client_name}}</option>
                   {% endfor %}
                 </select>
               </form>
@@ -47,83 +46,226 @@
 <!-- Works section -->
 <div class="row" id="works" style="display: none;">
 
-  <div class="col-md-12 col-xl-4 grid-margin ">
+  <div class="col-md-12 col-xl-12 grid-margin ">
     <div class="row">
 
-      <div class="col-xl-12 col-sm-12 grid-margin">
-        <div class="card" id="allocated-btn">
+      <div class="col-md-2 grid-margin"> 
+        <div class="card  h-100" id="rworks-btn">
           <div class="card-body">
           <div class="row">
-            <div class="col-9">
+            <div class="col-12">
             <div class="d-flex align-items-center align-self-start">
-                <h4 class="mb-0">Works Assigned</h4>
+                <h4 class="mb-0">Registered Works</h4>
                 <p class="text-success ml-2 mb-0 font-weight-medium"></p>
             </div>
             </div>
-            <div class="col-3">
-            <div class="icon icon-box-success">
-                <span class="mdi mdi-arrow-top-right icon-item"></span>
+            <div class="col-1">
+            <div class="icon">
             </div>
             </div>
           </div>
-          <h6 class="text-muted font-weight-normal mt-2">All work details assigned by team lead</h6>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-xl-12 col-sm-12 grid-margin">
-        <div class="card" id="ongoing-btn">
-          <div class="card-body">
-          <div class="row">
-            <div class="col-9">
-            <div class="d-flex align-items-center align-self-start">
-                <h4 class="mb-0">Ongoing Works</h4>
-                <p class="text-success ml-2 mb-0 font-weight-medium"></p>
-            </div>
-            </div>
-            <div class="col-3">
-            <div class="icon icon-box-success ">
-                <span class="mdi mdi-arrow-top-right icon-item"></span>
-            </div>
-            </div>
-          </div>
-          <h6 class="text-muted font-weight-normal mt-2">All ongoing work details of team lead</h6>
           </div>
         </div>
       </div>
 
-      <div class="col-xl-12 col-sm-12 grid-margin">
-        <div class="card" id="completed-btn">
+      <div class="col-md-2 grid-margin">
+        <div class="card  h-100" id="ctasks-btn">
           <div class="card-body">
           <div class="row">
-            <div class="col-9">
+            <div class="col-12">
             <div class="d-flex align-items-center align-self-start">
-              <h4 class="mb-0">Completed Works</h4>
+              <h4 class="mb-0">Client Tasks</h4>
               <p class="text-success ml-2 mb-0 font-weight-medium"></p>
             </div>
             </div>
             <div class="col-3">
-            <div class="icon icon-box-success">
-              <span class="mdi mdi-arrow-top-right icon-item"></span>
+            <div class="icon">
             </div>
             </div>
           </div>
-          <h6 class="text-muted font-weight-normal mt-2">All completed work details of team lead</h6>
           </div>
         </div>
       </div>
       
+
+      <div class="col-md-2 grid-margin">
+        <div class="card  h-100" id="assignworks-btn">
+          <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+            <div class="d-flex align-items-center align-self-start">
+                <h4 class="mb-0">Assigned Tasks</h4>
+                <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+            </div>
+            </div>
+            <div class="col-3">
+            <div class="icon">
+            </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 grid-margin">
+        <div class="card  h-100" id="ongoing-btn">
+          <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+            <div class="d-flex align-items-center align-self-start">
+                <h4 class="mb-0">Ongoing Tasks</h4>
+                <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+            </div>
+            </div>
+            <div class="col-3">
+            <div class="icon">
+            </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2 grid-margin">
+        <div class="card  h-100" id="completed-btn">
+          <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+            <div class="d-flex align-items-center align-self-start">
+              <h4 class="mb-0">Completed Tasks</h4>
+              <p class="text-success ml-2 mb-0 font-weight-medium"></p>
+            </div>
+            </div>
+            <div class="col-3">
+            <div class="icon">
+            </div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      
+     
       
       
     </div>
   </div>
 
-  <div class="col-md-12 col-xl-8 grid-margin">
+  <div class="col-md-12 col-xl-12 grid-margin">
 
-    <div class="card" id="assignworks">
+    <div class="card" id="rworks" style="display: none;">
       <div class="card-body">
         <div class="leave-form">
-          <h4 class="card-title mb-4">Works Assigned</h4>
+          <h4 class="card-title mb-4">Registered Works</h4>
+          
+          <div class="table-responsive">
+            <div class="row mt-3 mb-3">
+
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>From date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="fdate1" required >                    
+                </div>
+              </div>
+              <div class=" col-md-5">
+                <div class="form-group">
+                  <label>To date</label>
+                  <input type="date" class="form-control text-offwhite" name="#" id="edate1" required  >                    
+                </div>
+              </div>
+              <div class="col-md-2"></div>
+              
+                        
+            </div>
+            <table class="table" id="rwtable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Created date</th>
+                  <th>End Date</th>
+                  <th>Assigned Team Leads</th>
+                  <th>progress</th>
+                  <th>Work Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in works %}
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+                  
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+
+    <div class="card" id="ctasks" style="display: none;">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Client Tasks</h4>
+        <div class="table-responsive">
+          <div class="row mt-3 mb-3">
+
+            <div class=" col-md-5">
+              <div class="form-group">
+                <label>From date</label>
+                <input type="date" class="form-control text-offwhite" name="#" id="fdate2" required >                    
+              </div>
+            </div>
+            <div class=" col-md-5">
+              <div class="form-group">
+                <label>To date</label>
+                <input type="date" class="form-control text-offwhite" name="#" id="edate2" required  >                    
+              </div>
+            </div>
+            <div class="col-md-2"></div>
+            
+                      
+          </div>
+          <table class="table" id="cttable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Registered Date</th>
+              <th>Task Name</th>
+              <th>Description</th>
+              <th>Progress</th>
+              <!-- <th>Allocation Status</th> -->
+              <th>Work Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in view_complaints %}
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <!-- <td></td> -->
+              <td></td>
+            </tr>
+            {% endfor %}
+              
+          </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card" id="assignworks" style="display: none;">
+      <div class="card-body">
+        <div class="leave-form">
+          <h4 class="card-title mb-4">Assigned Tasks</h4>
           
           <div class="table-responsive">
             <div class="row mt-3 mb-3">
@@ -169,6 +311,7 @@
                   <td></td>
                   <td></td>
                   <td></td>
+                  <td></td>
                 </tr>
                 {% endfor %}
                   
@@ -182,7 +325,7 @@
     <div class="card" id="ongoingwork" style="display: none;" >
       <div class="card-body">
         <div class="leave-form">
-          <h4 class="card-title mb-4">Ongoing Works</h4>
+          <h4 class="card-title mb-4">Ongoing Tasks</h4>
           
           <div class="table-responsive">
             <div class="row mt-3 mb-3">
@@ -190,13 +333,13 @@
               <div class=" col-md-5">
                 <div class="form-group">
                   <label>From date</label>
-                  <input type="date" class="form-control text-offwhite" name="#" id="fdate1" required >                    
+                  <input type="date" class="form-control text-offwhite" name="#" id="fdate4" required >                    
                 </div>
               </div>
               <div class=" col-md-5">
                 <div class="form-group">
                   <label>To date</label>
-                  <input type="date" class="form-control text-offwhite" name="#" id="edate1" required  >                    
+                  <input type="date" class="form-control text-offwhite" name="#" id="edate4" required  >                    
                 </div>
               </div>
               <div class="col-md-2"></div>
@@ -210,6 +353,7 @@
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Task Name</th>
+                  <th>Employee Name</th>
                   <th>Progress</th>
                   <th>Daily Works</th>
                   <th>status</th>
@@ -234,25 +378,24 @@
         </div>
       </div>
     </div>
-    
 
 
     <div class="card" id="completedwork" style="display: none;">
       <div class="card-body">
-        <h4 class="card-title mb-4">Completed Works</h4>
+        <h4 class="card-title mb-4">Completed Tasks</h4>
         <div class="table-responsive">
           <div class="row mt-3 mb-3">
 
             <div class=" col-md-5">
               <div class="form-group">
                 <label>From date</label>
-                <input type="date" class="form-control text-offwhite" name="#" id="fdate2" required >                    
+                <input type="date" class="form-control text-offwhite" name="#" id="fdate5" required >                    
               </div>
             </div>
             <div class=" col-md-5">
               <div class="form-group">
                 <label>To date</label>
-                <input type="date" class="form-control text-offwhite" name="#" id="edate2" required  >                    
+                <input type="date" class="form-control text-offwhite" name="#" id="edate5" required  >                    
               </div>
             </div>
             <div class="col-md-2"></div>
@@ -266,6 +409,7 @@
               <th>Start Date</th>
               <th>End Date</th>
               <th>Task Name</th>
+              <th>Employee Name</th>
               <th>Progress</th>
               <th>Daily Works</th>
               <th>status</th>
@@ -290,7 +434,11 @@
       </div>
     </div>
 
-   
+
+
+    
+
+      
   </div>
   
 </div>
@@ -367,36 +515,34 @@
 <!-- Add this script block to your HTML file -->
 <script>
   $(document).ready(function () {
-    $('#employee-select').change(function () {
-      var selectedEmployee = $(this).val();
+    $('#client-select').change(function () {
+      var selectedClient = $(this).val();
 
-      if (selectedEmployee) {
+      if (selectedClient) {
         // Show the tables
         $('#works').show();
 
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_employee_workdetails" %}',
+          url: '{% url "admin_get_client_ongoingworkdetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-            'employee_id': selectedEmployee
+            'client_id': selectedClient
           },
           success: function (data) {
             // Clear the table bodies
+            $('#rwtable tbody').empty();
+            $('#cttable tbody').empty();
+            $('#watable tbody').empty();
             $('#otable tbody').empty();
             $('#ctable tbody').empty();
             $('#dtable tbody').empty();
-            $('#watable tbody').empty();
 
-            // Populate the table with the ongoing data
+
+            // Populate the table with the registered work data
             for (var i = 0; i < data.details1.length; i++) {
               var emp = data.details1[i];
-              var statusText = '';
-              if (emp.status === 1) {
-                statusText = '<p class="badge badge-outline-warning  mb-2">Ongoing</p>';
-              } else {
-                statusText = '<p class="badge badge-outline-danger mb-2">Completed</p>';
-              }
+             
               var progress = `
                 <div class="progress">
                   <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped" role="progressbar" style="width: ${emp.progress}%" aria-valuenow="${emp.progress}" aria-valuemin="0" aria-valuemax="100">
@@ -404,33 +550,51 @@
                   </div>
                 </div>
               `;
+              var statusText1 = '';
+              if (emp.astatus === 1) {
+                statusText1 = '<p class="badge badge-outline-success  mb-2">Assigned</p>';
+              } else {
+                statusText1 = '<p class="badge badge-outline-warning mb-2">Not assigned</p>';
+              }
 
-              var daily_work = `
-                <button class="btn btn-outline-info btn-sm rounded daily-work-btn" data-toggle="modal" data-target="#dworks" data-task-id="${emp.id}">Daily Works</button>
-              `;
+              var tlNames = emp.tl_names.join(', '); // Join names with a comma and space
+
+              var statusText2 = '';
+              if (emp.wstatus === 1) {
+                statusText2 = '<p class="badge badge-outline-success  mb-2">Completed</p>';
+              } else {
+                statusText2 = '<p class="badge badge-outline-warning mb-2">Ongoing</p>';
+              }
 
               var newRow = `
                 <tr>
                   <td>${i + 1}</td>
-                  <td>${emp.sdate}</td>
+                  <td>${emp.cdate}</td>
                   <td>${emp.edate}</td>
-                  <td>${emp.name}</td>
+                  <td>${tlNames}</td>
                   <td>${progress}</td>
-                  <td>${daily_work}</td>
-                  <td>${statusText}</td>
+                 
+                  <td>${statusText2}</td>
+                  
                 </tr>
               `;
-              $('#otable tbody').append(newRow);
+              $('#rwtable tbody').append(newRow);
             }
 
-            // Populate the table with the complete data
+            // Populate the table with the client task data
             for (var i = 0; i < data.details2.length; i++) {
               var emp = data.details2[i];
-              var statusText = '';
-              if (emp.status === 2) {
-                statusText = '<p class="badge badge-outline-success  mb-2">Completed</p>';
+              var statusText1 = '';
+              if (emp.status === 1) {
+                statusText1 = '<p class="badge badge-outline-success  mb-2">Allocated</p>';
               } else {
-                statusText = '<p class="badge badge-outline-danger mb-2">Ongoing</p>';
+                statusText1 = '<p class="badge badge-outline-warning mb-2">Pending</p>';
+              }
+              var statusText2 = '';
+              if (emp.status === 1) {
+                statusText2 = '<p class="badge badge-outline-success  mb-2">Completed</p>';
+              } else {
+                statusText2 = '<p class="badge badge-outline-warning mb-2">Ongoing</p>';
               }
               var progress = `
                 <div class="progress">
@@ -440,23 +604,21 @@
                 </div>
               `;
 
-              var daily_work = `
-                <button class="btn btn-outline-info btn-sm rounded daily-work-btn" data-toggle="modal" data-target="#dworks" data-task-id="${emp.id}">Daily Works</button>
-              `;
 
               var newRow = `
                 <tr>
                   <td>${i + 1}</td>
-                  <td>${emp.sdate}</td>
-                  <td>${emp.edate}</td>
-                  <td>${emp.name}</td>
+                  <td>${emp.date}</td>
+                  <td>${emp.task}</td>
+                  <td>${emp.description}</td>
                   <td>${progress}</td>
-                  <td>${daily_work}</td>
-                  <td>${statusText}</td>
+                 
+                  <td>${statusText2}</td>
                 </tr>
               `;
-              $('#ctable tbody').append(newRow);
+              $('#cttable tbody').append(newRow);
             }
+
 
             // Populate the table with the assign data
             for (var i = 0; i < data.details3.length; i++) {
@@ -488,6 +650,79 @@
               $('#watable tbody').append(newRow);
             }
 
+
+            // Populate the table with the ongoing data
+            for (var i = 0; i < data.details4.length; i++) {
+              var emp = data.details4[i];
+              var statusText = '';
+              if (emp.status === 1) {
+                statusText = '<p class="badge badge-outline-warning  mb-2">Ongoing</p>';
+              } else {
+                statusText = '<p class="badge badge-outline-danger mb-2">Completed</p>';
+              }
+              var progress = `
+                <div class="progress">
+                  <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped" role="progressbar" style="width: ${emp.progress}%" aria-valuenow="${emp.progress}" aria-valuemin="0" aria-valuemax="100">
+                    ${emp.progress}%
+                  </div>
+                </div>
+              `;
+
+              var daily_work = `
+                <button class="btn btn-outline-info btn-sm rounded daily-work-btn" data-toggle="modal" data-target="#dworks" data-task-id="${emp.id}">Daily Works</button>
+              `;
+
+              var newRow = `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td>${emp.sdate}</td>
+                  <td>${emp.edate}</td>
+                  <td>${emp.name}</td>
+                  <td>${emp.employee}</td>
+                  <td>${progress}</td>
+                  <td>${daily_work}</td>
+                  <td>${statusText}</td>
+                </tr>
+              `;
+              $('#otable tbody').append(newRow);
+            }
+
+            // Populate the table with the complete data
+            for (var i = 0; i < data.details5.length; i++) {
+              var emp = data.details5[i];
+              var statusText = '';
+              if (emp.status === 2) {
+                statusText = '<p class="badge badge-outline-success  mb-2">Completed</p>';
+              } else {
+                statusText = '<p class="badge badge-outline-danger mb-2">Ongoing</p>';
+              }
+              var progress = `
+                <div class="progress">
+                  <div class="progress-bar bg-primary progress-bar-animated progress-bar-striped" role="progressbar" style="width: ${emp.progress}%" aria-valuenow="${emp.progress}" aria-valuemin="0" aria-valuemax="100">
+                    ${emp.progress}%
+                  </div>
+                </div>
+              `;
+
+              var daily_work = `
+                <button class="btn btn-outline-info btn-sm rounded daily-work-btn" data-toggle="modal" data-target="#dworks" data-task-id="${emp.id}">Daily Works</button>
+              `;
+
+              var newRow = `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td>${emp.sdate}</td>
+                  <td>${emp.edate}</td>
+                  <td>${emp.name}</td>
+                  <td>${emp.employee}</td>
+                  <td>${progress}</td>
+                  <td>${daily_work}</td>
+                  <td>${statusText}</td>
+                </tr>
+              `;
+              $('#ctable tbody').append(newRow);
+            }
+            
 
             // Event handler for the "Daily Works" button
             bindDailyWorkButtonClick('.daily-work-btn');
@@ -532,7 +767,7 @@
                   <td>${emp.title}</td>
                   <td>${emp.description}</td>
                   <td>${emp.target}</td>
-                  <td>${emp.vtarget}</td>
+                  <td>${emp.vtarget}</td> 
                   <td>${statusText}</td>
                 </tr>
               `;
@@ -552,42 +787,84 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<!-- card show and hide section -->
 
 <script>
   $(document).ready(function() {
-    $('#completework').hide();
-
-    $('#allocated-btn').click(function() {
+  
+    $('#rworks-btn').click(function() {
+      $('#rworks').show();
+      $('#ctasks').hide();
+      $('#assignworks').hide();
       $('#ongoingwork').hide();
       $('#completedwork').hide();
+    });
+
+    $('#ctasks-btn').click(function() {
+      $('#rworks').hide();
+      $('#ctasks').show();
+      $('#assignworks').hide();
+      $('#ongoingwork').hide();
+      $('#completedwork').hide();
+      
+    });
+
+    $('#assignworks-btn').click(function() {
+      $('#rworks').hide();
+      $('#ctasks').hide();
       $('#assignworks').show();
+      $('#ongoingwork').hide();
+      $('#completedwork').hide();
     });
 
     $('#ongoing-btn').click(function() {
+      $('#rworks').hide();
+      $('#ctasks').hide();
+      $('#assignworks').hide();
       $('#ongoingwork').show();
       $('#completedwork').hide();
-      $('#assignworks').hide();
     });
 
     $('#completed-btn').click(function() {
-      $('#ongoingwork').hide();
+      $('#rworks').hide();
+      $('#ctasks').hide();
       $('#assignworks').hide();
+      $('#ongoingwork').hide();
       $('#completedwork').show();
     });
+
   });
 </script>
 
+<!-- date filter section -->
+
 <script>
-  // Add event listener for ongoing works date input changes
+  // Add event listener for client date input changes
   $('#fdate1, #edate1').on('change', function () {
-    filterTableByDate('otable', 'fdate1', 'edate1');
+    filterTableByDate('rwtable', 'fdate1', 'edate1');
+  });
+
+  // Add event listener for client works date input changes
+  $('#fdate2, #edate2').on('change', function () {
+    filterTableByDate('cttable', 'fdate2', 'edate2');
+  });
+
+  // Add event listener for assigned works date input changes
+  $('#fdate3, #edate3').on('change', function () {
+    filterTableByDate('watable', 'fdate3', 'edate3');
+  });
+
+   // Add event listener for ongoing works date input changes
+   $('#fdate4, #edate4').on('change', function () {
+    filterTableByDate('otable', 'fdate4', 'edate4');
   });
 
   // Add event listener for completed works date input changes
-  $('#fdate2, #edate2').on('change', function () {
-    filterTableByDate('ctable', 'fdate2', 'edate2');
+  $('#fdate5, #edate5').on('change', function () {
+    filterTableByDate('ctable', 'fdate5', 'edate5');
   });
 
+  
   function filterTableByDate(tableId, fromDateId, toDateId) {
     var startDate = $('#' + fromDateId).val();
     var endDate = $('#' + toDateId).val();
@@ -606,30 +883,9 @@
   }
 </script>
 
-<script>
-  // Add event listener for assigned works date input changes
-  $('#fdate3, #edate3').on('change', function () {
-    filterTableByDate('watable', 'fdate3', 'edate3');
-  });
 
-  function filterTableByDate(tableId, fromDateId, toDateId) {
-    var startDate = $('#' + fromDateId).val();
-    var endDate = $('#' + toDateId).val();
 
-    // Iterate through the specified table rows and hide/show them based on the date range
-    $('#' + tableId + ' tbody tr').each(function () {
-      var rowAssignedDate = $(this).find('td:eq(1)').text(); // Assuming assigned date is in the second column
-
-      if ((startDate === '' || rowAssignedDate >= startDate) && (endDate === '' || rowAssignedDate <= endDate)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
-  }
-</script>
-
-<!-- clear date input whenever an employee is selecte -->
+<!-- date input clear section -->
 
 <script>
 
@@ -640,8 +896,13 @@
     document.getElementById("edate2").value = "";
     document.getElementById("fdate3").value = "";
     document.getElementById("edate3").value = "";
+    document.getElementById("fdate4").value = "";
+    document.getElementById("edate4").value = "";
+    document.getElementById("fdate5").value = "";
+    document.getElementById("edate5").value = "";
   }
   
 </script> 
+
 
 {% endblock %}

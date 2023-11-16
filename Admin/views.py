@@ -1217,7 +1217,7 @@ def admin_executivework_page(request):
             return redirect('/')
 
 
-# executive wise work, dailywork details---------------------------------
+# executive,tl,head wise work, dailywork details---------------------------------
 
 def admin_get_employee_workdetails(request):
     if request.method == 'POST':
@@ -1425,7 +1425,9 @@ def admin_get_employee_dailyworkdetails(request):
             title=i.tad_title
             description=i.tad_discription
             target=i.tad_target
+            vtarget=i.tad_verified_target
             status=i.tad_status
+           
             
             
             daily_list.append({
@@ -1434,7 +1436,9 @@ def admin_get_employee_dailyworkdetails(request):
                 'title':title,
                 'description': description,
                 'target': target,
+                'vtarget':vtarget,
                 'status':status,
+                
             })
 
         
@@ -1514,6 +1518,13 @@ def admin_clientswork_page(request):
             id__in=WorkRegister.objects.filter(wcompId=dash_details).values('clientId').distinct()
         ).count()
 
+        ongoing_count = ClientRegister.objects.filter(
+            id__in=WorkRegister.objects.filter(
+                wcompId=dash_details,work_status=0,
+            ).values('clientId').distinct()
+        ).count()
+
+
         completed_count = ClientRegister.objects.filter(
             id__in=WorkRegister.objects.filter(
                 wcompId=dash_details,
@@ -1526,6 +1537,7 @@ def admin_clientswork_page(request):
             'Admin_dash':Admin_dash,
             'dash_details':dash_details,
             'new_count':new_count,
+            'ongoing_count':ongoing_count,
             'completed_count':completed_count,
         }
 
@@ -1566,6 +1578,207 @@ def admin_new_clientswork(request):
     else:
         return redirect('/')
 
+def admin_ongoing_clientswork(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+       # Get a queryset of clients with completed work under this admin
+        ongoing_clients = ClientRegister.objects.filter(
+            id__in=WorkRegister.objects.filter(
+                wcompId=dash_details,
+                work_status=0,
+            ).values('clientId').distinct()
+        )
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'ongoing_clients':ongoing_clients,
+        }
+
+        return render(request,'AD_ongoing_clientswork.html',content)
+
+    else:
+        return redirect('/')
+
+# Client wise ongoing work, dailywork details---------------------------------
+
+def admin_get_client_ongoingworkdetails(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        registeredwork_details = WorkRegister.objects.filter(clientId=client_id,work_status=0).order_by('-work_create_date','-work_create_time')
+        clientwork_details=ClientTask_Register.objects.filter(client_Id=client_id,work_Id__in=registeredwork_details).order_by('-task_create_date')
+        allocation_details = WorkAssign.objects.filter(wa_clientId=client_id,wa_work_regId__in=registeredwork_details).order_by('-work_assign_date')
+        ongoing_details = TaskAssign.objects.filter(ta_taskId__client_Id=client_id,ta_workAssignId__in=allocation_details,ta_status=1,ta_accept_status=1).order_by('-ta_start_date')
+        completed_details = TaskAssign.objects.filter(ta_taskId__client_Id=client_id,ta_workAssignId__in=allocation_details,ta_status=2).order_by('-ta_start_date')
+        
+
+
+        registeredwork_list=[]
+        clientworks_list=[]
+        allocation_list=[]
+        ongoing_list=[]
+        completed_list=[]
+        # client_list=[]
+        
+
+        # allocation details of head employees.
+
+        for i in registeredwork_details:
+            t_id=i.id
+            cdate= i.work_create_date
+            edate= i.work_end_date
+            client=i.clientId.client_name
+            tl_names = [emp.emp_name for emp in i.allocated_emp.all()]
+            progress=i.work_progress
+            astatus=i.work_allocate_status
+            wstatus=i.work_status
+            
+            
+            registeredwork_list.append({
+                'id':t_id,
+                'cdate':cdate,
+                'edate':edate,
+                'client':client,
+                'tl_names':tl_names,
+                'progress':progress,
+                'astatus':astatus,
+                'wstatus':wstatus,
+                
+            })   
+
+        # client work details under the company.
+
+        for i in clientwork_details:
+            t_id=i.id
+            date= i.task_create_date
+            client=i.client_Id.client_name
+            task=i.task_name
+            description=i.task_discription
+            progress=i.task_total_progress
+            astatus=i.task_allocate_status
+            tstatus=i.task_status
+            
+            
+            clientworks_list.append({
+                'id':t_id,
+                'date':date,
+                'client':client,
+                'task':task,
+                'description':description,
+                'progress':progress,
+                'astatus':astatus,
+                'tstatus':tstatus,
+                
+            }) 
+
+
+        # allocation details of team lead employees.
+
+        for i in allocation_details:
+            t_id=i.id
+            adate= i.work_assign_date
+            sdate= i.wa_from_date
+            edate= i. wa_due_date
+            executive_names = [emp.emp_name for emp in i.allocated_exemp.all()]
+            task=[emp.task_name for emp in i.wa_tasksId.all()]
+            target=i.wa_target
+            atarget=i.wa_target_achived
+            progress=i.work_assign_progress
+            
+            
+            
+            allocation_list.append({
+                'id':t_id,
+                'adate':adate,
+                'sdate':sdate,
+                'edate':edate,
+                'name':executive_names,
+                'task':task,
+                'target':target,
+                'atarget':atarget,
+                'progress':progress,
+                
+            })
+
+
+
+
+        # ongoing work details of employees.
+
+        for i in ongoing_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            employee=i.ta_workerId.emp_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            ongoing_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'employee':employee,
+                'progress': progress,
+                'status':status,
+            })
+
+
+
+        # completed work details of employees.
+
+        for i in completed_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            employee=i.ta_workerId.emp_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            completed_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'employee':employee,
+                'progress': progress,
+                'status':status,
+            })
+
+
+       
+
+       
+        context={
+            'details1':registeredwork_list,
+            'details2':clientworks_list,
+            'details3':allocation_list,
+            'details4':ongoing_list,
+            'details5':completed_list,   
+        }    
+        
+        
+        
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse(context)
+
+
 
 def admin_completed_clientswork(request):
     if 'admin_id' in request.session:
@@ -1598,3 +1811,175 @@ def admin_completed_clientswork(request):
 
     else:
         return redirect('/')
+
+
+# Client wise completed work, dailywork details---------------------------------
+
+def admin_get_client_completedworkdetails(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        
+
+        # Query your database to fetch employee details based on the employee_id.
+        registeredwork_details = WorkRegister.objects.filter(clientId=client_id,work_status=1,work_progress=100).order_by('-work_create_date','-work_create_time')
+        clientwork_details=ClientTask_Register.objects.filter(client_Id=client_id,work_Id__in=registeredwork_details).order_by('-task_create_date')
+        allocation_details = WorkAssign.objects.filter(wa_clientId=client_id,wa_work_regId__in=registeredwork_details).order_by('-work_assign_date')
+        ongoing_details = TaskAssign.objects.filter(ta_taskId__client_Id=client_id,ta_workAssignId__in=allocation_details,ta_status=1,ta_accept_status=1).order_by('-ta_start_date')
+        completed_details = TaskAssign.objects.filter(ta_taskId__client_Id=client_id,ta_workAssignId__in=allocation_details,ta_status=2).order_by('-ta_start_date')
+        
+
+
+        registeredwork_list=[]
+        clientworks_list=[]
+        allocation_list=[]
+        ongoing_list=[]
+        completed_list=[]
+        # client_list=[]
+        
+
+        # allocation details of head employees.
+
+        for i in registeredwork_details:
+            t_id=i.id
+            cdate= i.work_create_date
+            edate= i.work_end_date
+            client=i.clientId.client_name
+            tl_names = [emp.emp_name for emp in i.allocated_emp.all()]
+            progress=i.work_progress
+            astatus=i.work_allocate_status
+            wstatus=i.work_status
+            
+            
+            registeredwork_list.append({
+                'id':t_id,
+                'cdate':cdate,
+                'edate':edate,
+                'client':client,
+                'tl_names':tl_names,
+                'progress':progress,
+                'astatus':astatus,
+                'wstatus':wstatus,
+                
+            })   
+
+        # client work details under the company.
+
+        for i in clientwork_details:
+            t_id=i.id
+            date= i.task_create_date
+            client=i.client_Id.client_name
+            task=i.task_name
+            description=i.task_discription
+            progress=i.task_total_progress
+            astatus=i.task_allocate_status
+            tstatus=i.task_status
+            
+            
+            clientworks_list.append({
+                'id':t_id,
+                'date':date,
+                'client':client,
+                'task':task,
+                'description':description,
+                'progress':progress,
+                'astatus':astatus,
+                'tstatus':tstatus,
+                
+            }) 
+
+
+        # allocation details of team lead employees.
+
+        for i in allocation_details:
+            t_id=i.id
+            adate= i.work_assign_date
+            sdate= i.wa_from_date
+            edate= i. wa_due_date
+            executive_names = [emp.emp_name for emp in i.allocated_exemp.all()]
+            task=[emp.task_name for emp in i.wa_tasksId.all()]
+            target=i.wa_target
+            atarget=i.wa_target_achived
+            progress=i.work_assign_progress
+            
+            
+            
+            allocation_list.append({
+                'id':t_id,
+                'adate':adate,
+                'sdate':sdate,
+                'edate':edate,
+                'name':executive_names,
+                'task':task,
+                'target':target,
+                'atarget':atarget,
+                'progress':progress,
+                
+            })
+
+
+
+
+        # ongoing work details of employees.
+
+        for i in ongoing_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            employee=i.ta_workerId.emp_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            ongoing_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'employee':employee,
+                'progress': progress,
+                'status':status,
+            })
+
+
+
+        # completed work details of employees.
+
+        for i in completed_details:
+            t_id=i.id
+            sdate= i.ta_start_date
+            edate= i.ta_due_date
+            task_name=i.ta_taskId.task_name
+            employee=i.ta_workerId.emp_name
+            progress=i.ta_progress
+            status=i.ta_status
+            
+            
+            completed_list.append({
+                'id':t_id,
+                'sdate':sdate,
+                'edate':edate,
+                'name': task_name,
+                'employee':employee,
+                'progress': progress,
+                'status':status,
+            })
+
+
+       
+
+       
+        context={
+            'details1':registeredwork_list,
+            'details2':clientworks_list,
+            'details3':allocation_list,
+            'details4':ongoing_list,
+            'details5':completed_list,
+           
+            
+        }    
+        
+        print(registeredwork_list)
+        
+        # You might want to serialize the 'employee_details' to a JSON format.
+        return JsonResponse(context)
