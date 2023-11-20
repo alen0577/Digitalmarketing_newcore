@@ -1522,6 +1522,7 @@ def executive_lead_add(request,pk):
             ld_obj.lead_name = request.POST['leadName']
             ld_obj.lead_email = request.POST['leadEmail']
             ld_obj.lead_contact =request.POST['leadContact']
+            ld_obj.lead_taskAssignId=task
             ld_obj.save()
 
 
@@ -1636,6 +1637,8 @@ def executive_lead_file_upload(request,pk):
                     lead.lead_name = lead_data['Full Name']
                     lead.lead_email = lead_data['Email Id']
                     lead.lead_contact = lead_data['Contact Number']
+                    lead.lead_taskAssignId=task
+
                     lead.save()
 
                     for key, value in lead_data.items():
