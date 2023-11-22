@@ -12,60 +12,61 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-12 grid-margin">
-        
-        <div class="card">
-            <div class="card-body">
-                <h5>Task details</h5>
-
-                <div class="add-items d-flex mt-4 ">
-              
-                  <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
-                  <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button> 
-                </div>
-
-                <div class="row mt-3">
-                    <div class="table-responsive">
-                        <table class="table" id="task-details">
-                            <thead>
-                                <th>No</th>
-                                <th>Task Name</th>
-                                <th>Start date</th>
-                                <th>End date</th>
-                                <th>Allocated date</th>
-                                <th>Task Details</th>
-                                <th>Action</th>
-                
-                            </thead>
-                            {% for task in tasks %}
-                            <tbody>
-                                <td>{{forloop.counter}}</td>
-                                <td>{{task.ta_taskId.task_name}}</td>
-                                <td>{{task.ta_start_date|date:"Y-m-d"}}</td>
-                                <td>{{task.ta_due_date|date:"Y-m-d"}}</td>
-                                <td>{{task.ta_allocate_date|date:"Y-m-d" }}</td>
-                                <td>
-                                  <div class="badge badge-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
-                                </td>
-                                <td>
-                                    <a href="{% url 'executive_newwork_accept' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Accept</button></a>
-                                </td>
-                            </tbody> 
-                            {% endfor %}
-                        </table>
-                    </div>
-                
-                    
-                </div>
-
-                
-            </div>
+  <div class="col-sm-12 grid-margin">
+      
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mt-3 mb-3">Tasks<sup><span class="badge text-danger">New*</span></sup></h4>  
 
 
-
+        <div class="add-items d-flex mt-4 ">
+      
+          <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
+          <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button> 
         </div>
-        
+
+        <div class="row mt-3">
+          <div class="table-responsive">
+            <table class="table" id="task-details">
+              <thead>
+                <th>No</th>
+                <th>Task Name</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Allocated date</th>
+                <th>Task Details</th>
+                <th>Action</th>
+  
+              </thead>
+              {% for task in tasks %}
+              <tbody>
+                <td>{{forloop.counter}}</td>
+                <td>{{task.ta_taskId.task_name}}</td>
+                <td>{{task.ta_start_date|date:"Y-m-d"}}</td>
+                <td>{{task.ta_due_date|date:"Y-m-d"}}</td>
+                <td>{{task.ta_allocate_date|date:"Y-m-d" }}</td>
+                <td>
+                  <div class="badge badge-outline-primary" data-toggle="modal" data-target="#details{{task.id}}">View</div>
+                </td>
+                <td>
+                    <a href="{% url 'executive_newwork_accept' task.id %}"><button type="button" id="acceptbtn" class="btn btn-outline-success">Accept</button></a>
+                </td>
+              </tbody> 
+              {% endfor %}
+            </table>
+          </div>
+          
+              
+        </div>
+
+          
+      </div>
+
+
+
     </div>
+    
+  </div>
    
 </div>
 
