@@ -169,7 +169,7 @@ def login_submitt(request):
                         
                         elif dash_details.emp_designation_id.dashboard_id == 2:
                              
-                            print('Team Lead dashboard')
+                            return render(request,'TL_dashboard.html',content)
 
                         elif dash_details.emp_designation_id.dashboard_id == 3:
                             return render(request,'Executive_dashboard.html',content) 

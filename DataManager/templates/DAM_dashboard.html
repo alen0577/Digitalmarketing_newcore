@@ -1,0 +1,161 @@
+{% extends 'DAM_base.html' %}
+{% load static %}
+{% block body %}
+
+
+<div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'dataManager_dashboard' %}">Dashboard</a></li>
+        </ol>
+      </nav>
+</div>
+
+
+<div class="row">
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_notification_section' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9 col-sm-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">Notifications </h4>
+                        <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3 col-sm-3">
+                    <div class="icon icon-box-danger">
+                        <span class="mdi mdi-bell-ring-outline  icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2"> Stay informed with timely updates and notifications. </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_executive_dashboard' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">Executives Dashboard</h4>
+                        <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3">
+                    <div class="icon icon-box-success ">
+                        <span class="mdi mdi-account-multiple icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2">  Central hub for data access and monitoring for our executive team.   </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_allocation_dashboard' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">Allocation Dashboard</h4>
+                        <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3">
+                    <div class="icon icon-box-primary ">
+                        <span class="mdi mdi-account-network icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2"> Manage and 
+                    allocate new leads or old leads to Hr or Telecallers.   </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_telecallers_dashboard' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">HR\Telecallers Dashboard</h4>
+                        <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3">
+                    <div class="icon icon-box-primary ">
+                        <span class="mdi mdi-account-multiple icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2"> Manage their
+                    tasks and make data-driven decisions.   </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_platform_management' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">Platform Management</h4>
+                        <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3">
+                    <div class="icon icon-box-success">
+                        <span class="mdi mdi-calendar-check  icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2"> Data management strategy,
+                    involving the oversight and maintenance </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-xl-4 col-sm-12 grid-margin stretch-card">
+        <a href="{% url 'DAM_wasteData_management' %}" class="a-hover">
+            <div class="card">
+                <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                    <div class="d-flex align-items-center align-self-start">
+                        <h4 class="mb-0">Wasted Datas</h4>
+                        <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p> -->
+                    </div>
+                    </div>
+                    <div class="col-3">
+                    <div class="icon icon-box-warning">
+                        <span class="mdi mdi-delete-variant  icon-item"></span>
+                    </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal mt-2">Track and manage wasted data with the different strategies   </h6>
+                </div>
+            </div>
+        </a>
+    </div>
+   
+    
+
+</div>
+
+
+
+
+{% endblock %}

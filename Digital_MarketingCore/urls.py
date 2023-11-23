@@ -27,6 +27,8 @@ urlpatterns = [
     path('',include('Admin.urls')),
     path('',include('DM_Head.urls')),
     path('',include('DM_Executive.urls')),
+    path('',include('DM_TeamLead.urls')),
+    path('',include('DataManager.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

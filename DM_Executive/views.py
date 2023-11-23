@@ -1430,7 +1430,7 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
 
         
 
-        print(work_id)
+        
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
@@ -1522,6 +1522,7 @@ def executive_lead_add(request,pk):
             ld_obj.lead_name = request.POST['leadName']
             ld_obj.lead_email = request.POST['leadEmail']
             ld_obj.lead_contact =request.POST['leadContact']
+            ld_obj.lead_source =request.POST['leadsource']
             ld_obj.lead_taskAssignId=task
             ld_obj.save()
 
@@ -1575,7 +1576,7 @@ def download_excelfile(request,pk):
     wb = Workbook()
     ws = wb.active
 
-    additional_headers = ["Full Name", "Email Id", "Contact Number"]
+    additional_headers = ["Full Name", "Email Id", "Contact Number", "Lead Source"]
 
     headers = list(LeadField_Register.objects.filter(field_work_regId=wId).values_list('field_name', flat=True))
     all_headers = additional_headers + headers
@@ -1637,6 +1638,7 @@ def executive_lead_file_upload(request,pk):
                     lead.lead_name = lead_data['Full Name']
                     lead.lead_email = lead_data['Email Id']
                     lead.lead_contact = lead_data['Contact Number']
+                    lead.lead_source = lead_data['Lead Source']
                     lead.lead_taskAssignId=task
 
                     lead.save()

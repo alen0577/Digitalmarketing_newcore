@@ -21,6 +21,7 @@ class Feedback(models.Model):
     feedback_content = models.TextField(default='',null=True,blank=True)
     feedback_date = models.DateField(auto_now=False,null=True)
 
+
 class Complaints(models.Model):
     complaint_emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
     compaint_head = models.CharField(max_length=255,default='',null=True,blank=True)
@@ -29,6 +30,7 @@ class Complaints(models.Model):
     action = models.TextField(default='',null=True,blank=True)
     action_date = models.DateField(auto_now=False,null=True)
     status = models.IntegerField(default=0)
+
     
 class ActionTaken(models.Model):
     act_emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
@@ -81,7 +83,7 @@ class Previos_Allocation_Details(models.Model):
     previousemp_allocatedName = models.CharField(max_length=255,default='',null=True,blank=True)
 
 
-   
+    
 
 # Work section -------------------------
 
@@ -129,6 +131,7 @@ class ClientRegister(models.Model):
     more_discription = models.TextField(default='',null=True,blank=True)
     client_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
     client_status = models.IntegerField(default=0)
+    work_reg_status = models.IntegerField(default=0)
     client_reg_date = models.DateField(auto_now=True,null=True)
 
 
@@ -159,6 +162,30 @@ class ClientTask_Register(models.Model):
     task_create_date = models.DateField(auto_now=False,null=True)
 
 
+class LeadCategory_Register(models.Model):
+    cTaskId = models.ForeignKey(ClientTask_Register, on_delete=models.CASCADE, null=True,default='') 
+    lc_assign_date = models.DateField(auto_now=True,null=True)
+    lead_collection_for = models.CharField(max_length=255,default='',null=True,blank=True)
+    lc_discription = models.TextField(default='',null=True,blank=True)
+    lc_target = models.IntegerField(default=0)
+    lc_target_achived = models.IntegerField(default=0)
+    lc_file = models.FileField(upload_to=r'work\files',default='')
+    lc_progress = models.IntegerField(default=0)
+
+
+
+class LeadField_Register(models.Model):
+    field_clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
+    field_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
+    field_lead_category= models.ForeignKey(LeadCategory_Register, on_delete=models.CASCADE, null=True,default='') 
+    field_name = models.CharField(max_length=255,default='',null=True,blank=True)
+    field_discription = models.TextField(default='',null=True,blank=True)
+    field_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
+    field_status = models.IntegerField(default=0)
+    field_add_date = models.DateField(auto_now=True,null=True)
+
+
+
 
 # Work Assign Table maintains the data of allocated work details
 
@@ -179,6 +206,7 @@ class WorkAssign(models.Model):
     wa_type = models.IntegerField(default=0)
     wa_target = models.IntegerField(default=0)
     wa_target_achived = models.IntegerField(default=0)
+
 
 
 class TaskAssign(models.Model):
@@ -210,28 +238,52 @@ class TaskDetails(models.Model):
     tad_verified_target = models.IntegerField(default=0)
 
 
-class LeadField_Register(models.Model):
-    field_clientId = models.ForeignKey(ClientRegister, on_delete=models.CASCADE, null=True,default='') 
-    field_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
-    field_name = models.CharField(max_length=255,default='',null=True,blank=True)
-    field_discription = models.TextField(default='',null=True,blank=True)
-    field_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
-    field_status = models.IntegerField(default=0)
-    field_add_date = models.DateField(auto_now=True,null=True)
+class LeadCateogry_TeamAllocate(models.Model):
+    Tl_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
+    lc_id = models.ForeignKey(LeadCategory_Register, on_delete=models.CASCADE, null=True,default='')
+    wa_id = models.ForeignKey(WorkAssign, on_delete=models.CASCADE, null=True,default='')
+    lcta_discription = models.TextField(default='',null=True,blank=True)
+    lcta_from_date = models.DateField(auto_now=False,null=True)
+    lcta_due_date = models.DateField(auto_now=False,null=True)
+    lcta_target = models.IntegerField(default=0)
+    lcta_target_achived = models.IntegerField(default=0)
+    lcta_file = models.FileField(upload_to=r'work\files',default='')
+    lcta_progress = models.IntegerField(default=0)
+    lcta_status = models.IntegerField(default=0)
 
+
+class LeadCateogry_Assign(models.Model):
+    executive_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
+    lcta_id = models.ForeignKey(LeadCateogry_TeamAllocate, on_delete=models.CASCADE, null=True,default='')
+    lca_discription = models.TextField(default='',null=True,blank=True)
+    lca_from_date = models.DateField(auto_now=False,null=True)
+    lca_due_date = models.DateField(auto_now=False,null=True)
+    lca_target = models.IntegerField(default=0)
+    lca_target_achived = models.IntegerField(default=0)
+    lca_file = models.FileField(upload_to=r'work\files',default='')
+    lca_progress = models.IntegerField(default=0) 
+    lca_status = models.IntegerField(default=0)
+
+    
 class Leads(models.Model):
     lead_work_regId = models.ForeignKey(WorkRegister, on_delete=models.CASCADE, null=True,default='') 
     lead_collect_Emp_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
-    lead_taskAssignId = models.ForeignKey(TaskAssign, on_delete=models.CASCADE, null=True,default='')
+    lead_taskAssignId = models.ForeignKey(TaskAssign, on_delete=models.CASCADE, null=True,default='') 
+    lead_category_id =  models.ForeignKey(LeadCategory_Register, on_delete=models.CASCADE, null=True,default='') 
+
     lead_name = models.CharField(max_length=255,default='',null=True,blank=True)
     lead_email = models.EmailField(default='',null=True,blank=True)
     lead_contact = models.CharField(max_length=255,default='',null=True,blank=True)
+    lead_source = models.CharField(max_length=255,default='',null=True,blank=True)
+    
     lead_add_date = models.DateField(auto_now=True,null=True)
     lead_add_time = models.TimeField(auto_now_add=True,null=True,blank=True)
     waste_data = models.IntegerField(default=0)
     lead_status = models.IntegerField(default=0)
     lead_transfer_date = models.DateField(auto_now=False,null=True)
     lead_transfer_status = models.IntegerField(default=0)
+    target_update_status = models.IntegerField(default=0)
+
 
 class lead_Details(models.Model):
     leadId = models.ForeignKey(Leads, on_delete=models.CASCADE, null=True,default='') 
@@ -239,14 +291,14 @@ class lead_Details(models.Model):
     lead_field_data = models.CharField(max_length=855,default='',null=True,blank=True)
 
 
-
 class WorkProgress(models.Model):
     wp_workerId = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='') 
     wp_add_date = models.DateField(auto_now=True,null=True)
-    wp_from_date = models.DateField(auto_now=False,null=True) 
+    wp_from_date = models.DateField(auto_now=False,null=True)
     wp_to_date = models.DateField(auto_now=False,null=True)
     work_discription = models.TextField(default='',null=True,blank=True)
     wp_type = models.CharField(max_length=255,default='',null=True,blank=True)
     wp_progress = models.IntegerField(default=0)
     wp_status = models.IntegerField(default=0)
     wp_file = models.JSONField(default=list)
+

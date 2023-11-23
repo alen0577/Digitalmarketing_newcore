@@ -1,0 +1,316 @@
+{% extends 'DAM_base.html' %}
+{% load static %}
+{% block body %}
+
+<link rel="stylesheet" href="https://www.cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" />
+
+
+<div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+
+          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'DAM_platform_management' %}">Platform Management</a></li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Platform Leads </li>
+        </ol>
+      </nav>
+</div>
+
+<style>
+  .bg-transparent
+  {
+    font-size: .80rem;
+    border: none;
+    border-bottom: 1px solid #5555;
+  }
+  .bg-transparent:hover
+  {
+ 
+    border-bottom: 1px solid #0775a1c0;
+  }
+  .select-text
+  {
+    color: rgb(51, 53, 54);
+  }
+  .box-div
+  {
+
+    background: #ffff;
+  }
+  .box-1
+  {
+    background-color: #1e88e5;
+    color: #1e88e5;
+  }
+  .box-2
+  {
+    background-color: #cbe2f6;
+    color: #cbe2f6;
+  }
+</style>
+
+<!-- Chart section -->
+
+<section class="container-fluid">
+  <div class="d-flex justify-content-between">
+    <h6>{{ platform_data.platform_Name }}</h6>
+    <div>
+      <p><span class="box-div box-1">--</span><span class="ml-1 text-small ">Total Data</span></p>
+      <p><span class="box-div box-2">--</span><span class="ml-1 text-small ">Collected Data</span></p>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div id="bar-chart"></div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .morris-hover {
+    position:absolute;
+    z-index:1000;
+  }
+  
+  .morris-hover.morris-default-style {     border-radius:10px;
+    padding:6px;
+    color:#666;
+    background:rgba(255, 255, 255, 0.8);
+    border:solid 2px rgba(230, 230, 230, 0.8);
+    font-family:sans-serif;
+    font-size:12px;
+    text-align:center;
+  }
+  
+  .morris-hover.morris-default-style .morris-hover-row-label {
+    font-weight:bold;
+    margin:0.25em 0;
+  }
+  
+  .morris-hover.morris-default-style .morris-hover-point {
+    white-space:nowrap;
+    margin:0.1em 0;
+  }
+  
+  svg { width: 100%; }
+</style>
+
+<section>
+
+  <div class="row ">
+    <div class="col-12 grid-margin">
+      <div class="card">
+        <div class="card-body ">
+    
+            <div class="d-flex justify-content-between">
+                <h4 class="card-title">{{ platform_data.platform_Name }} Leads List</h4> 
+                <button class="btn btn-outline-danger mb-3"><span class="mdi mdi-file-pdf"></span><span class="small"> Export To Pdf</span> </button>
+                <button class="btn btn-outline-primary mb-3"><span class="mdi mdi-file-excel"></span><span class="small"> Export To Excel</span> </button>
+            </div>
+            
+            <section class="mt-3">
+              <div class="add-items d-flex justify-content-between">
+                <select class="form-control text-offwhite mr-2  bg-transparent" style="border-bottom: 1px solid #5555;">
+                  <option >----- All client -----</option>
+                  <option class="select-text"> client</option>
+                </select>
+                
+                
+                <form action="#" method="post" class="d-flex mr-1 ">
+                  {% csrf_token %}
+          
+                  <input type="date" class="text-offwhite mr-2 bg-transparent" name="#" required>
+                  <input type="date" class="text-offwhite bg-transparent" name="#" required >
+                  <button class="btn mdi mdi-magnify" id="" type="submit"></button> 
+                 
+                </form>
+
+
+                  <input  class="form-control text-offwhite" name="#" id="search-data" placeholder="search here..">
+                  <button class="btn btn-outline-danger mdi mdi-close" id="closeBtn" type="button"></button>  
+               
+                
+              </div>
+            </section>
+
+          <div class="table-responsive">
+           
+            <table class="table" id="employee-details">
+              <thead>
+                <tr>
+                  <th> No </th>
+                  <th> Date </th>
+                  <th> Full name </th>
+                  <th> Email </th>
+                  <th> Phone </th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for emp in employees %}
+                <tr class="clickable-row" data-href="#">
+                  <td>
+                    {{forloop.counter}}
+                  </td>
+                  
+                  <td>
+                    {% if emp.emp_profile %}
+                    <img src="{{emp.emp_profile.url}}" alt="Profile-image" />
+                    {% else %}
+                    <img src="{% static 'images/faces/profile-icon.png' %}" alt="Profile-image" />
+                    {% endif %}
+                    <span class="pl-2">{{emp.emp_name}}</span>
+                  </td>
+                  <td> {{emp.emp_email}} </td>
+                  <td> {{emp.emp_contact_no}} </td>
+                  <td> {{emp.emp_reg_date}} </td>
+                  <td> {{emp.emp_department_id.dept_name}} </td>
+                  <td> {{emp.emp_designation_id.desig_name}} </td>
+                  <td>
+                     {% if emp.emp_active_status == 1 %}
+                      <span class="mdi mdi-check-circle-outline text-success mdi-18px"></span>
+                    {% else %}
+                    <span class="mdi mdi-close-circle-outline text-danger  mdi-18px"></span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if emp.emp_verify_status == 1 %}
+                     <span class="mdi mdi-account-check text-success  mdi-18px"></span>
+                   {% else %}
+                   <span class="mdi mdi-account-remove text-danger  mdi-18px"></span>
+                   {% endif %}
+                 </td>
+                
+                 
+                </tr>
+               {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+  
+
+</section>
+
+
+  
+  
+  <script>
+   
+    const inputField = document.getElementById('search-data');
+    const closeBtn = document.getElementById('closeBtn');
+    const empTable = document.getElementById('employee-details');
+    closeBtn.style.display = 'none';
+  
+    inputField.addEventListener('input', function() {
+        filterTable();
+    });
+  
+    function filterTable() {
+        const filterValue = inputField.value.toLowerCase();
+        const rows = empTable.getElementsByTagName('tr');
+  
+        for (let i = 1; i < rows.length; i++) {
+            const Cell1 = rows[i].getElementsByTagName('td')[1];
+            const Cell2 = rows[i].getElementsByTagName('td')[2];
+            const Cell3 = rows[i].getElementsByTagName('td')[3];
+            const Cell4 = rows[i].getElementsByTagName('td')[4];
+            const Cell5 = rows[i].getElementsByTagName('td')[5];
+            const Cell6 = rows[i].getElementsByTagName('td')[6];
+            const Cell7 = rows[i].getElementsByTagName('td')[7];
+            const Cell8 = rows[i].getElementsByTagName('td')[8];
+  
+            if (Cell1 || Cell2 || Cell3 || Cell4|| Cell5 || Cell6 || Cell7 || Cell8) {
+  
+                const datacell1 = Cell1.textContent || Cell1.innerText;
+                const datacell2 = Cell2.textContent || Cell2.innerText;
+                const datacell3 = Cell3.textContent || Cell3.innerText;
+                const datacell4 = Cell4.textContent || Cell4.innerText;
+                const datacell5 = Cell5.textContent || Cell5.innerText;
+                const datacell6 = Cell6.textContent || Cell6.innerText;
+                const datacell7 = Cell7.textContent || Cell7.innerText;
+                const datacell8 = Cell7.textContent || Cell8.innerText;
+                
+  
+                if (datacell1.toLowerCase().includes(filterValue) || datacell2.toLowerCase().includes(filterValue) || datacell3.toLowerCase().includes(filterValue)
+                || datacell4.toLowerCase().includes(filterValue) || datacell5.toLowerCase().includes(filterValue) || datacell6.toLowerCase().includes(filterValue) 
+                || datacell7.toLowerCase().includes(filterValue) || datacell8.toLowerCase().includes(filterValue) ) 
+                {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+  
+     // To display the close button and hide the close button based on the search input 
+    inputField.addEventListener('input', function() {
+    if (inputField.value == '') {
+        closeBtn.style.display = 'none';
+       
+    } else {
+        closeBtn.style.display = 'block';
+        
+    }
+    });
+  
+    closeBtn.addEventListener('click', function() {
+    inputField.value = '';
+    closeBtn.style.display = 'none';
+    filterTable(); // Display the full table data
+    });
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      barChart();
+      
+      donutChart();
+    
+      $(window).resize(function() {
+        window.barChart.redraw();
+       
+        window.donutChart.redraw();
+      });
+    });
+    
+    function barChart() {
+      window.barChart = Morris.Bar({
+        element: 'bar-chart',
+        data: [
+          { y: 'Jan', a: 100, b: 90 },
+          { y: 'Feb', a: 75,  b: 65 },
+          { y: 'March', a: 50,  b: 40 },
+          { y: 'April', a: 75,  b: 65 },
+          { y: 'May', a: 50,  b: 40 },
+          { y: 'June', a: 75,  b: 65 },
+          { y: 'July', a: 120, b: 90 },
+          { y: 'August', a: 100, b: 90 },
+          { y: 'Sept', a: 105, b: 90 },
+          { y: 'October', a: 100, b: 90 },
+          { y: 'Nov', a: 90, b: 90 },
+          { y: 'December', a: 100, b: 90 },
+        ],
+     
+        xkey: 'y',
+        ykeys: ['a','b'],
+        labels: ['Total', '{{platform_data.platform_Name}}'],
+        lineColors: ['#1e88e5','#ff3321'],
+        lineWidth: '3px',
+        resize: true,
+        redraw: true
+      });
+    }
+    
+  
+  </script>
+
+{% endblock %}
