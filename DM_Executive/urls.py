@@ -82,6 +82,7 @@ urlpatterns = [
     #Lead collection 
     path('Executive-OngoingWork-Dailyworkadd_leadcollection/<int:pk>',views.executive_ongoingwork_dailyworkadd_lead,name='executive_ongoingwork_dailyworkadd_lead'),
     path('Executive-Leadcollection/<int:pk>',views.executive_lead_add_page,name='executive_lead_add_page'),
+    path('Executive-Leadcategory/<int:pk>',views.executive_leadcategory,name='executive_leadcategory'),
     path('Executive-Lead-add/<int:pk>',views.executive_lead_add,name='executive_lead_add'),
     path('Executive-OngoingWork-Dailywork-Leads/<int:pk>',views.executive_ongoingwork_dailywork_leads,name='executive_ongoingwork_dailywork_leads'),
     path('Remove-Duplicate-leads/<int:pk>/',views.remove_duplicate_leads,name='remove_duplicate_leads'),
@@ -95,9 +96,6 @@ urlpatterns = [
     path('Download_excelFile/<int:pk>',views.download_excelfile,name='download_excelfile'),
     path('Upload-excelFile/<int:pk>/',views.executive_lead_file_upload,name='executive_lead_file_upload'),
 
-
-
-
     path('download_file/<int:task_id>/<int:file_index>/', views.download_file, name='download_file'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),
     path('Executive-CompletedWorks-Dailyworks/<int:pk>',views.executive_completedwork_dailyworks,name='executive_completedwork_dailyworks'),
@@ -106,9 +104,6 @@ urlpatterns = [
     path('Executive-Progress-Save',views.executive_progress_save,name='executive_progress_save'),
     path('download_progressfile/<int:progress_id>/<int:file_index>/', views.download_progressfile, name='download_progressfile'),
 
-
-
-   
 
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

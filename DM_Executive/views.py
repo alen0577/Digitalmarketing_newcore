@@ -1445,6 +1445,49 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
     else:
             return redirect('/')
 
+
+def executive_leadcategory(request,pk):
+    if 'emp_id' in request.session:
+        if request.session.has_key('emp_id'):
+            emp_id = request.session['emp_id']
+           
+        else:
+            return redirect('/')
+        
+        emp_dash = LogRegister_Details.objects.get(id=emp_id)
+        dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash)
+
+        # notification-----------
+        notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
+        notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
+        
+        # taskassign details
+        task=TaskAssign.objects.get(id=pk)
+        clientid=task.ta_taskId.client_Id.id
+        work_id=(task.ta_workAssignId.wa_work_regId).id
+        
+        leadinfo=LeadField_Register.objects.filter(field_work_regId=work_id)
+
+        # leadcategory details
+        LeadCategory_Register
+        
+        content = {
+            'emp_dash':emp_dash,
+            'dash_details':dash_details,
+            'notifications':notifications,
+            'notification':notification,
+            'task':task,
+            'leadinfo':leadinfo,
+            'pk':pk,
+        }
+        print(clientid)
+        return render(request,'Executive_leadcategory.html',content)
+
+    else:
+            return redirect('/')
+
+
+
 def executive_lead_add_page(request,pk):
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
