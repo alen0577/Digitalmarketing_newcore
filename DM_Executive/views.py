@@ -45,11 +45,29 @@ def executive_dashboard(request):
         notifications = EmployeeRegister_Details.objects.filter(logreg_id=emp_dash)
         notification=Notification.objects.filter(emp_id=dash_details,notific_status=0).order_by('-notific_date','-notific_time')
         
+        # Get the current date and time in the timezone defined in your Django settings
+        current_datetime = timezone.now()
+
+        # Extract the month from the current date
+        current_month = current_datetime.month
+        #additional details
+        work_count=TaskAssign.objects.filter(ta_workerId= dash_details).count()
+        monthwork_count = TaskAssign.objects.filter(ta_workerId=dash_details, ta_start_date__month=current_month).count()
+        leave_count=EmployeeLeave.objects.filter(emp_id=dash_details).count()
+        monthleave_count =EmployeeLeave.objects.filter(emp_id=dash_details,start_date__month=current_month).count()
+        complaint_count=Complaints.objects.filter(complaint_emp_id= dash_details).count()
+        monthcomplaint_count = Complaints.objects.filter(complaint_emp_id=dash_details, complaint_date__month=current_month).count()        
         content = {
             'emp_dash':emp_dash,
             'dash_details':dash_details,
             'notifications':notifications,
             'notification':notification,
+            'work_count':work_count,
+            'monthwork_count': monthwork_count,
+            'leave_count':leave_count,
+            'monthleave_count': monthleave_count,
+            'complaint_count':complaint_count,
+            'monthcomplaint_count': monthcomplaint_count,
         }
 
         return render(request,'Executive_dashboard.html',content)
@@ -1446,6 +1464,7 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
             return redirect('/')
 
 
+
 def executive_leadcategory(request,pk):
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
@@ -1466,10 +1485,12 @@ def executive_leadcategory(request,pk):
         clientid=task.ta_taskId.client_Id.id
         work_id=(task.ta_workAssignId.wa_work_regId).id
         
-        leadinfo=LeadField_Register.objects.filter(field_work_regId=work_id)
 
-        # leadcategory details
-        LeadCategory_Register
+        # leadcategory assign details
+        category=LeadCategory_Register.objects.filter(cTaskId__client_Id=clientid)
+        lead_team_allocate = LeadCateogry_TeamAllocate.objects.filter(lc_id__in=category)
+        lead_category_assign=LeadCateogry_Assign.objects.filter(executive_id=dash_details,lcta_id__in=lead_team_allocate)
+
         
         content = {
             'emp_dash':emp_dash,
@@ -1477,14 +1498,15 @@ def executive_leadcategory(request,pk):
             'notifications':notifications,
             'notification':notification,
             'task':task,
-            'leadinfo':leadinfo,
             'pk':pk,
+            'lead_category_assign':lead_category_assign,
         }
-        print(clientid)
+        print( lead_category_assign)
         return render(request,'Executive_leadcategory.html',content)
 
     else:
             return redirect('/')
+
 
 
 
