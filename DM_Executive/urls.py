@@ -81,11 +81,11 @@ urlpatterns = [
     path('Executive-OngoingWork-Dailyworksave/<int:pk>',views.executive_ongoingwork_dailyworksave,name='executive_ongoingwork_dailyworksave'),
     #Lead collection 
     path('Executive-OngoingWork-Dailyworkadd_leadcollection/<int:pk>',views.executive_ongoingwork_dailyworkadd_lead,name='executive_ongoingwork_dailyworkadd_lead'),
-    path('Executive-Leadcollection/<int:pk>',views.executive_lead_add_page,name='executive_lead_add_page'),
     path('Executive-Leadcategory/<int:pk>',views.executive_leadcategory,name='executive_leadcategory'),
-    path('Executive-Lead-add/<int:pk>',views.executive_lead_add,name='executive_lead_add'),
+    path('Executive-Leadcollection/<int:pk>/<int:id>',views.executive_lead_add_page,name='executive_lead_add_page'),
+    path('Executive-Lead-add/<int:pk>/<int:id>',views.executive_lead_add,name='executive_lead_add'),
     path('Executive-OngoingWork-Dailywork-Leads/<int:pk>',views.executive_ongoingwork_dailywork_leads,name='executive_ongoingwork_dailywork_leads'),
-    path('Remove-Duplicate-leads/<int:pk>/',views.remove_duplicate_leads,name='remove_duplicate_leads'),
+    path('Remove-Duplicate-leads/<int:pk>/<int:id>',views.remove_duplicate_leads,name='remove_duplicate_leads'),
     path('Executive-OngoingWork-leadsDailyworkadd/<int:pk>',views.executive_ongoingwork_leads_dailywork,name='executive_ongoingwork_leads_dailywork'),
     path('Executive-OngoingWork-leadsDailyworksave/<int:pk>',views.executive_ongoingwork_leadsdailyworksave,name='executive_ongoingwork_leadsdailyworksave'),
     path('Executive-OngoingWorksleadComplete/<int:pk>',views.executive_ongoingwork_leadcomplete,name='executive_ongoingwork_leadcomplete'),
@@ -93,8 +93,8 @@ urlpatterns = [
 
 
     #Excel Create and download 
-    path('Download_excelFile/<int:pk>',views.download_excelfile,name='download_excelfile'),
-    path('Upload-excelFile/<int:pk>/',views.executive_lead_file_upload,name='executive_lead_file_upload'),
+    path('Download_excelFile/<int:pk>/<int:id>',views.download_excelfile,name='download_excelfile'),
+    path('Upload-excelFile/<int:pk>/<int:id>',views.executive_lead_file_upload,name='executive_lead_file_upload'),
 
     path('download_file/<int:task_id>/<int:file_index>/', views.download_file, name='download_file'),
     path('Executive-CompletedWorks',views.executive_completedwork,name='executive_completedwork'),

@@ -13,7 +13,7 @@
 <div>
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_ongoingwork_dailyworkadd_lead' pk %}">Add Daily Works</a></li>
+          <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'executive_leadcategory' pk %}">Lead Category</a></li>
           <li class="breadcrumb-item active text-md" aria-current="page">Lead Collection </li>
         </ol>
     </nav>
@@ -54,14 +54,14 @@
                         </a>
                     </div>
                     <div class="col-sm-6 col-lg-3 col-md-3 col-xl-2  grid-margin">
-                        <a href="{% url 'remove_duplicate_leads' task.id %}">
+                        <a href="{% url 'remove_duplicate_leads' task.id  lead_category_assign.id  %}">
                             <button class="btn btn-outline-success" data-toggle="tooltip" title="To check duplicates data based on email and Contact number">
                                 <span class="mdi mdi-file-multiple mr-1"></span><span class="small">Remove Duplicates</span>
                             </button>
                         </a>
                     </div>
                     <div class="col-sm-6 col-lg-3 col-md-3 col-xl-2 grid-margin ">
-                        <a href="{% url 'download_excelfile' task.id %}">
+                        <a href="{% url 'download_excelfile' task.id lead_category_assign.id %}">
                             <button class="btn btn-outline-danger" data-toggle="tooltip" title="Excel file format for data upload">
                                 <span class="mdi mdi-file-excel mr-1"></span><span class="small">File Download</span>
                             </button>
@@ -163,7 +163,7 @@
           
           <div class="card-body mt-0">
   
-            <form action="{% url 'executive_lead_file_upload' task.id %}" method="post"  enctype="multipart/form-data">
+            <form action="{% url 'executive_lead_file_upload' task.id lead_category_assign.id %}" method="post"  enctype="multipart/form-data">
              
               {% csrf_token %}
               <div class="form-group add-items mt-3">
@@ -202,7 +202,7 @@
           
           <div class="card-body mt-0">
   
-            <form action="{% url 'executive_lead_add' task.id %}" method="post"  enctype="multipart/form-data">
+            <form action="{% url 'executive_lead_add' task.id lead_category_assign.id %}" method="post"  enctype="multipart/form-data">
             
               {% csrf_token %}
               <div class="row">
@@ -250,7 +250,7 @@
 
             
           
-          </form>
+            </form>
   
           </div>
   

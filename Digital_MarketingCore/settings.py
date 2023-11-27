@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'Digital_MarketingCore.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Digital_MarketingCore_db7',   
+        'NAME': 'Digital_MarketingCore_db8',   
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',

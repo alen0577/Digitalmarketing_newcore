@@ -18,7 +18,9 @@ import io, os
 from openpyxl.workbook import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 from django.http import HttpResponse
-
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+import re
 
 
 # Create your views here.
@@ -1444,7 +1446,7 @@ def executive_ongoingwork_dailyworkadd_lead(request,pk):
         clientid=task.ta_taskId.client_Id.id
         work_id=(task.ta_workAssignId.wa_work_regId).id
         
-        leadinfo=LeadField_Register.objects.filter(field_work_regId=work_id)
+        leadinfo = LeadField_Register.objects.filter(field_work_regId=work_id).values('field_name').distinct()
 
         
 
@@ -1501,7 +1503,7 @@ def executive_leadcategory(request,pk):
             'pk':pk,
             'lead_category_assign':lead_category_assign,
         }
-        print( lead_category_assign)
+        
         return render(request,'Executive_leadcategory.html',content)
 
     else:
@@ -1510,7 +1512,7 @@ def executive_leadcategory(request,pk):
 
 
 
-def executive_lead_add_page(request,pk):
+def executive_lead_add_page(request,pk,id):
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
             emp_id = request.session['emp_id']
@@ -1526,14 +1528,18 @@ def executive_lead_add_page(request,pk):
         task=TaskAssign.objects.get(id=pk)
         work_id=(task.ta_workAssignId.wa_work_regId).id
         today=date.today()
-        
+
+        lead_category_assign=LeadCateogry_Assign.objects.get(executive_id=dash_details,id=id)
+        category_id=lead_category_assign.lcta_id.lc_id
+
         works_obj = WorkRegister.objects.get(id=work_id)
-        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj,field_lead_category=category_id)
         leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
         leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
         
-        
+       
+
 
         content = {
             'emp_dash':emp_dash,
@@ -1546,15 +1552,16 @@ def executive_lead_add_page(request,pk):
             'lf_obj':lf_obj,
             'pk':pk,
             'task':task,
+            'lead_category_assign':lead_category_assign,
         }
-
+       
         return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
 
     else:
         return redirect('/')
 
 
-def executive_lead_add(request,pk):
+def executive_lead_add(request,pk,id):
      
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
@@ -1573,10 +1580,15 @@ def executive_lead_add(request,pk):
         works_obj = WorkRegister.objects.get(id=work_id)
         today=date.today()
 
-        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        lead_category_assign=LeadCateogry_Assign.objects.get(executive_id=dash_details,id=id)
+        category_id=lead_category_assign.lcta_id.lc_id
+
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj,field_lead_category=category_id)
         leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
         leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
+
+        lead_category_assign=LeadCateogry_Assign.objects.get(executive_id=dash_details,id=id)
 
         if request.POST:
              
@@ -1589,6 +1601,7 @@ def executive_lead_add(request,pk):
             ld_obj.lead_contact =request.POST['leadContact']
             ld_obj.lead_source =request.POST['leadsource']
             ld_obj.lead_taskAssignId=task
+            ld_obj.lead_category_id=lead_category_assign.lcta_id.lc_id
             ld_obj.save()
 
 
@@ -1599,10 +1612,16 @@ def executive_lead_add(request,pk):
                 lead_detail.save()
 
 
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
         task.ta_target_achived=leads_target_count
-        task.save()    
+        task.save() 
+
+        category_id=lead_category_assign.lcta_id.lc_id
+        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+
+        lead_category_assign.lca_target_achived=leads_categorytarget_count
+        lead_category_assign.save() 
         
         
         
@@ -1619,6 +1638,7 @@ def executive_lead_add(request,pk):
             'lf_obj':lf_obj,
             'pk':pk,
             'task':task,
+            'lead_category_assign':lead_category_assign,
         }
 
         return render(request,'Executive_ongoingwork_dailyworkadd_leaddata.html',content)
@@ -1629,10 +1649,13 @@ def executive_lead_add(request,pk):
 # Excel File Create Section ---------------------------------------
 
     
-def download_excelfile(request,pk):
+def download_excelfile(request,pk,id):
     task=TaskAssign.objects.get(id=pk)
     work_id=(task.ta_workAssignId.wa_work_regId).id
     wId = WorkRegister.objects.get(id=work_id)
+    lead_category_assign=LeadCateogry_Assign.objects.get(id=id)
+    category_id=lead_category_assign.lcta_id.lc_id
+
 
  
     data = LeadField_Register.objects.filter(field_work_regId=wId).values('field_name')
@@ -1643,7 +1666,7 @@ def download_excelfile(request,pk):
 
     additional_headers = ["Full Name", "Email Id", "Contact Number", "Lead Source"]
 
-    headers = list(LeadField_Register.objects.filter(field_work_regId=wId).values_list('field_name', flat=True))
+    headers = list(LeadField_Register.objects.filter(field_work_regId=wId,field_lead_category=category_id).values_list('field_name', flat=True))
     all_headers = additional_headers + headers
     ws.append(all_headers)
 
@@ -1656,7 +1679,21 @@ def download_excelfile(request,pk):
 
     return response
 
-def executive_lead_file_upload(request,pk):
+def is_valid_phone_number(phone_number):
+    # Check if phone_number is None or not a string
+    if phone_number is None or not isinstance(str(phone_number), str):
+        return False
+
+    # Remove non-digit characters from the phone number
+    cleaned_phone_number = re.sub(r'\D', '', str(phone_number))
+
+    # Check if the cleaned phone number has exactly 10 digits
+    if len(cleaned_phone_number) == 10:
+        return True
+    else:
+        return False
+
+def executive_lead_file_upload(request,pk,id):
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
             emp_id = request.session['emp_id']
@@ -1674,6 +1711,8 @@ def executive_lead_file_upload(request,pk):
         work_id=(task.ta_workAssignId.wa_work_regId).id
         works_obj = WorkRegister.objects.get(id=work_id)
         today=date.today()
+        lead_category_assign=LeadCateogry_Assign.objects.get(executive_id=dash_details,id=id)
+
         data_list = {}
 
         if request.POST:
@@ -1697,6 +1736,8 @@ def executive_lead_file_upload(request,pk):
                 for _, row in df.iterrows():
                     lead_data = {header: row[header] for header in headers}
 
+                   
+
                     lead = Leads()
                     lead.lead_work_regId = works_obj
                     lead.lead_collect_Emp_id = dash_details
@@ -1705,11 +1746,26 @@ def executive_lead_file_upload(request,pk):
                     lead.lead_contact = lead_data['Contact Number']
                     lead.lead_source = lead_data['Lead Source']
                     lead.lead_taskAssignId=task
+                    lead.lead_category_id=lead_category_assign.lcta_id.lc_id
+                   
 
                     lead.save()
 
+                    try:
+                        validate_email(lead.lead_email)
+                    except ValidationError:
+                        # Invalid email, mark as waste data
+                        lead.waste_data=1
+
+                    # Validate phone number
+                    if not is_valid_phone_number(lead.lead_contact):
+                        # Invalid phone number, mark as waste data
+                        lead.waste_data=1
+                        
+                    lead.save()    
+
                     for key, value in lead_data.items():
-                        if key not in ('Full Name', 'Email Id', 'Contact Number'):
+                        if key not in ('Full Name', 'Email Id', 'Contact Number','Lead Source'):
                             lead_details = lead_Details(leadId=lead, lead_field_name=key, lead_field_data=value)
                             lead_details.leadId = lead
                             lead_details.save()
@@ -1725,10 +1781,17 @@ def executive_lead_file_upload(request,pk):
         leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
         leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
         task.ta_target_achived=leads_target_count
         task.save()
+
+        category_id=lead_category_assign.lcta_id.lc_id
+        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+
+        lead_category_assign.lca_target_achived=leads_categorytarget_count
+        lead_category_assign.save()
+        
 
 
         
@@ -1744,6 +1807,7 @@ def executive_lead_file_upload(request,pk):
             'lf_obj':lf_obj,
             'pk':pk,
             'task':task,
+            'lead_category_assign':lead_category_assign,
         }
 
         
@@ -1755,7 +1819,7 @@ def executive_lead_file_upload(request,pk):
             return redirect('/')      
 
 
-def remove_duplicate_leads(request,pk):
+def remove_duplicate_leads(request,pk,id):
 
     if 'emp_id' in request.session:
         if request.session.has_key('emp_id'):
@@ -1777,7 +1841,10 @@ def remove_duplicate_leads(request,pk):
         works_obj = WorkRegister.objects.get(id=work_id)
         today=date.today()
 
-        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj)
+        lead_category_assign=LeadCateogry_Assign.objects.get(executive_id=dash_details,id=id)
+        category_id=lead_category_assign.lcta_id.lc_id
+
+        lf_obj = LeadField_Register.objects.filter(field_work_regId=works_obj,field_lead_category=category_id)
         leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
         leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
@@ -1804,10 +1871,17 @@ def remove_duplicate_leads(request,pk):
             # Delete duplicate leads
             duplicates.exclude(pk=lead_to_keep.pk).delete()
 
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details).count()
+
+        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
         task.ta_target_achived=leads_target_count
         task.save()    
+
+        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+
+        lead_category_assign.lca_target_achived=leads_categorytarget_count
+        lead_category_assign.save()
+
 
         content = {
             'emp_dash':emp_dash,
@@ -1820,6 +1894,7 @@ def remove_duplicate_leads(request,pk):
             'lf_obj':lf_obj,
             'pk':pk,
             'task':task,
+            'lead_category_assign':lead_category_assign,
         }
 
 
