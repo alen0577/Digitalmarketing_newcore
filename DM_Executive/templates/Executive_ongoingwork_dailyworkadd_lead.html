@@ -52,7 +52,7 @@
               
               <tr>
               
-                <td>1</td>
+                <td>{{forloop.counter}}</td>
                 <td>{{ task.ta_taskId.client_Id.client_name }}</td>
                 <td>{{ task.ta_start_date }}</td>
                 <td>{{ task.ta_due_date }}</td>
@@ -85,18 +85,19 @@
                 </td>
                 <td>
                     
-                    <ol>
-                      
-                        <li><p>Full Name</p></li>
-                        <li><p> Email</p></li>
-                        <li><p> Contact Number </p></li>
-                        <li><p> Lead Source </p></li>
-                        {% if leadinfo %}
-                        {% for fields in leadinfo %}
-                        <li><p>{{ fields.field_name }}</p></li>
-                        {% endfor %}
-                        {% endif %}
-                    </ol>
+                  <ol>
+                    
+                    <li><p>Full Name</p></li>
+                    <li><p> Email</p></li>
+                    <li><p> Contact Number </p></li>
+                    <li><p> Lead Source </p></li>
+                    {% if leadinfo %}
+                    {% for fields in leadinfo %}
+                    <li><p>{{ fields.field_name }}</p></li>
+                    {% endfor %}
+                    {% endif %}
+                    
+                  </ol>
                   
                 </td>
                 <td>

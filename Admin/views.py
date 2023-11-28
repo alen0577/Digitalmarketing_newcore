@@ -1979,7 +1979,38 @@ def admin_get_client_completedworkdetails(request):
             
         }    
         
-        print(registeredwork_list)
+        
         
         # You might want to serialize the 'employee_details' to a JSON format.
         return JsonResponse(context)
+
+def admin_leads_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # Get a queryset of clients with lead work under this admin
+        # Assuming you have instances of ClientTask_Register model with task_name='lead collection'
+        tasks_with_lead_collection = ClientTask_Register.objects.filter(task_name='lead collection',cTcompId=dash_details)
+
+        # Get the corresponding clients using the reverse relation
+        clients = ClientRegister.objects.filter(clienttask_register__in=tasks_with_lead_collection)
+
+        
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'clients':clients,
+            
+        }
+
+        return render(request,'AD_leads_page.html',content)
+
+    else:
+        return redirect('/')

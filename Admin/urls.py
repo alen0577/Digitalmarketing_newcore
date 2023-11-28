@@ -77,16 +77,8 @@ urlpatterns = [
     path('Admin-Client-OngoingworkDetails',views.admin_get_client_ongoingworkdetails,name='admin_get_client_ongoingworkdetails'),
     path('Admin-Client-CompletedworkDetails',views.admin_get_client_completedworkdetails,name='admin_get_client_completedworkdetails'),
 
-
-
-
-
-
-
-
-
-
-
+    # leads Section -----------------
+    path('Admin-Leads',views.admin_leads_page,name='admin_leads_page'),
     
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
