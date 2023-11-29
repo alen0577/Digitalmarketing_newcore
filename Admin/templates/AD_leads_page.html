@@ -18,14 +18,14 @@
       <div class="card-body">
 
         <div class="d-flex">
-          <h4 class="card-title">Choose  Client</h4>   
+          <h4 class="card-title">Select <span class="text-success">Client</span></h4>   
         </div>
 
         <div class="row mb-5 mt-3">
           <div class="col-md-4">
             <form action="" method="post">
               {% csrf_token %}
-              <select name="employeeselect" id="employee-select" class="form-control text-white" onchange="clearDateInputs()">
+              <select name="client-select" id="client-select" class="form-control text-white" onchange="clearDateInputs()">
                 <option value="" hidden>Select</option>
                 {% for i in clients %}
                 <option value="{{i.id}}">{{i.client_name}}</option>
@@ -42,7 +42,7 @@
   </div>
 </div>
 
-<div class="row" id="complainttable" style="display: none;">
+<div class="row" id="leadtable" style="display: none;">
   <div class="col-12 grid-margin">
     <div class="card">
       <div class="card-body">
@@ -88,7 +88,7 @@
           </div>
 
 
-          <table class="table mt-4 mb-4" id="employee-details">
+          <table class="table mt-4 mb-4" id="lead-details">
             <thead>
               <tr>
                 <th> No. </th>
@@ -98,6 +98,7 @@
                 <th> Lead Email</th>
                 <th> Lead Contact</th>
                 <th> Lead Source</th>
+                <!-- <th> Lead Category</th> -->
                 <th> Client Required Fields</th>
                  
               </tr>
@@ -113,9 +114,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                
-                
-                
+                <!-- <td></td> -->
               </tr>
               
             </tbody>
@@ -133,66 +132,59 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function () {
-    $('#employee-select').change(function () {
-      var selectedEmployee = $(this).val();
+    $('#client-select').change(function () {
+      var selectedClient = $(this).val();
       
-      if (selectedEmployee) {
+      if (selectedClient) {
         // Show the table
-        $('#complainttable').show();
+        $('#leadtable').show();
         
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_employee_complaintdetails" %}',
+          url: '{% url "admin_get_client_leaddetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-            'employee_id': selectedEmployee
+            'client_id': selectedClient
           },
           success: function (data) {
             // Clear the table body
-            $('#employee-details tbody').empty();
+            $('#lead-details tbody').empty();
   
             // Populate the table with the received data
-            for (var i = 0; i < data.details.length; i++) {
-              var emp = data.details[i];
-              var complainttatusText = '';
-              if (emp.status === 1) {
-                complainttatusText = '<button class="btn btn-outline-success btn-sm  mb-2">Action Taken</button>';
-              } else if (emp.status === 0) {
-                complainttatusText = '<button class="btn btn-outline-warning btn-sm mb-2">Pending</button><p>Action will take as soon as possible</p>';
-              } else {
-                complainttatusText = '<button class="btn btn-outline-danger btn-sm mb-2">Rejected</button>';
+            for (var i = 0; i < data.details1.length; i++) {
+              var lead = data.details1[i];
+              
+              // Prepare lead details HTML
+              var leadDetailsHTML = '';
+              for (var j = 0; j < lead.lead_details.length; j++) {
+                var detail = lead.lead_details[j];
+                leadDetailsHTML += `<p>${detail.field_name}: ${detail.field_data}</p>`;
               }
 
-              var actionText = emp.action ? `<p>${emp.action}</p>` : '';
-             
               var newRow = `
                 <tr>
                   <td>${i + 1}</td>
-                  <td>${emp.complaint_date}</td>
-                  <td>
-                    <h6>${emp.compaint_head}</h6>
-                    <p>${emp.compaint_content}</p>
-                  </td>
-                  <td>
-                    ${complainttatusText}
-                    ${actionText}
-                  </td>
-                  
-                  
+                  <td>${lead.date}</td>
+                  <td>${lead.employee}</td>
+                  <td>${lead.name}</td>
+                  <td>${lead.email}</td>
+                  <td>${lead.contact}</td>
+                  <td>${lead.source}</td>
+                  <td>${leadDetailsHTML}</td>
                 </tr>
               `;
-              $('#employee-details tbody').append(newRow);
+              $('#lead-details tbody').append(newRow);
             }
           }
         });
       } else {
         // If no option is selected, hide the table
-        $('#complainttable').hide();
+        $('#leadtable').hide();
       }
     });
   });
-  
 </script>
+
 <script>
   // Add event listener for date input changes
   $('#fdate, #edate').on('change', function () {
@@ -203,7 +195,7 @@
     var endDate = $('#edate').val();
 
     // Iterate through the table rows and hide/show them based on the date range
-    $('#employee-details tbody tr').each(function () {
+    $('#lead-details tbody tr').each(function () {
       var rowStartDate = $(this).find('td:eq(1)').text(); // Assuming start date is in the second column
       var rowEndDate = $(this).find('td:eq(1)').text(); // Assuming end date is in the third column
 

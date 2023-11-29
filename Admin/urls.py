@@ -79,6 +79,9 @@ urlpatterns = [
 
     # leads Section -----------------
     path('Admin-Leads',views.admin_leads_page,name='admin_leads_page'),
+    path('Admin-LeadDetails',views.admin_get_client_leaddetails,name='admin_get_client_leaddetails'),
+
+
     
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
