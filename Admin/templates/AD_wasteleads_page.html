@@ -7,7 +7,7 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_dashboard' %}">Dashboard</a></li>
           <li class="breadcrumb-item"><a class="text-underline-remove" href="{% url 'admin_leads_section' %}">Leads</a></li>
-          <li class="breadcrumb-item active text-md" aria-current="page">All Leads</li>
+          <li class="breadcrumb-item active text-md" aria-current="page">Waste Leads</li>
         </ol>
       </nav>
 </div>
@@ -156,7 +156,7 @@
         
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_client_leaddetails" %}',
+          url: '{% url "admin_get_client_wasteleaddetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
             'client_id': selectedClient
@@ -293,7 +293,7 @@
 
         $.ajax({
           type: 'POST',
-          url: '{% url "admin_get_client_employee_leaddetails" %}',
+          url: '{% url "admin_get_client_employee_wasteleaddetails" %}',
           data: {
             'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
             'employee_id': selectedEmployee,

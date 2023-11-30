@@ -78,11 +78,16 @@ urlpatterns = [
     path('Admin-Client-CompletedworkDetails',views.admin_get_client_completedworkdetails,name='admin_get_client_completedworkdetails'),
 
     # leads Section -----------------
+    path('Admin-Leadsection',views.admin_leads_section,name='admin_leads_section'),
     path('Admin-Leads',views.admin_leads_page,name='admin_leads_page'),
     path('Admin-LeadDetails',views.admin_get_client_leaddetails,name='admin_get_client_leaddetails'),
     path('Admin_lead_categories',views.get_lead_categories, name='get_lead_categories'),
     path('Admin_lead_collected_employees',views.get_lead_collected_employees, name='get_lead_collected_employees'),
     path('Admin-Employee-LeadDetails',views.admin_get_client_employee_leaddetails,name='admin_get_client_employee_leaddetails'),
+    path('Admin-Waste-Leads',views.admin_wasteleads_page,name='admin_wasteleads_page'),
+    path('Admin-Waste-LeadDetails',views.admin_get_client_wasteleaddetails,name='admin_get_client_wasteleaddetails'),
+    path('Admin-Employee-Waste-LeadDetails',views.admin_get_client_employee_wasteleaddetails,name='admin_get_client_employee_wasteleaddetails'),
+
 
 
     

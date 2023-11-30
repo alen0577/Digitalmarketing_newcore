@@ -107,7 +107,7 @@
             </a>
           </li>
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{% url 'admin_leads_page' %}">
+            <a class="nav-link" href="{% url 'admin_leads_section' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-chart-areaspline text-success"></i>
               </span>
@@ -115,20 +115,22 @@
             </a>
           </li>
           <!-- <li class="nav-item menu-items">
-            <a class="nav-link" data-toggle="collapse" href="#" aria-expanded="false" aria-controls="ui-basic">
+            <a class="nav-link" data-toggle="collapse" href="#" aria-expanded="false" aria-controls="leads">
               <span class="menu-icon">
-                <i class="mdi mdi-laptop"></i>
+                <i class="mdi mdi-chart-areaspline text-success"></i>
               </span>
-              <span class="menu-title">Link Name</span>
+              <span class="menu-title">Leads</span>
               <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="ui-basic">
+            <div class="collapse" id="leads">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="#">Link Name</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_leads_page' %}">All Leads</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_wasteleads_page' %}">Waste Leads</a></li>
                 
               </ul>
             </div>
           </li> -->
+          
           
          
           
