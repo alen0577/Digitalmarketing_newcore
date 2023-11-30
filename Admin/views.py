@@ -1985,6 +1985,8 @@ def admin_get_client_completedworkdetails(request):
         # You might want to serialize the 'employee_details' to a JSON format.
         return JsonResponse(context)
 
+# lead section
+
 def admin_leads_page(request):
     if 'admin_id' in request.session:
         if request.session.has_key('admin_id'):
@@ -2039,6 +2041,7 @@ def admin_get_client_leaddetails(request):
             lead_id = lead.id
             date = lead.lead_add_date
             employee = lead.lead_collect_Emp_id.emp_name
+            lead_category=lead.lead_category_id.lead_collection_for
             lead_name = lead.lead_name
             lead_email = lead.lead_email
             lead_contact = lead.lead_contact
@@ -2058,6 +2061,7 @@ def admin_get_client_leaddetails(request):
                 'id': lead_id,
                 'date': date,
                 'employee': employee,
+                'category':lead_category,
                 'name': lead_name,
                 'email': lead_email,
                 'contact': lead_contact,
@@ -2067,6 +2071,102 @@ def admin_get_client_leaddetails(request):
 
         context = {
             'details1': leaddata_list,
+        }
+
+        # Return the serialized data as JSON.
+        return JsonResponse(context)
+
+
+# Client wise lead category details---------------------------------
+
+def get_lead_categories(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        lead_categories = LeadCategory_Register.objects.filter(cTaskId__client_Id=client_id).values('lead_collection_for').distinct()
+
+        return JsonResponse(list(lead_categories), safe=False)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# lead collected employee details---------------------------------
+
+def get_lead_collected_employees(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        
+        # Query your database to fetch lead details based on the client_id.
+        client = get_object_or_404(ClientRegister, id=client_id)
+        client_tasks = ClientTask_Register.objects.filter(client_Id=client, task_name='lead collection')
+        
+        # Assuming ta_taskId is a ForeignKey in TaskAssign pointing to TaskAssign model
+        task_assigns = TaskAssign.objects.filter(ta_taskId__in=client_tasks)
+
+        # Extract employee instances from TaskAssign instances
+        employees = task_assigns.values('ta_workerId__id', 'ta_workerId__emp_name').distinct()
+        
+        
+        return JsonResponse(list(employees), safe=False)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+# Client, employee  wise lead details---------------------------------
+
+def admin_get_client_employee_leaddetails(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        employee_id =request.POST.get('employee_id')
+
+        employee_details = EmployeeRegister_Details.objects.get(id=employee_id)
+
+        # Query your database to fetch lead details based on the client_id.
+        client = get_object_or_404(ClientRegister, id=client_id)
+        client_tasks = ClientTask_Register.objects.filter(client_Id=client, task_name='lead collection')
+        
+        # Assuming ta_taskId is a ForeignKey in TaskAssign pointing to TaskAssign model
+        task_assigns = TaskAssign.objects.filter(ta_taskId__in=client_tasks)
+        
+        leads = Leads.objects.filter(lead_taskAssignId__in=task_assigns, waste_data=0,lead_collect_Emp_id=employee_details).order_by('-lead_add_date', '-lead_add_time')
+        
+        leaddata_list1 = []
+
+        # Lead details of clients.
+        for lead in leads:
+            lead_id = lead.id
+            date = lead.lead_add_date
+            employee = lead.lead_collect_Emp_id.emp_name
+            lead_category=lead.lead_category_id.lead_collection_for
+            lead_name = lead.lead_name
+            lead_email = lead.lead_email
+            lead_contact = lead.lead_contact
+            lead_source = lead.lead_source
+
+            # Get all lead details related to this lead
+            lead_details = lead_Details.objects.filter(leadId=lead)
+
+            lead_details_list = []
+            for detail in lead_details:
+                lead_details_list.append({
+                    'field_name': detail.lead_field_name,
+                    'field_data': detail.lead_field_data,
+                })
+
+            leaddata_list1.append({
+                'id': lead_id,
+                'date': date,
+                'employee': employee,
+                'category':lead_category,
+                'name': lead_name,
+                'email': lead_email,
+                'contact': lead_contact,
+                'source': lead_source,
+                'lead_details': lead_details_list,
+            })
+
+       
+        context = {
+            'details2': leaddata_list1,
         }
 
         # Return the serialized data as JSON.

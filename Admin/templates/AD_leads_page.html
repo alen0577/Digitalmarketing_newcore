@@ -47,28 +47,43 @@
     <div class="card">
       <div class="card-body">
         <div class="d-flex">
-          <h4 class="card-title">Clients lead data's</h4>
+          <h4 class="card-title">Lead Data</h4>
             
         </div>
         
         <div class="table-responsive" >
-            <div class="row">
-                <div class="col-md-5">
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        <select name="employeeselect" id="employee-select" class="form-control text-white" onchange="clearDateInputs()">
-                          <option value="" hidden>Select</option>
-                          {% for i in clients %}
-                          <option value="{{i.id}}">{{i.client_name}}</option>
-                          {% endfor %}
-                          
-                        </select>
-                    </form>
+            <div class="row mt-4">
+              <div class="col-md-5">
+                <form action="" method="post">
+                  {% csrf_token %}
+                  <label>Employees</label>
+                  <select name="employee" id="employee-select" class="form-control text-white" onchange="clearDateInputs()">
+                    <option value="" hidden>Select</option>
+                    {% for i in catagory %}
+                    <option value="{{i.id}}">{{i.emp_name}}</option>
+                    {% endfor %}
+                    
+                  </select>
+                </form>
 
-                </div>
+              </div>
+              <div class="col-md-5">
+                <form action="" method="post">
+                  {% csrf_token %}
+                  <label>Lead categories</label>
+                  <select name="leadcatagory" id="catagory-select" class="form-control text-white" onchange="clearDateInputs()">
+                    <option value="" hidden>Select</option>
+                    {% for i in catagory %}
+                    <option value="{{i.lead_collection_for}}">{{i.lead_collection_for}}</option>
+                    {% endfor %}
+                    
+                  </select>
+                </form>
+
+              </div>
             </div>
 
-          <div class="row mt-5">
+          <div class="row mt-4">
 
             <div class=" col-md-5">
               <div class="form-group">
@@ -94,11 +109,11 @@
                 <th> No. </th>
                 <th> Date </th>
                 <th> Lead collected Employee</th>
+                <th> Lead Category</th>
                 <th> Lead Name</th>
                 <th> Lead Email</th>
                 <th> Lead Contact</th>
                 <th> Lead Source</th>
-                <!-- <th> Lead Category</th> -->
                 <th> Client Required Fields</th>
                  
               </tr>
@@ -114,7 +129,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <!-- <td></td> -->
+                <td></td>
               </tr>
               
             </tbody>
@@ -128,8 +143,7 @@
 
 
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
   $(document).ready(function () {
     $('#client-select').change(function () {
@@ -166,6 +180,7 @@
                   <td>${i + 1}</td>
                   <td>${lead.date}</td>
                   <td>${lead.employee}</td>
+                  <td>${lead.category}</td>
                   <td>${lead.name}</td>
                   <td>${lead.email}</td>
                   <td>${lead.contact}</td>
@@ -186,30 +201,186 @@
 </script>
 
 <script>
+  $(document).ready(function() {
+    // Triggered when a client is selected
+    $('#client-select').change(function() {
+      var clientId = $(this).val();
+      
+      // Make an Ajax request to get lead categories for the selected client
+      $.ajax({
+        url: '{% url "get_lead_categories" %}',  // Update the URL to match your Django URL pattern
+        method: 'POST',
+        data: {
+          'client_id': clientId, 
+          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(data) {
+          // Update the lead category select options
+          $('#catagory-select').empty();
+          $('#catagory-select').append('<option value="" hidden>Select</option>');
+
+          // Append new options based on the received data
+          for (var i = 0; i < data.length; i++) {
+            $('#catagory-select').append('<option value="' + data[i].lead_collection_for + '">' + data[i].lead_collection_for + '</option>');
+          }
+
+          // Show the lead table
+          $('#leadtable').show();
+        },
+        error: function(error) {
+          console.log('Error:', error);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+    // Triggered when a client is selected
+    $('#client-select').change(function() {
+      var clientId = $(this).val();
+      
+      // Make an Ajax request to get lead categories and associated employees for the selected client
+      $.ajax({
+        url: '{% url "get_lead_collected_employees" %}',  // Update the URL to match your Django URL pattern
+        method: 'POST',
+        data: {
+          'client_id': clientId, 
+          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(data) {
+          console.log('Received data:', data);
+
+          // Update the employee select options
+          $('#employee-select').empty();
+          $('#employee-select').append('<option value="" hidden>Select</option>');
+
+          // Iterate over each dictionary in the array
+          for (var i = 0; i < data.length; i++) {
+            // Assuming each dictionary has 'ta_workerId__id' and 'ta_workerId__emp_name' keys
+            var employeeId = data[i].ta_workerId__id;
+            var employeeName = data[i].ta_workerId__emp_name;
+
+            // Append the new option
+            $('#employee-select').append('<option value="' + employeeId + '">' + employeeName + '</option>');
+          }
+
+          // Show the lead table
+          $('#leadtable').show();
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', status, error);
+          console.log(xhr.responseText);
+        }
+      });
+    });
+  });
+</script>
+
+
+<script>
+  $(document).ready(function () {
+    $('#employee-select').change(function () {
+      clearCategorySelect();
+      var selectedEmployee = $(this).val();
+      var selectedClient = $('#client-select').val(); // Assuming you have a client select element
+
+      if (selectedEmployee) {
+        // Show the table
+        $('#leadtable').show();
+
+        $.ajax({
+          type: 'POST',
+          url: '{% url "admin_get_client_employee_leaddetails" %}',
+          data: {
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+            'employee_id': selectedEmployee,
+            'client_id': selectedClient
+          },
+          success: function (data) {
+            // Clear the table body
+            $('#lead-details tbody').empty();
+
+            // Populate the table with the received data
+            for (var i = 0; i < data.details2.length; i++) {
+              var lead = data.details2[i];
+
+              // Prepare lead details HTML
+              var leadDetailsHTML = '';
+              for (var j = 0; j < lead.lead_details.length; j++) {
+                var detail = lead.lead_details[j];
+                leadDetailsHTML += `<p>${detail.field_name}: ${detail.field_data}</p>`;
+              }
+
+              var newRow = `
+                <tr>
+                  <td>${i + 1}</td>
+                  <td>${lead.date}</td>
+                  <td>${lead.employee}</td>
+                  <td>${lead.category}</td>
+                  <td>${lead.name}</td>
+                  <td>${lead.email}</td>
+                  <td>${lead.contact}</td>
+                  <td>${lead.source}</td>
+                  <td>${leadDetailsHTML}</td>
+                </tr>
+              `;
+              $('#lead-details tbody').append(newRow);
+            }
+          }
+        });
+      } else {
+        // If no option is selected, hide the table
+        $('#leadtable').hide();
+      }
+    });
+
+    // Function to clear the category select
+    function clearCategorySelect() {
+      $('#catagory-select').val('');
+    }
+  });
+</script>
+
+
+
+<script>
+  // Add event listener for category dropdown changes
+  $('#catagory-select').on('change', function () {
+    filterTable();
+  });
+
   // Add event listener for date input changes
   $('#fdate, #edate').on('change', function () {
-    filterTableByDate();
+    filterTable();
   });
-  function filterTableByDate() {
+
+  function filterTable() {
+    var category = $('#catagory-select').val();
     var startDate = $('#fdate').val();
     var endDate = $('#edate').val();
 
-    // Iterate through the table rows and hide/show them based on the date range
+    // Iterate through the table rows and hide/show them based on the category and date range
     $('#lead-details tbody tr').each(function () {
+      var rowCategory = $(this).find('td:eq(3)').text(); // Assuming category is in the fourth column
       var rowStartDate = $(this).find('td:eq(1)').text(); // Assuming start date is in the second column
       var rowEndDate = $(this).find('td:eq(1)').text(); // Assuming end date is in the third column
 
-      if ((startDate === '' || rowStartDate >= startDate) && (endDate === '' || rowEndDate <= endDate)) {
+      // Check if the row satisfies both category and date conditions
+      if ((category === '' || rowCategory === category) &&
+          (startDate === '' || rowStartDate >= startDate) &&
+          (endDate === '' || rowEndDate <= endDate)) {
         $(this).show();
       } else {
         $(this).hide();
       }
     });
   }
-
 </script>
 
-<!-- clear date input whenever an employee is selecte -->
+
+<!-- clear date input whenever an employee is selected -->
 
 <script>
 
@@ -217,8 +388,11 @@
     document.getElementById("fdate").value = "";
     document.getElementById("edate").value = "";
   }
-  
+ 
 </script> 
+
+
+
 <style>
   a{
     text-decoration: none;
