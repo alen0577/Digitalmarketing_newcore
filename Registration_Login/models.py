@@ -49,6 +49,7 @@ class BusinessRegister_Details(models.Model):
     company_state =  models.CharField(max_length=150,default='',null=True,blank=True)
     company_active_status = models.IntegerField(default=0)
     reg_date = models.DateField(auto_now_add=True,null=True)
+    company_identify_Id = models.CharField(max_length=150,default='COMID001',blank=False,null=False)
 
 
 class DepartmentRegister_details(models.Model):

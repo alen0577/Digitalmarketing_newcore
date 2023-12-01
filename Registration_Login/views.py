@@ -2,6 +2,8 @@ from django.shortcuts import render,redirect
 from .models import *
 from Supper_admin.views import supper_admin_dashboard
 from django.http import JsonResponse
+from DM_Head.models import ClientRegister,WorkRegister
+
 
 
 #Login Section ------------
@@ -66,19 +68,12 @@ def login_submitt(request):
                         success=True
                         success_text = 'Your authenticated successfully.'
 
-                        if BusinessRegister_Details.objects.get(log_id=Admin_dash):
-
-                            business_details= BusinessRegister_Details.objects.get(log_id=Admin_dash)
-
-                            # Check if any field is empty or null
-                            for field in business_details._meta.get_fields():
-                                field_value = getattr(business_details, field.name,None)
-                                print(f"Field: {field.name}, Value: {field_value}")
-
+                        employees = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details,emp_active_status=0)
                            
 
                         content = {'Admin_dash':Admin_dash,
                                    'dash_details':dash_details,
+                                   'employees':employees,
                                    'success':success,
                                    'success_text':success_text}
                         
@@ -150,11 +145,18 @@ def login_submitt(request):
                         dash_details = EmployeeRegister_Details.objects.get(logreg_id=emp_dash,emp_active_status=1)
                         success=True
                         success_text = 'Your authenticated successfully.'
+
+                        employee_count = EmployeeRegister_Details.objects.filter(emp_comp_id=dash_details.emp_comp_id,emp_active_status=1).count()
+                        work_count = WorkRegister.objects.filter(wcompId=dash_details.emp_comp_id).count()
+                        client_count = ClientRegister.objects.filter(compId=dash_details.emp_comp_id).count()
                         
                         content = {'emp_dash':emp_dash,
                                    'dash_details':dash_details,
                                    'success':success,
-                                   'success_text':success_text}
+                                   'success_text':success_text,
+                                   'employee_count':employee_count,
+                                   'work_count':work_count,
+                                   'client_count':client_count}
                         
                         # Dashbord List-----
                         
@@ -162,18 +164,29 @@ def login_submitt(request):
                         # Digital Marketing Head -     1
                         # Team Lead              -     2
                         # Exicutive              -     3
+                        # Hr / Telecaller        -     4
+                        # Data Manager           -     5
                         
                         if dash_details.emp_designation_id.dashboard_id == 1:
-                        
+
                             return render(request,'HD_dashboard.html',content)
                         
                         elif dash_details.emp_designation_id.dashboard_id == 2:
                              
                             return render(request,'TL_dashboard.html',content)
-
+                        
                         elif dash_details.emp_designation_id.dashboard_id == 3:
-                            return render(request,'Executive_dashboard.html',content) 
-                               
+                             
+                            return render(request,'Executive_dashboard.html',content)
+                        
+                        elif dash_details.emp_designation_id.dashboard_id == 4:
+                             
+                            return render(request,'HR_dashboard.html',content)
+                        
+                        elif dash_details.emp_designation_id.dashboard_id == 5:
+                             
+                            return render(request,'DAM_dashboard.html',content)
+                        
                         else:
                             return render(request,'error-404.html')
 
@@ -211,6 +224,7 @@ def company_registration_form_save(request):
         log_details.log_username = request.POST['business_uname']
         log_details.log_password = request.POST['business_password']
         log_details.position = 'Admin'
+        log_details.active_status = 1
         log_details.save()
 
         bussiness_reg = BusinessRegister_Details()
@@ -219,10 +233,12 @@ def company_registration_form_save(request):
         bussiness_reg.owner_fname = request.POST['fname']
         bussiness_reg.owner_lname = request.POST['lname']
         bussiness_reg.company_name = request.POST['companyName']
+        bussiness_reg.company_identify_Id = request.POST['companyID']
         bussiness_reg.contact_no = request.POST['contactNo']
         bussiness_reg.company_email = request.POST['companyEmail']
         bussiness_reg.company_location = request.POST['companyLocation']
         bussiness_reg.company_website = request.POST['companyWebsite']
+        bussiness_reg.company_active_status = 1
         bussiness_reg.save()
 
         success = True
@@ -247,12 +263,22 @@ def employee_registration_form(request):
 
 
 def get_departments(request):
-    company_id = request.GET.get('company_id')
-    companyees = BusinessRegister_Details.objects.get(id=company_id)
-    departments = DepartmentRegister_details.objects.filter(brd_id=companyees,dept_active_status=1).values('id', 'dept_name')
-    
-    department_list = [{'id': department['id'], 'name': department['dept_name']} for department in departments]
-    return JsonResponse({'departments': department_list})
+   
+   identifier_id = request.GET.get('company_id')
+
+   try:
+    company = BusinessRegister_Details.objects.get(company_identify_Id=identifier_id)
+   except BusinessRegister_Details.DoesNotExist:
+    return JsonResponse({'departments': []})
+
+   departments = DepartmentRegister_details.objects.filter(brd_id=company, dept_active_status=1).values('id', 'dept_name')
+
+   department_list = [{'id': department['id'], 'name': department['dept_name']} for department in departments]
+
+   return JsonResponse({'departments': department_list})
+
+
+
 
 
 def get_designation(request):
