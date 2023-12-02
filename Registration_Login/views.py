@@ -304,7 +304,9 @@ def employee_registration_form_save(request):
         emp = EmployeeRegister_Details()
 
         emp.logreg_id = log_details
-        emp.emp_comp_id = BusinessRegister_Details.objects.get(id=int(request.POST['emp_company_name']))
+        identifier_id=request.POST['companyID']
+        company_details=BusinessRegister_Details.objects.get(company_identify_Id=identifier_id)
+        emp.emp_comp_id = company_details
         emp.emp_department_id = DepartmentRegister_details.objects.get(id=int(request.POST['emp_dept_name']))
         emp.emp_designation_id = DesignationRegister_details.objects.get(id=int(request.POST['emp_desig_name']))
 

@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from Registration_Login.models import *
 from django.db.models import Q
 from DM_Head.models import *
+from DataManager.models import *
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
@@ -2344,3 +2345,42 @@ def admin_get_client_employee_wasteleaddetails(request):
 
         # Return the serialized data as JSON.
         return JsonResponse(context)
+
+
+def admin_followupleads_page(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+           
+        else:
+            return redirect('/')
+        
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        # Get a queryset of clients with lead work under this admin
+        # Assuming you have instances of ClientTask_Register model with task_name='lead collection'
+        tasks_with_lead_collection = ClientTask_Register.objects.filter(task_name='lead collection',cTcompId=dash_details)
+
+        # Get the corresponding clients using the reverse relation
+        clients = ClientRegister.objects.filter(clienttask_register__in=tasks_with_lead_collection)
+        task_assigns = TaskAssign.objects.filter(ta_taskId__in=tasks_with_lead_collection)
+
+        works=WorkRegister.objects.filter(wcompId=dash_details)
+
+        followup_leads=leads=Leads.objects.filter(lead_work_regId__in=works,waste_data=0,lead_transfer_status=1).order_by('-lead_add_date', '-lead_add_time')
+        followup_status=FollowupStatus.objects.filter(company_Id=dash_details)
+        print(works)
+        content = {
+            'Admin_dash':Admin_dash,
+            'dash_details':dash_details,
+            'clients':clients,
+            'followup_leads':followup_leads,
+            'followup_status':followup_status,
+            
+        }
+
+        return render(request,'AD_followupleads_page.html',content)
+
+    else:
+        return redirect('/')

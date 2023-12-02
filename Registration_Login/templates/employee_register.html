@@ -112,14 +112,20 @@
           success: function(data) {
             // Clear previous options
             $("#department").empty();
+            $("#designation").empty();
 
             $("#department").append(
               $("<option>", {
-                value: 0,
+                value: '',
                 text: '-- select -- '
               })
             )
-
+            $("#designation").append(
+              $("<option>", {
+                value: '',
+                text: '-- select -- '
+              })
+            )
             // Iterate through the received data and add options to the dropdown
             $.each(data.departments, function (index, item) {
               $("#department").append(

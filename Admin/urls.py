@@ -87,6 +87,8 @@ urlpatterns = [
     path('Admin-Waste-Leads',views.admin_wasteleads_page,name='admin_wasteleads_page'),
     path('Admin-Waste-LeadDetails',views.admin_get_client_wasteleaddetails,name='admin_get_client_wasteleaddetails'),
     path('Admin-Employee-Waste-LeadDetails',views.admin_get_client_employee_wasteleaddetails,name='admin_get_client_employee_wasteleaddetails'),
+    path('Admin-Followup-Leads',views.admin_followupleads_page,name='admin_followupleads_page'),
+
 
 
 
