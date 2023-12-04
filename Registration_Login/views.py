@@ -384,6 +384,10 @@ def check_email(request):
 
     return JsonResponse({'exists': False})
     
+# Validation check - Company Identifier ID 
 
-
+def check_company_id(request):
+    company_id = request.GET.get('companyID', None)
+    data = {'exists': BusinessRegister_Details.objects.filter(company_identify_Id=company_id).exists()}
+    return JsonResponse(data)
 

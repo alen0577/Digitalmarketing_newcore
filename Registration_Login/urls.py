@@ -20,6 +20,7 @@ urlpatterns = [
 
     # check -----------------
     path('Email-Validation',views.check_email,name='check_email'),
+    path('check_company_id',views.check_company_id,name='check_company_id'),
 
     # Save --------------------
     path('Company-Registration-Save',views.company_registration_form_save,name='company_registration_form_save'),

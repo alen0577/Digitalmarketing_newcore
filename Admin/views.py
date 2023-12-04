@@ -5,6 +5,7 @@ from DM_Head.models import *
 from DataManager.models import *
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.core.serializers import serialize
 
 
 # Dashboard section---------------------------------
@@ -2369,13 +2370,19 @@ def admin_followupleads_page(request):
         works=WorkRegister.objects.filter(wcompId=dash_details)
 
         followup_leads=leads=Leads.objects.filter(lead_work_regId__in=works,waste_data=0,lead_transfer_status=1).order_by('-lead_add_date', '-lead_add_time')
+        followup_lead_details=lead_Details.objects.filter(leadId__in=followup_leads)
+        followup_followup_details = FollowupDetails.objects.filter(lead_Id__in=followup_leads).order_by('response_date')
+        followup_history_details = FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads)
         followup_status=FollowupStatus.objects.filter(company_Id=dash_details)
-        print(works)
+       
         content = {
             'Admin_dash':Admin_dash,
             'dash_details':dash_details,
             'clients':clients,
             'followup_leads':followup_leads,
+            'followup_lead_details':followup_lead_details,
+            'followup_followup_details': followup_followup_details,
+            'followup_history_details': followup_history_details,
             'followup_status':followup_status,
             
         }
@@ -2384,3 +2391,72 @@ def admin_followupleads_page(request):
 
     else:
         return redirect('/')
+
+def get_leadcategory(request):
+    client_id = request.GET.get('client_id')
+
+    try:
+        client = ClientRegister.objects.get(id=client_id)
+    except ClientRegister.DoesNotExist:
+        return JsonResponse({'categories': []})
+
+    categories = LeadCategory_Register.objects.filter(cTaskId__client_Id=client).values('id', 'lead_collection_for')
+
+    category_list = [{'id': category['id'], 'name': category['lead_collection_for']} for category in categories]
+
+    return JsonResponse({'categories': category_list})
+
+
+def serialize_leads(queryset):
+    return serialize('json', queryset)
+
+def serialize_lead_details(queryset):
+    return serialize('json', queryset)
+
+def serialize_followup_details(queryset):
+    return serialize('json', queryset)
+
+def serialize_followup_history(queryset):
+    return serialize('json', queryset)
+
+
+
+def filter_lead_and_modal_details(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+
+        # Fetch follow-up leads based on the client_id
+        followup_leads = Leads.objects.filter(lead_taskAssignId__ta_taskId__client_Id_id=client_id, lead_transfer_status=1, waste_data=0).order_by('-lead_add_date', '-lead_add_time')
+
+        # Fetch lead details associated with the leads
+        lead_details = lead_Details.objects.filter(leadId__in=followup_leads)
+
+        # Fetch follow-up details associated with the leads
+        followup_details = FollowupDetails.objects.filter(lead_Id__in=followup_leads)
+
+        # Fetch follow-up history associated with the leads
+        followup_history = FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads)
+
+        # Build a list of dictionaries for follow-up leads
+        lead_list = []
+        for lead in followup_leads:
+            lead_list.append({
+                'date': lead.lead_transfer_date,
+                'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
+                'category': lead.lead_category_id.lead_collection_for,
+                'name': lead.lead_name,
+                'email': lead.lead_email,
+                'contact': lead.lead_contact,
+                'source': lead.lead_source,
+                'modalid': lead.id,
+                'collected_by': lead.lead_collect_Emp_id.emp_name,
+            })
+
+        return JsonResponse({
+            'followup_leads': lead_list,
+            'lead_details': serialize_lead_details(lead_details),
+            'followup_details': serialize_followup_details(followup_details),
+            'followup_history': serialize_followup_history(followup_history),
+        })
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)

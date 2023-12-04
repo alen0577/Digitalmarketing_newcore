@@ -19,7 +19,7 @@
       <div class="card-body">
 
         <div class="d-flex">
-          <h4 class="card-title">Follow Up <span class="text-success">Leads</span></h4>   
+          <h4 class="card-title"><span class="text-success">Follow Up</span> Leads</h4>   
         </div>
 
         <div class="row mt-3">
@@ -124,7 +124,7 @@
                 <th> Lead Email</th>
                 <th> Lead Contact</th>
                 <th> Lead Source</th>
-                <th> Follow Details</th>
+                <th> More Details</th>
                 <th> Collected by</th>
                  
               </tr>
@@ -134,14 +134,14 @@
               {% for i in followup_leads %}  
               <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{i.lead_transfer_date}}</td>
+                <td>{{i.lead_transfer_date|date:"Y-m-d"}}</td>
                 <td>{{i.lead_taskAssignId.ta_taskId.client_Id.client_name}}</td>
                 <td>{{i.lead_category_id.lead_collection_for}}</td>
                 <td>{{i.lead_name}}</td>
                 <td>{{i.lead_email}}</td>
                 <td>{{i.lead_contact}}</td>
                 <td>{{i.lead_source }}</td>
-                <td><button class="btn btn-outline-primary btn-sm">Details</button></td>
+                <td><button class="btn btn-outline-success btn-sm leads-btn" data-toggle="modal" data-target="#leadModal{{i.id}}">Details</button></td>
                 <td>{{i.lead_collect_Emp_id.emp_name}}</td>
               </tr>
               {% endfor %}
@@ -154,246 +154,145 @@
   </div>
 </div>
 
+<!-- Modal for Lead details-->
+
+{% for i in followup_leads %}
+{% for details in followup_lead_details %}
+<div class="modal fade" id="leadModal{{i.id}}">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="card">
+        <div class="card-head d-flex justify-content-between align-items-center mt-3 mb-0 ">
+          <h4 class="card-title mt-3 ml-3"><span class="text-success">Lead</span> Details</h4>
+          
+        </div>
+        
+        <div class="card-body mt-0">
+          <div class="container mt-2">
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a class="nav-link active bg-dark text-white" id="pills-leaddetails-tab{{i.id}}" data-toggle="pill" href="#pills-leaddetails{{i.id}}">Lead Details</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bg-dark text-white" id="pills-followup-tab{{i.id}}" data-toggle="pill" href="#pills-followup{{i.id}}">Follow Up</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bg-dark text-white" id="pills-history-tab{{i.id}}" data-toggle="pill" href="#pills-history{{i.id}}">History</a>
+              </li>
+            </ul>
+            <div class="tab-content mt-2">
+              <div class="tab-pane fade show active" id="pills-leaddetails{{i.id}}">
+                
+                <h6><span class="text-success">{{ i.lead_name }}</span> - More Details</h6>
+                {% for lead_detail in followup_lead_details %}
+                  {% if lead_detail.leadId_id == i.id %}
+                    <p>{{ lead_detail.lead_field_name }}: {{ lead_detail.lead_field_data }}</p>
+                    <!-- Add other lead details using Django template variables -->
+                  {% endif %}
+                {% endfor %}
+                
+              </div>
+              <div class="tab-pane fade" id="pills-followup{{i.id}}">
+                <h6><span class="text-success">{{ i.lead_name }}</span> -  Follow Up Details</h6>
+                {% for followup_detail in followup_followup_details %}
+                  {% if followup_detail.lead_Id_id == i.id %}
+                    <p>Followup Date: {{ followup_detail.response_date|date:"Y-m-d" }}</p>
+                    <p>Response: {{ followup_detail.response }}</p>
+                    {% if followup_detail.response_status == 'Intrested' %}
+                     <p>Status: <span class="text-success">Intrested</span></p>
+                    {% elif followup_detail.response_status == 'Pending' %}
+                     <p>Status: <span class="text-warning">Pending</span></p>
+                    {% elif followup_detail.response_status == 'Waiting' %}
+                     <p>Status: <span class="text-warning">Waiting</span></p>
+                    {% elif followup_detail.response_status == 'Call Not Picked' %}
+                     <p>Status: <span class="text-danger">Call Not Picked</span></p>
+                    {% else  %}
+                     <p>Status: <span class="text-danger">{{ followup_detail.response_status }}</span></p>
+                    {% endif %}
+                    {% if followup_detail.nextfollowup_date %}
+                     <p>Next Follow-Up Date: {{ followup_detail.nextfollowup_date|date:"Y-m-d" }}</p>
+                    {% endif %}
+                    <p>----------------------------------------------</p>
+                    
+                    <!-- Add other follow-up details using Django template variables -->
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="tab-pane fade" id="pills-history{{i.id}}">
+                <h6><span class="text-success">{{ i.lead_name }}</span> - History Details</h6>
+                {% for history_detail in followup_history_details %}
+                  {% if history_detail.hs_lead_Id_id == i.id %}
+                    <p>Allocated Date: {{ history_detail.allocated_date|date:"Y-m-d"  }}</p>
+                    <p>Allocated Hr/Tele Caller: {{ history_detail.hr_telecaller_Id.emp_name }}</p>
+                    <p>Note: {{ history_detail.note }}</p>
+                    <p>Final Status: <span class="text-primary">{{ history_detail.final_status }}</span></p>
+                    <p>----------------------------------------------</p>
+                    <!-- Add other history details using Django template variables -->
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endfor %}
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script>
-  $(document).ready(function () {
-    $('#client-select').change(function () {
-      var selectedClient = $(this).val();
-      
-      if (selectedClient) {
-        // Show the table
-        $('#leadtable').show();
-        
-        $.ajax({
-          type: 'POST',
-          url: '',
-          data: {
-            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-            'client_id': selectedClient
-          },
-          success: function (data) {
-            // Clear the table body
-            $('#lead-details tbody').empty();
-  
-            // Populate the table with the received data
-            for (var i = 0; i < data.details1.length; i++) {
-              var lead = data.details1[i];
-              
-              // Prepare lead details HTML
-              var leadDetailsHTML = '';
-              for (var j = 0; j < lead.lead_details.length; j++) {
-                var detail = lead.lead_details[j];
-                leadDetailsHTML += `<p>${detail.field_name}: ${detail.field_data}</p>`;
-              }
 
-              var newRow = `
-                <tr>
-                  <td>${i + 1}</td>
-                  <td>${lead.date}</td>
-                  <td>${lead.employee}</td>
-                  <td>${lead.category}</td>
-                  <td>${lead.name}</td>
-                  <td>${lead.email}</td>
-                  <td>${lead.contact}</td>
-                  <td>${lead.source}</td>
-                  <td>${leadDetailsHTML}</td>
-                </tr>
-              `;
-              $('#lead-details tbody').append(newRow);
-            }
-          }
-        });
-      } else {
-        // If no option is selected, hide the table
-        $('#leadtable').hide();
-      }
-    });
-  });
-</script>
-
+<!-- Add this script tag to include your custom JavaScript -->
 <script>
   $(document).ready(function() {
-    // Triggered when a client is selected
-    $('#client-select').change(function() {
-      var clientId = $(this).val();
-      
-      // Make an Ajax request to get lead categories for the selected client
+    // Function to update lead categories based on selected client
+    function updateLeadCategories() {
+      var client_id = $('#client-select').val(); // Assuming your client dropdown has the id 'client-select'
+
       $.ajax({
-        url: '{% url "get_lead_categories" %}',  // Update the URL to match your Django URL pattern
-        method: 'POST',
+        url: '{% url "get_leadcategory" %}',  // Replace with the actual URL
         data: {
-          'client_id': clientId, 
-          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+          'client_id': client_id,
         },
+        dataType: 'json',
         success: function(data) {
-          // Update the lead category select options
-          $('#catagory-select').empty();
-          $('#catagory-select').append('<option value="" hidden>Select</option>');
+          // Update lead category dropdown options
+          var categorySelect = $('#catagory-select');  // Assuming your category dropdown has the id 'catagory-select'
+          categorySelect.empty();  // Clear existing options
 
-          // Append new options based on the received data
-          for (var i = 0; i < data.length; i++) {
-            $('#catagory-select').append('<option value="' + data[i].lead_collection_for + '">' + data[i].lead_collection_for + '</option>');
-          }
+          // Add "Select" option
+          categorySelect.append('<option value="" hidden>Select</option>');
 
-          // Show the lead table
-          $('#leadtable').show();
-        },
-        error: function(error) {
-          console.log('Error:', error);
-        }
-      });
-    });
-  });
-</script>
-
-<script>
-  $(document).ready(function() {
-    // Triggered when a client is selected
-    $('#client-select').change(function() {
-      var clientId = $(this).val();
-      
-      // Make an Ajax request to get lead categories and associated employees for the selected client
-      $.ajax({
-        url: '{% url "get_lead_collected_employees" %}',  // Update the URL to match your Django URL pattern
-        method: 'POST',
-        data: {
-          'client_id': clientId, 
-          'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-        },
-        success: function(data) {
-          console.log('Received data:', data);
-
-          // Update the employee select options
-          $('#employee-select').empty();
-          $('#employee-select').append('<option value="" hidden>Select</option>');
-
-          // Iterate over each dictionary in the array
-          for (var i = 0; i < data.length; i++) {
-            // Assuming each dictionary has 'ta_workerId__id' and 'ta_workerId__emp_name' keys
-            var employeeId = data[i].ta_workerId__id;
-            var employeeName = data[i].ta_workerId__emp_name;
-
-            // Append the new option
-            $('#employee-select').append('<option value="' + employeeId + '">' + employeeName + '</option>');
-          }
-
-          // Show the lead table
-          $('#leadtable').show();
+          // Add new options based on the Ajax response
+          $.each(data.categories, function(index, category) {
+            categorySelect.append('<option value="' + category.id + '">' + category.name + '</option>');
+          });
         },
         error: function(xhr, status, error) {
-          console.error('AJAX Error:', status, error);
-          console.log(xhr.responseText);
+          console.error('Error fetching lead categories:', status, error);
         }
       });
-    });
-  });
-</script>
-
-
-<script>
-  $(document).ready(function () {
-    $('#employee-select').change(function () {
-      clearCategorySelect();
-      var selectedEmployee = $(this).val();
-      var selectedClient = $('#client-select').val(); // Assuming you have a client select element
-
-      if (selectedEmployee) {
-        // Show the table
-        $('#leadtable').show();
-
-        $.ajax({
-          type: 'POST',
-          url: '{% url "admin_get_client_employee_leaddetails" %}',
-          data: {
-            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-            'employee_id': selectedEmployee,
-            'client_id': selectedClient
-          },
-          success: function (data) {
-            // Clear the table body
-            $('#lead-details tbody').empty();
-
-            // Populate the table with the received data
-            for (var i = 0; i < data.details2.length; i++) {
-              var lead = data.details2[i];
-
-              // Prepare lead details HTML
-              var leadDetailsHTML = '';
-              for (var j = 0; j < lead.lead_details.length; j++) {
-                var detail = lead.lead_details[j];
-                leadDetailsHTML += `<p>${detail.field_name}: ${detail.field_data}</p>`;
-              }
-
-              var newRow = `
-                <tr>
-                  <td>${i + 1}</td>
-                  <td>${lead.date}</td>
-                  <td>${lead.employee}</td>
-                  <td>${lead.category}</td>
-                  <td>${lead.name}</td>
-                  <td>${lead.email}</td>
-                  <td>${lead.contact}</td>
-                  <td>${lead.source}</td>
-                  <td>${leadDetailsHTML}</td>
-                </tr>
-              `;
-              $('#lead-details tbody').append(newRow);
-            }
-          }
-        });
-      } else {
-        // If no option is selected, hide the table
-        $('#leadtable').hide();
-      }
-    });
-
-    // Function to clear the category select
-    function clearCategorySelect() {
-      $('#catagory-select').val('');
     }
-  });
-</script>
 
-
-
-<script>
-  // Add event listener for category dropdown changes
-  $('#catagory-select').on('change', function () {
-    filterTable();
-  });
-
-  // Add event listener for date input changes
-  $('#fdate, #edate').on('change', function () {
-    filterTable();
-  });
-
-  function filterTable() {
-    var category = $('#catagory-select').val();
-    var startDate = $('#fdate').val();
-    var endDate = $('#edate').val();
-
-    // Iterate through the table rows and hide/show them based on the category and date range
-    $('#lead-details tbody tr').each(function () {
-      var rowCategory = $(this).find('td:eq(3)').text(); // Assuming category is in the fourth column
-      var rowStartDate = $(this).find('td:eq(1)').text(); // Assuming start date is in the second column
-      var rowEndDate = $(this).find('td:eq(1)').text(); // Assuming end date is in the third column
-
-      // Check if the row satisfies both category and date conditions
-      if ((category === '' || rowCategory === category) &&
-          (startDate === '' || rowStartDate >= startDate) &&
-          (endDate === '' || rowEndDate <= endDate)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
+    // Attach the function to the client dropdown change event
+    $('#client-select').change(function() {
+      updateLeadCategories();
     });
-  }
+  });
 </script>
 
 
-<!-- clear date input whenever an employee is selected -->
+
+
+
+
+
 
 <script>
 
@@ -403,6 +302,9 @@
   }
  
 </script> 
+
+
+
 
 
 
