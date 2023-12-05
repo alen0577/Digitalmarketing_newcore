@@ -89,7 +89,11 @@ urlpatterns = [
     path('Admin-Employee-Waste-LeadDetails',views.admin_get_client_employee_wasteleaddetails,name='admin_get_client_employee_wasteleaddetails'),
     path('Admin-Followup-Leads',views.admin_followupleads_page,name='admin_followupleads_page'),
     path('Category-Select',views.get_leadcategory,name='get_leadcategory'),
-    path('filter_lead_and_modal_details', views.filter_lead_and_modal_details, name='filter_lead_and_modal_details'),
+    path('filter_lead', views.filter_lead, name='filter_lead'),
+    path('Filter_lead_category', views.filter_lead_category, name='filter_lead_category'),
+    path('Filter_lead_caller', views.filter_lead_hr_telecaller, name='filter_lead_hr_telecaller'),
+    path('Filter_lead_status', views.filter_lead_status, name='filter_lead_status'),
+
 
 
 

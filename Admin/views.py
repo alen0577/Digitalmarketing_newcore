@@ -2373,7 +2373,10 @@ def admin_followupleads_page(request):
         followup_lead_details=lead_Details.objects.filter(leadId__in=followup_leads)
         followup_followup_details = FollowupDetails.objects.filter(lead_Id__in=followup_leads).order_by('response_date')
         followup_history_details = FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads)
+        # hr_telecaller1=FollowupDetails.objects.filter(lead_Id__in=followup_leads).values('hr_telecaller_Id','hr_telecaller_Id__emp_name').distinct()
+        hr_telecaller2=FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads).values('hr_telecaller_Id','hr_telecaller_Id__emp_name').distinct()
         followup_status=FollowupStatus.objects.filter(company_Id=dash_details)
+       
        
         content = {
             'Admin_dash':Admin_dash,
@@ -2383,7 +2386,9 @@ def admin_followupleads_page(request):
             'followup_lead_details':followup_lead_details,
             'followup_followup_details': followup_followup_details,
             'followup_history_details': followup_history_details,
+            'hr_telecaller2':hr_telecaller2,
             'followup_status':followup_status,
+            
             
         }
 
@@ -2407,35 +2412,18 @@ def get_leadcategory(request):
     return JsonResponse({'categories': category_list})
 
 
-def serialize_leads(queryset):
-    return serialize('json', queryset)
-
-def serialize_lead_details(queryset):
-    return serialize('json', queryset)
-
-def serialize_followup_details(queryset):
-    return serialize('json', queryset)
-
-def serialize_followup_history(queryset):
-    return serialize('json', queryset)
 
 
-
-def filter_lead_and_modal_details(request):
+def filter_lead(request):
     if request.method == 'POST':
         client_id = request.POST.get('client_id')
 
         # Fetch follow-up leads based on the client_id
-        followup_leads = Leads.objects.filter(lead_taskAssignId__ta_taskId__client_Id_id=client_id, lead_transfer_status=1, waste_data=0).order_by('-lead_add_date', '-lead_add_time')
-
-        # Fetch lead details associated with the leads
-        lead_details = lead_Details.objects.filter(leadId__in=followup_leads)
-
-        # Fetch follow-up details associated with the leads
-        followup_details = FollowupDetails.objects.filter(lead_Id__in=followup_leads)
-
-        # Fetch follow-up history associated with the leads
-        followup_history = FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads)
+        followup_leads = Leads.objects.filter(
+            lead_taskAssignId__ta_taskId__client_Id_id=client_id, 
+            lead_transfer_status=1, 
+            waste_data=0
+        ).order_by('-lead_add_date', '-lead_add_time')
 
         # Build a list of dictionaries for follow-up leads
         lead_list = []
@@ -2451,12 +2439,179 @@ def filter_lead_and_modal_details(request):
                 'modalid': lead.id,
                 'collected_by': lead.lead_collect_Emp_id.emp_name,
             })
+        
+        context={
+            'details1': lead_list,
+        }
 
-        return JsonResponse({
-            'followup_leads': lead_list,
-            'lead_details': serialize_lead_details(lead_details),
-            'followup_details': serialize_followup_details(followup_details),
-            'followup_history': serialize_followup_history(followup_history),
-        })
+        return JsonResponse(context)
     else:
         return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def filter_lead_category(request):
+    if request.method == 'POST':
+        client_id = request.POST.get('client_id')
+        category_id = request.POST.get('category_id')
+
+       
+        # Fetch follow-up leads based on the client_id, categor_id
+        followup_leads_category = Leads.objects.filter(
+            lead_taskAssignId__ta_taskId__client_Id_id=client_id, 
+            lead_transfer_status=1,
+            waste_data=0,
+            lead_category_id=category_id
+        ).order_by('-lead_add_date', '-lead_add_time')
+
+        # Build a list of dictionaries for follow-up leads
+        leadcategory_list = []
+        for lead in followup_leads_category:
+            leadcategory_list.append({
+                'date': lead.lead_transfer_date,
+                'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
+                'category': lead.lead_category_id.lead_collection_for,
+                'name': lead.lead_name,
+                'email': lead.lead_email,
+                'contact': lead.lead_contact,
+                'source': lead.lead_source,
+                'modalid': lead.id,
+                'collected_by': lead.lead_collect_Emp_id.emp_name,
+            })
+        
+        context={
+            'details2': leadcategory_list,
+        }
+
+        return JsonResponse(context)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def filter_lead_hr_telecaller(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+        else:
+            return redirect('/')
+
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        if request.method == 'POST':
+            client_id = request.POST.get('client_id')
+            category_id = request.POST.get('category_id')
+            caller_id = request.POST.get('caller_id')
+
+            # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
+            followup_history_details = FollowupHistory.objects.filter(hs_comp_Id=dash_details, hr_telecaller_Id=caller_id)
+
+            if client_id and category_id:
+                # Get corresponding Leads details for the filtered FollowupHistory instances
+                related_leads_details = Leads.objects.filter(
+                    lead_taskAssignId__ta_taskId__client_Id_id=client_id,
+                    lead_category_id=category_id,
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_history_details.values_list('hs_lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+            else:
+                # Get corresponding Leads details for the filtered FollowupHistory instances
+                related_leads_details = Leads.objects.filter(
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_history_details.values_list('hs_lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+
+            # Build a list of dictionaries for follow-up leads
+            leadhr_list = []
+            for lead in related_leads_details:
+                leadhr_list.append({
+                    'date': lead.lead_transfer_date,
+                    'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
+                    'category': lead.lead_category_id.lead_collection_for,
+                    'name': lead.lead_name,
+                    'email': lead.lead_email,
+                    'contact': lead.lead_contact,
+                    'source': lead.lead_source,
+                    'modalid': lead.id,
+                    'collected_by': lead.lead_collect_Emp_id.emp_name,
+                })
+
+            context = {
+                'details3': leadhr_list,
+            }
+
+            return JsonResponse(context)
+        else:
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+
+    else:
+        return redirect('/')
+
+
+def filter_lead_status(request):
+    if 'admin_id' in request.session:
+        if request.session.has_key('admin_id'):
+            admin_id = request.session['admin_id']
+        else:
+            return redirect('/')
+
+        Admin_dash = LogRegister_Details.objects.get(id=admin_id)
+        dash_details = BusinessRegister_Details.objects.get(log_id=Admin_dash)
+
+        if request.method == 'POST':
+            client_id = request.POST.get('client_id')
+            category_id = request.POST.get('category_id')
+            caller_id = request.POST.get('caller_id')
+            status_id = request.POST.get('status_id')
+
+            if caller_id:
+                # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
+                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details, hr_telecaller_Id=caller_id, final_status=status_id)
+            else:
+                # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
+                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details,final_status=status_id)
+
+            if client_id and category_id:
+                # Get corresponding Leads details for the filtered FollowupHistory instances
+                related_leads_details = Leads.objects.filter(
+                    lead_taskAssignId__ta_taskId__client_Id_id=client_id,
+                    lead_category_id=category_id,
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_history_statusdetails.values_list('hs_lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+            else:
+                # Get corresponding Leads details for the filtered FollowupHistory instances
+                related_leads_details = Leads.objects.filter(
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_history_statusdetails.values_list('hs_lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+
+            # Build a list of dictionaries for follow-up leads
+            leadstatus_list = []
+            for lead in related_leads_details:
+                leadstatus_list.append({
+                    'date': lead.lead_transfer_date,
+                    'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
+                    'category': lead.lead_category_id.lead_collection_for,
+                    'name': lead.lead_name,
+                    'email': lead.lead_email,
+                    'contact': lead.lead_contact,
+                    'source': lead.lead_source,
+                    'modalid': lead.id,
+                    'collected_by': lead.lead_collect_Emp_id.emp_name,
+                })
+
+           
+            context = {
+                'details4': leadstatus_list,
+            }
+
+            return JsonResponse(context)
+        else:
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+
+    else:
+        return redirect('/')        
