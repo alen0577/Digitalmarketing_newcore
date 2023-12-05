@@ -6,6 +6,7 @@ from DataManager.models import *
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.core.serializers import serialize
+from itertools import chain 
 
 
 # Dashboard section---------------------------------
@@ -2373,8 +2374,7 @@ def admin_followupleads_page(request):
         followup_lead_details=lead_Details.objects.filter(leadId__in=followup_leads)
         followup_followup_details = FollowupDetails.objects.filter(lead_Id__in=followup_leads).order_by('response_date')
         followup_history_details = FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads)
-        # hr_telecaller1=FollowupDetails.objects.filter(lead_Id__in=followup_leads).values('hr_telecaller_Id','hr_telecaller_Id__emp_name').distinct()
-        hr_telecaller2=FollowupHistory.objects.filter(hs_lead_Id__in=followup_leads).values('hr_telecaller_Id','hr_telecaller_Id__emp_name').distinct()
+        hr_telecaller=EmployeeRegister_Details.objects.filter(emp_designation_id__dashboard_id=4,emp_comp_id=dash_details)
         followup_status=FollowupStatus.objects.filter(company_Id=dash_details)
        
        
@@ -2386,7 +2386,7 @@ def admin_followupleads_page(request):
             'followup_lead_details':followup_lead_details,
             'followup_followup_details': followup_followup_details,
             'followup_history_details': followup_history_details,
-            'hr_telecaller2':hr_telecaller2,
+            'hr_telecaller':hr_telecaller,
             'followup_status':followup_status,
             
             
@@ -2502,29 +2502,44 @@ def filter_lead_hr_telecaller(request):
             category_id = request.POST.get('category_id')
             caller_id = request.POST.get('caller_id')
 
-            # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
+            # Get FollowupHistory followup  instances related to the specific hr_telecaller_id in reverse order
             followup_history_details = FollowupHistory.objects.filter(hs_comp_Id=dash_details, hr_telecaller_Id=caller_id)
+            followup_details= FollowupDetails.objects.filter(comp_Id=dash_details,  hr_telecaller_Id=caller_id)
 
             if client_id and category_id:
                 # Get corresponding Leads details for the filtered FollowupHistory instances
-                related_leads_details = Leads.objects.filter(
+                related_leads_details1 = Leads.objects.filter(
                     lead_taskAssignId__ta_taskId__client_Id_id=client_id,
                     lead_category_id=category_id,
                     lead_transfer_status=1,
                     waste_data=0,
                     id__in=followup_history_details.values_list('hs_lead_Id', flat=True)
                 ).order_by('-lead_add_date', '-lead_add_time')
+                related_leads_details2 = Leads.objects.filter(
+                    lead_taskAssignId__ta_taskId__client_Id_id=client_id,
+                    lead_category_id=category_id,
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_details.values_list('lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
             else:
                 # Get corresponding Leads details for the filtered FollowupHistory instances
-                related_leads_details = Leads.objects.filter(
+                related_leads_details1 = Leads.objects.filter(
                     lead_transfer_status=1,
                     waste_data=0,
                     id__in=followup_history_details.values_list('hs_lead_Id', flat=True)
                 ).order_by('-lead_add_date', '-lead_add_time')
+                related_leads_details2 = Leads.objects.filter(
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_details.values_list('lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+
 
             # Build a list of dictionaries for follow-up leads
             leadhr_list = []
-            for lead in related_leads_details:
+
+            for lead in chain(related_leads_details1, related_leads_details2):
                 leadhr_list.append({
                     'date': lead.lead_transfer_date,
                     'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
@@ -2538,7 +2553,7 @@ def filter_lead_hr_telecaller(request):
                 })
 
             context = {
-                'details3': leadhr_list,
+                'details3': sorted(leadhr_list, key=lambda x: (x['date'], x['modalid']), reverse=True),
             }
 
             return JsonResponse(context)
@@ -2563,18 +2578,29 @@ def filter_lead_status(request):
             client_id = request.POST.get('client_id')
             category_id = request.POST.get('category_id')
             caller_id = request.POST.get('caller_id')
-            status_id = request.POST.get('status_id')
+            status = request.POST.get('status_id')
 
             if caller_id:
                 # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
-                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details, hr_telecaller_Id=caller_id, final_status=status_id)
+                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details, hr_telecaller_Id=caller_id, final_status=status)
+                followup_statusdetails =FollowupDetails.objects.filter(comp_Id=dash_details, hr_telecaller_Id=caller_id,response_status=status)
             else:
                 # Get FollowupHistory instances related to the specific hr_telecaller_id in reverse order
-                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details,final_status=status_id)
+                followup_history_statusdetails = FollowupHistory.objects.filter(hs_comp_Id=dash_details,final_status=status)
+                followup_statusdetails =FollowupDetails.objects.filter(comp_Id=dash_details,response_status=status)
 
+            
             if client_id and category_id:
                 # Get corresponding Leads details for the filtered FollowupHistory instances
-                related_leads_details = Leads.objects.filter(
+                related_leads_details1 = Leads.objects.filter(
+                    lead_taskAssignId__ta_taskId__client_Id_id=client_id,
+                    lead_category_id=category_id,
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_statusdetails.values_list('lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+                
+                related_leads_details2 = Leads.objects.filter(
                     lead_taskAssignId__ta_taskId__client_Id_id=client_id,
                     lead_category_id=category_id,
                     lead_transfer_status=1,
@@ -2583,15 +2609,25 @@ def filter_lead_status(request):
                 ).order_by('-lead_add_date', '-lead_add_time')
             else:
                 # Get corresponding Leads details for the filtered FollowupHistory instances
-                related_leads_details = Leads.objects.filter(
+                related_leads_details1 = Leads.objects.filter(
+                    lead_transfer_status=1,
+                    waste_data=0,
+                    id__in=followup_statusdetails.values_list('lead_Id', flat=True)
+                ).order_by('-lead_add_date', '-lead_add_time')
+
+                related_leads_details2 = Leads.objects.filter(
                     lead_transfer_status=1,
                     waste_data=0,
                     id__in=followup_history_statusdetails.values_list('hs_lead_Id', flat=True)
                 ).order_by('-lead_add_date', '-lead_add_time')
 
+            
+
             # Build a list of dictionaries for follow-up leads
             leadstatus_list = []
-            for lead in related_leads_details:
+
+            # Combine the results from both queries
+            for lead in chain(related_leads_details1, related_leads_details2):
                 leadstatus_list.append({
                     'date': lead.lead_transfer_date,
                     'client_name': lead.lead_taskAssignId.ta_taskId.client_Id.client_name,
@@ -2606,7 +2642,7 @@ def filter_lead_status(request):
 
            
             context = {
-                'details4': leadstatus_list,
+                'details4': sorted(leadstatus_list, key=lambda x: (x['date'], x['modalid']), reverse=True),
             }
 
             return JsonResponse(context)

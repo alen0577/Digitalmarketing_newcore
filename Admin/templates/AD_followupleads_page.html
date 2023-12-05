@@ -52,8 +52,8 @@
               <label>Hr/Tele caller</label>
               <select name="employee" id="caller-select" class="form-control text-white" onchange="clearDateInputs()">
                 <option value="" hidden>Select</option>
-                {% for entry in hr_telecaller2 %}
-                <option value="{{ entry.hr_telecaller_Id }}">{{ entry.hr_telecaller_Id__emp_name }}</option>
+                {% for entry in hr_telecaller %}
+                <option value="{{ entry.id }}">{{ entry.emp_name }}</option>
                 {% endfor %}
                 
               </select>
