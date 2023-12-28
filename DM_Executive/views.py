@@ -1612,16 +1612,16 @@ def executive_lead_add(request,pk,id):
                 lead_detail.save()
 
 
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
+        # leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
-        task.ta_target_achived=leads_target_count
-        task.save() 
+        # task.ta_target_achived=leads_target_count
+        # task.save() 
 
-        category_id=lead_category_assign.lcta_id.lc_id
-        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+        # category_id=lead_category_assign.lcta_id.lc_id
+        # leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
 
-        lead_category_assign.lca_target_achived=leads_categorytarget_count
-        lead_category_assign.save() 
+        # lead_category_assign.lca_target_achived=leads_categorytarget_count
+        # lead_category_assign.save() 
         
         
         
@@ -1781,16 +1781,16 @@ def executive_lead_file_upload(request,pk,id):
         leads_obj = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).order_by('-lead_add_date','-lead_add_time')
         leads_obj_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_add_date=today).count()
         lead_Details_obj = lead_Details.objects.filter(leadId__in=leads_obj)
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
+        # leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
-        task.ta_target_achived=leads_target_count
-        task.save()
+        # task.ta_target_achived=leads_target_count
+        # task.save()
 
-        category_id=lead_category_assign.lcta_id.lc_id
-        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+        # category_id=lead_category_assign.lcta_id.lc_id
+        # leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
 
-        lead_category_assign.lca_target_achived=leads_categorytarget_count
-        lead_category_assign.save()
+        # lead_category_assign.lca_target_achived=leads_categorytarget_count
+        # lead_category_assign.save()
         
 
 
@@ -1872,15 +1872,15 @@ def remove_duplicate_leads(request,pk,id):
             duplicates.exclude(pk=lead_to_keep.pk).delete()
 
 
-        leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
+        # leads_target_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,waste_data=0).count()
 
-        task.ta_target_achived=leads_target_count
-        task.save()    
+        # task.ta_target_achived=leads_target_count
+        # task.save()    
 
-        leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
+        # leads_categorytarget_count = Leads.objects.filter(lead_work_regId=works_obj,lead_collect_Emp_id=dash_details,lead_category_id=category_id,waste_data=0).count()
 
-        lead_category_assign.lca_target_achived=leads_categorytarget_count
-        lead_category_assign.save()
+        # lead_category_assign.lca_target_achived=leads_categorytarget_count
+        # lead_category_assign.save()
 
 
         content = {

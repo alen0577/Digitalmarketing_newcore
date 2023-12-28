@@ -200,6 +200,7 @@
                 {% for followup_detail in followup_followup_details %}
                   {% if followup_detail.lead_Id_id == i.id %}
                     <p class="mt-3">Followup Date: {{ followup_detail.response_date|date:"Y-m-d" }}</p>
+                    <p>Allocated Hr/Tele Caller: <span class="text-warning">{{ followup_detail.hr_telecaller_Id.emp_name }}</span></p>
                     <p>Response: {{ followup_detail.response }}</p>
                     {% if followup_detail.response_status == 'Intrested' %}
                      <p>Status: <span class="text-success">Intrested</span></p>
@@ -548,29 +549,30 @@
 
 
 <script>
-  // Add event listener for date input changes
-  $('#fdate, #edate').on('change', function () {
-    filterTable();
-  });
-
-  function filterTable() {
-    var startDate = $('#fdate').val();
-    var endDate = $('#edate').val();
-
-    // Iterate through the table rows and hide/show them based on the date range
-    $('#lead-details tbody tr').each(function () {
-      var rowStartDate = $(this).find('td:eq(1)').text(); // Assuming start date is in the second column
-      var rowEndDate = $(this).find('td:eq(1)').text(); // Assuming end date is in the third column
-
-      // Check if the row satisfies the date conditions
-      if ((startDate === '' || rowStartDate >= startDate) &&
-          (endDate === '' || rowEndDate <= endDate)) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
+  $(document).ready(function () {
+    // Add event listener for date input changes
+    $('#fdate, #edate').on('change', function () {
+      filterTable();
     });
-  }
+
+    function filterTable() {
+      var startDate = $('#fdate').val();
+      var endDate = $('#edate').val();
+
+      // Iterate through the table rows and hide/show them based on the date range
+      $('#lead-details tbody tr').each(function () {
+        var rowDate = $(this).find('td:eq(1)').text(); // Assuming date is in the second column
+
+        // Check if the row satisfies the date conditions
+        if ((startDate === '' || rowDate >= startDate) &&
+          (endDate === '' || rowDate <= endDate)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    }
+  });
 </script>
 
 

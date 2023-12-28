@@ -255,6 +255,7 @@ class LeadCateogry_TeamAllocate(models.Model):
 class LeadCateogry_Assign(models.Model):
     executive_id = models.ForeignKey(EmployeeRegister_Details, on_delete=models.CASCADE, null=True,default='')
     lcta_id = models.ForeignKey(LeadCateogry_TeamAllocate, on_delete=models.CASCADE, null=True,default='')
+    ta_id = models.ForeignKey(TaskAssign, on_delete=models.CASCADE, null=True,default='')
     lca_discription = models.TextField(default='',null=True,blank=True)
     lca_from_date = models.DateField(auto_now=False,null=True)
     lca_due_date = models.DateField(auto_now=False,null=True)
